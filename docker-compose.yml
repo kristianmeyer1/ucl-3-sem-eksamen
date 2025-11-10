@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  gateway:
+    build: ./Gateway
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      authenticationservice:
+        condition: service_healthy
+    networks:
+      - appnet
+
+  authenticationservice:
+    build: ./AuthenticationService
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      # Connection string til din online database:
+      - ConnectionStrings__Default=Server=mysql80.unoeuro.com;Port=3306;Database=danlinedanser_dk_db;Uid=danlinedanser_dk;Pwd=DhxrtHRg345wnyfdeFb9;
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:5000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
