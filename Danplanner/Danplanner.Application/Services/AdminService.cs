@@ -1,8 +1,5 @@
 ﻿using Danplanner.Application.Dtos;
 using Danplanner.Application.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Danplanner.Application.Services
 {

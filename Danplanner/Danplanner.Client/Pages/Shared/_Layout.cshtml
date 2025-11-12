@@ -3,20 +3,47 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Danplanner.Client</title>
+    <title>@ViewData["Title"] - Danplanner</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Danplanner.Client.styles.css" asp-append-version="true" />
+
+    <!-- Flatpickr CSS (for inline clickable calendars) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <style>
+        /* small layout tweaks for inline calendars */
+        /* larger card and centered horizontally */
+        .calendar-card {
+            min-height: 420px;
+            max-width: 760px;
+            margin: 20px auto;
+        }
+
+        /* make the flatpickr calendar fill the card and slightly bigger */
+        .flatpickr-calendar {
+            width: 100% !important;
+            font-size: 1.05rem;
+        }
+
+        /* helper to vertically center content when desired */
+        .center-vertical {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Danplanner.Client</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">Danplanner</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
@@ -26,6 +53,12 @@
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
                     </ul>
+
+                    <!-- LOGIN / REGISTER buttons placed in the header -->
+                    <div class="d-flex align-items-center ms-3">
+                        <a class="btn btn-outline-secondary me-2" asp-page="/Login">Login</a>
+                        <a class="btn btn-primary" asp-page="/Register">Registrer</a>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -45,6 +78,10 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Flatpickr JS + Danish locale -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/da.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
