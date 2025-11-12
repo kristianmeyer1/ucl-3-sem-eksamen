@@ -14,9 +14,14 @@ namespace Danplanner.Persistence.Repositories
     {
         private readonly DbManager _dbManager;
 
-        public AdminRepository(DbManager dbManager)
+      /*  public AdminRepository(DbManager dbManager)
         {
             _dbManager = dbManager;
+        } */
+
+        public AdminRepository()
+        {
+            _dbManager = new DbManager();
         }
         public async Task<List<Admin>> LoadAdminListAsync()
         {
