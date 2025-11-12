@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Danplanner.Application\Danplanner.Application.csproj" />
+    <ProjectReference Include="..\Danplanner.Persistence\Danplanner.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
