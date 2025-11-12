@@ -1,10 +1,9 @@
 ﻿@page
 @model IndexModel
-@{
-    ViewData["Title"] = "Home page";
+<h2>Admins</h2>
+<ul>
+@foreach (var admin in Model.Admins)
+{
+    <li>@admin.AdminId</li> <!-- udskift med rigtige felter når de findes -->
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+</ul>

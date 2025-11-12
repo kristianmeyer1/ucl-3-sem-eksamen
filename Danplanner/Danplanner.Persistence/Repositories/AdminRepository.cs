@@ -11,21 +11,16 @@ using Microsoft.EntityFrameworkCore;
 namespace Danplanner.Persistence.Repositories
 {
     public class AdminRepository : IAdminRepository
+{
+    private readonly DbManager _dbManager;
+
+    public AdminRepository(DbManager dbManager)
     {
-        private readonly DbManager _dbManager;
-
-      /*  public AdminRepository(DbManager dbManager)
-        {
-            _dbManager = dbManager;
-        } */
-
-        public AdminRepository()
-        {
-            _dbManager = new DbManager();
-        }
-        public async Task<List<Admin>> LoadAdminListAsync()
-        {
-            return await _dbManager.Admins.ToListAsync();
-        }
+        _dbManager = dbManager;
     }
+
+    public async Task<List<Admin>> LoadAdminListAsync() =>
+        await _dbManager.Admin.ToListAsync();
+}
+
 }

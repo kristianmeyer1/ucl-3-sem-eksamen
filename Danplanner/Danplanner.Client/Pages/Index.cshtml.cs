@@ -1,19 +1,22 @@
-using Microsoft.AspNetCore.Mvc;
+using Danplanner.Application.Interfaces;
+using Danplanner.Domain.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace Danplanner.Client.Pages;
 
 public class IndexModel : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
+    private readonly IAdminRepository _adminRepository;
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public List<Admin> Admins { get; private set; } = new List<Admin>();
+
+    public IndexModel(IAdminRepository adminRepository)
     {
-        _logger = logger;
+        _adminRepository = adminRepository;
     }
 
-    public void OnGet()
+    public async Task OnGetAsync()
     {
-
+        Admins = await _adminRepository.LoadAdminListAsync();
     }
 }
