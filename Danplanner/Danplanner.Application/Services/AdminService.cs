@@ -1,4 +1,4 @@
-﻿using Danplanner.Application.Dtos;
+﻿using Danplanner.Domain.Entities;
 using Danplanner.Application.Interfaces;
 
 namespace Danplanner.Application.Services
@@ -12,10 +12,10 @@ namespace Danplanner.Application.Services
             _adminRepository = adminRepository;
         }
 
-        public async Task<List<AdminDto>> GetAllAdminsAsync()
+        public async Task<List<Admin>> GetAllAdminsAsync()
         {
             var admins = await _adminRepository.LoadAdminListAsync();
-            return admins.Select(a => new AdminDto { AdminId = a.AdminId }).ToList();
+            return admins.Select(a => new Admin { AdminId = a.AdminId }).ToList();
         }
     }
 }
