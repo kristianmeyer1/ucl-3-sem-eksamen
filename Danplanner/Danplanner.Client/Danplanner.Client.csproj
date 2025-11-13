@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Danplanner.Application\Danplanner.Application.csproj" />
     <ProjectReference Include="..\Danplanner.Domain\Danplanner.Domain.csproj" />
+    <ProjectReference Include="..\Danplanner.Infrastructure\Danplanner.Infrastructure.csproj" />
     <ProjectReference Include="..\Danplanner.Persistence\Danplanner.Persistence.csproj" />
   </ItemGroup>
 
@@ -28,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="keys\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
