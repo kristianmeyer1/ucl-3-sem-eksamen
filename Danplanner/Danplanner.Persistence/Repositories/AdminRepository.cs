@@ -14,8 +14,21 @@ namespace Danplanner.Persistence.Repositories
             _dbManager = dbManager;
         }
 
-        public async Task<List<Admin>> LoadAdminListAsync() =>
-            await _dbManager.Admin.ToListAsync();
-    }
+        public async Task<List<Admin>> LoadAdminListAsync()
+        {
+            return await _dbManager.Admin.ToListAsync();
+        }
 
+        public async Task<Admin?> GetByIdAsync(int adminId)
+        {
+            return await _dbManager.Admin.FirstOrDefaultAsync(a => a.AdminId == adminId);
+        }
+
+
+        public async Task AddAsync(Admin admin)
+        {
+            await _dbManager.Admin.AddAsync(admin);
+            await _dbManager.SaveChangesAsync();
+        }
+    }
 }

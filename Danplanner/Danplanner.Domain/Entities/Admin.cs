@@ -6,5 +6,6 @@ namespace Danplanner.Domain.Entities
     {
         [Key]
         public int AdminId { get; set; }
+        public string? AdminPassword { get; set; }
     }
 }

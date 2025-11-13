@@ -13,8 +13,14 @@ var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DbManager>(options =>
     options.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddRazorPages();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddControllers();
 
 builder.Services.AddSingleton<ITranslationService>(sp =>
     new GoogleTranslationService(builder.Configuration["GoogleCloud:danplanner"]));
@@ -22,6 +28,7 @@ builder.Services.AddSingleton<ITranslationService>(sp =>
 builder.Services.AddScoped<ContentTranslationHandler>();
 
 var app = builder.Build();
+app.MapControllers();
 
 if (!app.Environment.IsDevelopment())
 {
