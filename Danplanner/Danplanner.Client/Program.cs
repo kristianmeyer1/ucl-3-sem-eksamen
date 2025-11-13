@@ -1,4 +1,5 @@
 using Danplanner.Application.Interfaces;
+using Danplanner.Application.Services;
 using Danplanner.Persistence.DbMangagerDir;
 using Danplanner.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,18 @@ var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DbManager>(options =>
     options.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddRazorPages();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddControllers();
+
+
 var app = builder.Build();
+app.MapControllers();
 
 if (!app.Environment.IsDevelopment())
 {
