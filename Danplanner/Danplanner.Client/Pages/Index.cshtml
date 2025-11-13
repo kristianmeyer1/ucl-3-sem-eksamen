@@ -112,4 +112,44 @@
 
 @section Scripts {
     <script src="~/js/calendar.js" asp-append-version="true"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    // find flatpickr instance attached to #fp-calendar
+    const calEl = document.querySelector("#fp-calendar");
+    if (!calEl) return;
+
+    const fp = calEl._flatpickr || (window.flatpickr && flatpickr(calEl)[0]) || null;
+    // create button and append near controls
+    const controls = document.querySelector(".calendar-controls");
+    if (!controls) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-success btn-sm";
+    btn.textContent = "Vælg plads";
+    btn.style.marginLeft = "8px";
+
+    btn.addEventListener("click", function () {
+        if (!fp || !fp.selectedDates || fp.selectedDates.length < 2) {
+            alert("Vælg venligst både ankomst og afrejse.");
+            return;
+        }
+
+        // Use ISO format (YYYY-MM-DD) to keep parsing simple server-side
+        const format = (d) => fp.formatDate(d, "Y-m-d"); // flatpickr token Y=4-digit year, m=month, d=day
+        const start = format(fp.selectedDates[0]);
+        const end = format(fp.selectedDates[1]);
+
+        // calculate days (safe to send, but server will also compute)
+        const a = new Date(fp.selectedDates[0].getFullYear(), fp.selectedDates[0].getMonth(), fp.selectedDates[0].getDate());
+        const b = new Date(fp.selectedDates[1].getFullYear(), fp.selectedDates[1].getMonth(), fp.selectedDates[1].getDate());
+        const days = Math.max(0, Math.round((b - a) / (1000 * 60 * 60 * 24)));
+
+        const url = `/Accommodation?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&daysQuery=${encodeURIComponent(days)}`;
+        window.location.href = url;
+    });
+
+    controls.appendChild(btn);
+});
+</script>
 }
