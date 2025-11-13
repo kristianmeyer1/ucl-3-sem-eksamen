@@ -1,4 +1,68 @@
 ﻿@page
 @model Danplanner.Client.Pages.AccommodationModel
 @{
+    ViewData["Title"] = "Accommodations";
 }
+
+<style>
+/* (behold din eksisterende CSS, kun layout-eksempel vist) */
+.accom-topbar { background:#222; color:#fff; padding:16px; display:flex; gap:12px; align-items:center; }
+.accom-dates { background:#fff; color:#000; padding:10px 14px; border-radius:4px; display:flex; gap:20px; }
+.accom-item { display:flex; gap:18px; align-items:flex-start; margin-bottom:18px; }
+.accom-thumb { width:120px; height:90px; object-fit:cover; border:1px solid #ddd; }
+.accom-desc { flex:1; }
+.price-box { width:140px; border:1px solid #ccc; padding:10px; text-align:left; background:#f8f8f8; }
+.accom-grid { display:grid; grid-template-columns: 1fr 320px; gap:20px; align-items:start; }
+.accom-aside { display:flex; align-items:flex-start; justify-content:center; }
+.contact-box { border:1px solid #333; background:#f7f7f7; padding:12px; width:280px; border-radius:4px; position:sticky; top:calc(var(--accom-topbar-height,0px) + 12px); }
+.media (max-width:991.98px) { .accom-grid{ grid-template-columns:1fr } .contact-box{ position:static; width:auto; margin:18px auto 0 } }
+</style>
+
+<div class="accom-topbar">
+    <div class="accom-dates">
+        <div><strong>Ankomst:</strong> @Model.StartDisplay</div>
+        <div><strong>Afrejse:</strong> @Model.EndDisplay</div>
+        <div><strong>Dage:</strong> @Model.Days</div>
+    </div>
+</div>
+
+<div class="accom-grid">
+    <div>
+        @foreach (var item in Model.Items)
+        {
+            <div class="accom-item">
+                <img src="@(item.ImageUrl)" alt="@item.Title" class="accom-thumb" />
+                <div class="accom-desc">
+                    <h5>@item.Title</h5>
+                    <p>@item.Description</p>
+                </div>
+                <div class="price-box">
+                    <strong>Pris:</strong>
+                    <p>@item.PriceText</p>
+                    <a class="btn btn-sm btn-primary" asp-page="/Booking" asp-route-type="@item.Key" asp-route-start="@Model.Start" asp-route-end="@Model.End">Vælg</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <aside class="accom-aside">
+        <div class="contact-box">
+            <h6><span class="badge bg-dark">i</span> Kontakt Information</h6>
+            <p>Tlf: 12 34 56 78<br/>Email: info@camping.dk</p>
+            <p>Adresse: Strandvej 1, 0000 By</p>
+        </div>
+    </aside>
+</div>
+
+<script>
+(function () {
+    function updateTopbarHeight() {
+        var topbar = document.querySelector('.accom-topbar');
+        var height = topbar ? topbar.offsetHeight : 0;
+        document.documentElement.style.setProperty('--accom-topbar-height', height + 'px');
+    }
+    window.addEventListener('load', updateTopbarHeight);
+    window.addEventListener('resize', updateTopbarHeight);
+    updateTopbarHeight();
+})();
+</script>
