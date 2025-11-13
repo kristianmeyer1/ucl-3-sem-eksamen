@@ -1,0 +1,29 @@
+﻿{
+  "ImageUrl": "/images/camping-map.jpg",
+  "Width": 2000,
+  "Height": 1200,
+  "Points": [
+    {
+      "Key": "HytteA",
+      "Title": "Hytte A",
+      "Description": "Plads til 4 personer",
+      "X": 320,
+      "Y": 420,
+      "ImageUrl": "/images/pin-blue.png"
+    },
+    {
+      "Key": "HytteB",
+      "Title": "Hytte B",
+      "Description": "Par-hytte",
+      "X": 640,
+      "Y": 480
+    },
+    {
+      "Key": "Plads1",
+      "Title": "Plads 1",
+      "Description": "Stor teltplads",
+      "X": 980,
+      "Y": 700
+    }
+  ]
+}

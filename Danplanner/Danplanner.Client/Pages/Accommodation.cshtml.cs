@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Globalization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -18,7 +13,6 @@ namespace Danplanner.Client.Pages
             _env = env;
         }
 
-        // query string dates (ISO yyyy-MM-dd)
         [BindProperty(SupportsGet = true)]
         public string? Start { get; set; }
 
@@ -102,11 +96,46 @@ namespace Danplanner.Client.Pages
             }
             else
             {
-                // fallback: add defaults so page still shows something
-                Items.Add(new AccommodationItem { Key = "hytteA", Title = "Hytte A", Description = "Hyggelig hytte.", PriceText = "Fra 450 kr / nat", ImageUrl = "/images/hytte-a.jpg" });
-                Items.Add(new AccommodationItem { Key = "hytteB", Title = "Hytte B", Description = "Mindre hytte.", PriceText = "Fra 350 kr / nat", ImageUrl = "/images/hytte-b.jpg" });
-                Items.Add(new AccommodationItem { Key = "plads", Title = "Plads", Description = "Stor plads.", PriceText = "Fra 200 kr / nat", ImageUrl = "/images/plads.jpg" });
+                throw new FileNotFoundException("Accommodation data file not found.", dataFile);
             }
+        }
+
+        // handler saves the chosen item key in a cookie and redirects to Map
+        public IActionResult OnPostSelect(string key, string? category, string? Start, string? End)
+        {
+            if (!string.IsNullOrEmpty(key))
+            {
+                var options = new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(30),
+                    Path = "/"
+                };
+                Response.Cookies.Append("selectedItem", key, options);
+            }
+
+            // keep category cookie if provided (backwards compatible)
+            var cat = category;
+            if (string.IsNullOrEmpty(cat) && !string.IsNullOrEmpty(key))
+            {
+                var t = key.ToLowerInvariant();
+                if (t.Contains("plads")) cat = "plads";
+                else if (t.Contains("hytte")) cat = "hytte";
+            }
+            if (!string.IsNullOrEmpty(cat))
+            {
+                var options = new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(30),
+                    Path = "/"
+                };
+                Response.Cookies.Append("selectedCategory", cat, options);
+            }
+
+            // redirect to Map page with same query params if present
+            var qs = string.Empty;
+            if (!string.IsNullOrEmpty(Start)) qs += $"?Start={Uri.EscapeDataString(Start)}";
+            if (!string.IsNullOrEmpty(End)) qs += (qs == "" ? "?" : "&") + $"End={Uri.EscapeDataString(End)}";
+            return Redirect($"/Map{qs}");
         }
 
         public class AccommodationItem

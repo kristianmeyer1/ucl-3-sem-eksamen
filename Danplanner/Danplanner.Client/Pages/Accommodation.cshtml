@@ -5,7 +5,6 @@
 }
 
 <style>
-/* (behold din eksisterende CSS, kun layout-eksempel vist) */
 .accom-topbar { background:#222; color:#fff; padding:16px; display:flex; gap:12px; align-items:center; }
 .accom-dates { background:#fff; color:#000; padding:10px 14px; border-radius:4px; display:flex; gap:20px; }
 .accom-item { display:flex; gap:18px; align-items:flex-start; margin-bottom:18px; }
@@ -39,7 +38,14 @@
                 <div class="price-box">
                     <strong>Pris:</strong>
                     <p>@item.PriceText</p>
-                    <a class="btn btn-sm btn-primary" asp-page="/Booking" asp-route-type="@item.Key" asp-route-start="@Model.Start" asp-route-end="@Model.End">Vælg</a>
+
+                    <!-- form posts selected key to OnPostSelect -->
+                    <form method="post" asp-page-handler="Select" style="display:inline;">
+                        <input type="hidden" name="key" value="@item.Key" />
+                        <input type="hidden" name="Start" value="@(Model.Start ?? string.Empty)" />
+                        <input type="hidden" name="End" value="@(Model.End ?? string.Empty)" />
+                        <button type="submit" class="btn btn-sm btn-primary">Vælg</button>
+                    </form>
                 </div>
             </div>
         }
