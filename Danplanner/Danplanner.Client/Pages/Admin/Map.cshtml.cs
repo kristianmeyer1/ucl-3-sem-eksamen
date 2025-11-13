@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Danplanner.Client.Pages
+namespace Danplanner.Client.Pages.Admin
 {
-    public class AdminModel : PageModel
+    public class MapModel : PageModel
     {
         public void OnGet()
         {
