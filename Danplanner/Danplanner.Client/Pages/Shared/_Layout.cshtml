@@ -32,6 +32,10 @@
             align-items: center;
             justify-content: center;
         }
+
+        #google_translate_element {
+            margin-left: 15px; /* juster px efter behov */
+        }
     </style>
 </head>
 <body>
@@ -59,6 +63,8 @@
                         <a class="btn btn-outline-secondary me-2" asp-page="/Login">Login</a>
                         <a class="btn btn-primary" asp-page="/Register">Registrer</a>
                     </div>
+                    <div id="google_translate_element"></div>
+
                 </div>
             </div>
         </nav>
@@ -71,7 +77,7 @@
 
     <footer class="border-top footer text-muted text-center py-3">
         <div class="container">
-            &copy; 2025 - Danplanner.Client -
+            &copy; 2025 - Danplanner -
             <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
@@ -86,5 +92,21 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/da.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+          new google.translate.TranslateElement(
+            {
+              pageLanguage: 'en', // your site’s default language
+              includedLanguages: 'da,en,de,nl',
+              layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            },
+            'google_translate_element'
+          );
+        }
+    </script>
+
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </body>
 </html>

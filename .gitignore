@@ -396,6 +396,10 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
+# Google Cloud service account key
+Danplanner.Client/keys/service-account.json.json
+
+
 # VS Code files for those working on multiple tools
 .vscode/*
 !.vscode/settings.json

@@ -2,14 +2,14 @@ using Danplanner.Application.Interfaces;
 using Danplanner.Application.Services;
 using Danplanner.Persistence.DbMangagerDir;
 using Danplanner.Persistence.Repositories;
+using Danplanner.Domain.Interfaces;
+using Danplanner.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Connection string fra appsettings.json
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Vælg provider der matcher din DB (MySQL vist her)
 builder.Services.AddDbContext<DbManager>(options =>
     options.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
@@ -22,6 +22,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<ITranslationService>(sp =>
+    new GoogleTranslationService(builder.Configuration["GoogleCloud:danplanner"]));
+
+builder.Services.AddScoped<ContentTranslationHandler>();
 
 var app = builder.Build();
 app.MapControllers();

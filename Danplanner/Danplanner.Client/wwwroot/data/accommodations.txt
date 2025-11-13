@@ -1,0 +1,5 @@
+﻿# Format: key|title|description|price|imageUrl
+# imageUrl skal være web-sti (fx /images/hytte-a.jpg)
+HytteA|Hytte A|Mindre hytte, perfekt til par eller enkeltpersoner. God udsigt.|Fra 350 kr / nat|/images/hytte-a.png
+HytteB|Hytte B|Hyggelig hytte med plads til 4 personer. Inklusiv køkkenniche og terrasse.|Fra 450 kr / nat|/images/hytte-b.png
+Plads|Plads|Stor telt-/vognplads tæt på servicebygninger og legplads.|Fra 200 kr / nat|/images/plads.png

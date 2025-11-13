@@ -32,7 +32,15 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+    "Danplanner.Client": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "GOOGLE_APPLICATION_CREDENTIALS": "C:\\GitHub\\ucl-3-sem-eksamen\\Danplanner\\Danplanner.Client\\keys\\service-account.json.json"
       }
+    }
     }
   }
 }
+

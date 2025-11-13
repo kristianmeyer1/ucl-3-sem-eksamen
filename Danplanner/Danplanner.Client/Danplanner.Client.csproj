@@ -7,8 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="images\**" />
+    <Content Remove="images\**" />
+    <EmbeddedResource Remove="images\**" />
+    <None Remove="images\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Danplanner.Application\Danplanner.Application.csproj" />
     <ProjectReference Include="..\Danplanner.Domain\Danplanner.Domain.csproj" />
+    <ProjectReference Include="..\Danplanner.Infrastructure\Danplanner.Infrastructure.csproj" />
     <ProjectReference Include="..\Danplanner.Persistence\Danplanner.Persistence.csproj" />
   </ItemGroup>
 
@@ -22,6 +30,11 @@
     <PackageReference Include="Scalar.AspNetCore" Version="2.10.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.35.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="keys\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>
