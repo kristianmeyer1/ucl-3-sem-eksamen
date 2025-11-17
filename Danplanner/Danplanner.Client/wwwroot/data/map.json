@@ -1,29 +1,358 @@
 ﻿{
-  "ImageUrl": "/images/camping-map.jpg",
-  "Width": 2000,
-  "Height": 1200,
+  "ImageUrl": "/images/camping-map.png",
+  "Width": 800,
+  "Height": 400,
   "Points": [
     {
-      "Key": "HytteA",
-      "Title": "Hytte A",
+      "Key": "Hytte1",
+      "Title": "Hytte 1",
       "Description": "Plads til 4 personer",
-      "X": 320,
-      "Y": 420,
+      "X": 275,
+      "Y": 102,
       "ImageUrl": "/images/pin-blue.png"
     },
     {
-      "Key": "HytteB",
-      "Title": "Hytte B",
+      "Key": "Hytte2",
+      "Title": "Hytte 2",
       "Description": "Par-hytte",
-      "X": 640,
-      "Y": 480
+      "X": 310,
+      "Y": 115
+    },
+    {
+      "Key": "Hytte3",
+      "Title": "Hytte 3",
+      "Description": "Par-hytte",
+      "X": 343,
+      "Y": 133
+    },
+    {
+      "Key": "Hytte4",
+      "Title": "Hytte 4",
+      "Description": "Par-hytte",
+      "X": 375,
+      "Y": 150
+    },
+    {
+      "Key": "Hytte5",
+      "Title": "Hytte 5",
+      "Description": "Par-hytte",
+      "X": 412,
+      "Y": 167
+    },
+    {
+      "Key": "Hytte6",
+      "Title": "Hytte 6",
+      "Description": "Par-hytte",
+      "X": 557,
+      "Y": 167
+    },
+    {
+      "Key": "Hytte7",
+      "Title": "Hytte 7",
+      "Description": "Par-hytte",
+      "X": 596,
+      "Y": 144
+    },
+    {
+      "Key": "Hytte8",
+      "Title": "Hytte 8",
+      "Description": "Par-hytte",
+      "X": 635,
+      "Y": 125
+    },
+    {
+      "Key": "Hytte9",
+      "Title": "Hytte 9",
+      "Description": "Par-hytte",
+      "X": 652,
+      "Y": 157
+    },
+    {
+      "Key": "Hytte10",
+      "Title": "Hytte 10",
+      "Description": "Par-hytte",
+      "X": 613,
+      "Y": 180
+    },
+    {
+      "Key": "Luksushytte1",
+      "Title": "Luksushytte 1",
+      "Description": "Par-hytte",
+      "X": 105,
+      "Y": 137
+    },
+    {
+      "Key": "Luksushytte2",
+      "Title": "Luksushytte 2",
+      "Description": "Par-hytte",
+      "X": 130,
+      "Y": 125
+    },
+    {
+      "Key": "Luksushytte3",
+      "Title": "Luksushytte 3",
+      "Description": "Par-hytte",
+      "X": 155,
+      "Y": 110
+    },
+    {
+      "Key": "Luksushytte4",
+      "Title": "Luksushytte 4",
+      "Description": "Par-hytte",
+      "X": 180,
+      "Y": 97
+    },
+    {
+      "Key": "Luksushytte5",
+      "Title": "Luksushytte 5",
+      "Description": "Par-hytte",
+      "X": 205,
+      "Y": 85
     },
     {
       "Key": "Plads1",
       "Title": "Plads 1",
       "Description": "Stor teltplads",
-      "X": 980,
-      "Y": 700
+      "X": 240,
+      "Y": 135
+    },
+    {
+      "Key": "Plads2",
+      "Title": "Plads 2",
+      "Description": "Stor teltplads",
+      "X": 270,
+      "Y": 150
+    },
+    {
+      "Key": "Plads3",
+      "Title": "Plads 3",
+      "Description": "Stor teltplads",
+      "X": 300,
+      "Y": 165
+    },
+    {
+      "Key": "Plads4",
+      "Title": "Plads 4",
+      "Description": "Stor teltplads",
+      "X": 330,
+      "Y": 182
+    },
+    {
+      "Key": "Plads5",
+      "Title": "Plads 5",
+      "Description": "Stor teltplads",
+      "X": 355,
+      "Y": 197
+    },
+    {
+      "Key": "Plads6",
+      "Title": "Plads 6",
+      "Description": "Stor teltplads",
+      "X": 200,
+      "Y": 155
+    },
+    {
+      "Key": "Plads7",
+      "Title": "Plads 7",
+      "Description": "Stor teltplads",
+      "X": 230,
+      "Y": 170
+    },
+    {
+      "Key": "Plads8",
+      "Title": "Plads 8",
+      "Description": "Stor teltplads",
+      "X": 260,
+      "Y": 187
+    },
+    {
+      "Key": "Plads9",
+      "Title": "Plads 9",
+      "Description": "Stor teltplads",
+      "X": 289,
+      "Y": 202
+    },
+    {
+      "Key": "Plads10",
+      "Title": "Plads 10",
+      "Description": "Stor teltplads",
+      "X": 319,
+      "Y": 216
+    },
+    {
+      "Key": "Plads11",
+      "Title": "Plads 11",
+      "Description": "Stor teltplads",
+      "X": 165,
+      "Y": 174
+    },
+    {
+      "Key": "Plads12",
+      "Title": "Plads 12",
+      "Description": "Stor teltplads",
+      "X": 195,
+      "Y": 190
+    },
+    {
+      "Key": "Plads13",
+      "Title": "Plads 13",
+      "Description": "Stor teltplads",
+      "X": 225,
+      "Y": 205
+    },
+    {
+      "Key": "Plads14",
+      "Title": "Plads 14",
+      "Description": "Stor teltplads",
+      "X": 255,
+      "Y": 220
+    },
+    {
+      "Key": "Plads15",
+      "Title": "Plads 15",
+      "Description": "Stor teltplads",
+      "X": 285,
+      "Y": 235
+    },
+    {
+      "Key": "Plads16",
+      "Title": "Plads 16",
+      "Description": "Stor teltplads",
+      "X": 130,
+      "Y": 190
+    },
+    {
+      "Key": "Plads17",
+      "Title": "Plads 17",
+      "Description": "Stor teltplads",
+      "X": 160,
+      "Y": 205
+    },
+    {
+      "Key": "Plads18",
+      "Title": "Plads 18",
+      "Description": "Stor teltplads",
+      "X": 190,
+      "Y": 222
+    },
+    {
+      "Key": "Plads19",
+      "Title": "Plads 19",
+      "Description": "Stor teltplads",
+      "X": 220,
+      "Y": 235
+    },
+    {
+      "Key": "Plads20",
+      "Title": "Plads 20",
+      "Description": "Stor teltplads",
+      "X": 250,
+      "Y": 250
+    },
+    {
+      "Key": "Plads21",
+      "Title": "Plads 21",
+      "Description": "Stor teltplads",
+      "X": 430,
+      "Y": 210
+    },
+    {
+      "Key": "Plads22",
+      "Title": "Plads 22",
+      "Description": "Stor teltplads",
+      "X": 470,
+      "Y": 200
+    },
+    {
+      "Key": "Plads23",
+      "Title": "Plads 23",
+      "Description": "Stor teltplads",
+      "X": 500,
+      "Y": 185
+    },
+    {
+      "Key": "Plads24",
+      "Title": "Plads 24",
+      "Description": "Stor teltplads",
+      "X": 390,
+      "Y": 227
+    },
+    {
+      "Key": "Plads25",
+      "Title": "Plads 25",
+      "Description": "Stor teltplads",
+      "X": 420,
+      "Y": 240
+    },
+    {
+      "Key": "Plads26",
+      "Title": "Plads 26",
+      "Description": "Stor teltplads",
+      "X": 475,
+      "Y": 235
+    },
+    {
+      "Key": "Plads27",
+      "Title": "Plads 27",
+      "Description": "Stor teltplads",
+      "X": 505,
+      "Y": 220
+    },
+    {
+      "Key": "Plads28",
+      "Title": "Plads 28",
+      "Description": "Stor teltplads",
+      "X": 535,
+      "Y": 205
+    },
+    {
+      "Key": "Plads29",
+      "Title": "Plads 29",
+      "Description": "Stor teltplads",
+      "X": 345,
+      "Y": 245
+    },
+    {
+      "Key": "Plads30",
+      "Title": "Plads ´30",
+      "Description": "Stor teltplads",
+      "X": 375,
+      "Y": 260
+    },
+    {
+      "Key": "Plads31",
+      "Title": "Plads 31",
+      "Description": "Stor teltplads",
+      "X": 405,
+      "Y": 275
+    },
+    {
+      "Key": "Plads32",
+      "Title": "Plads 32",
+      "Description": "Stor teltplads",
+      "X": 480,
+      "Y": 275
+    },
+    {
+      "Key": "Plads33",
+      "Title": "Plads 33",
+      "Description": "Stor teltplads",
+      "X": 510,
+      "Y": 260
+    },
+    {
+      "Key": "Plads34",
+      "Title": "Plads 34",
+      "Description": "Stor teltplads",
+      "X": 545,
+      "Y": 240
+    },
+    {
+      "Key": "Plads35",
+      "Title": "Plads 35",
+      "Description": "Stor teltplads",
+      "X": 575,
+      "Y": 225
     }
   ]
 }
