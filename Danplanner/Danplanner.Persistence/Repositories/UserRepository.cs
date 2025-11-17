@@ -28,7 +28,8 @@ namespace Danplanner.Persistence.Repositories
                     UserId = u.UserId,
                     UserAdress = u.UserAdress,
                     UserMobile = u.UserMobile,
-                    UserEmail = u.UserEmail
+                    UserEmail = u.UserEmail,
+                    UserName = u.UserName
                 })
                 .ToListAsync();
         }
