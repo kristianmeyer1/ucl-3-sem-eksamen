@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
+using Danplanner.Application.Models;
 
 namespace Danplanner.Client.Pages
 {
@@ -45,51 +46,11 @@ namespace Danplanner.Client.Pages
                 throw new FileNotFoundException("Map definition file not found.", mapFile);
             }
 
-            //var accomFile = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "accommodations.txt");
-            //HashSet<string> availableKeys = new(StringComparer.OrdinalIgnoreCase);
-            //if (System.IO.File.Exists(accomFile))
-            //{
-            //    var lines = System.IO.File.ReadAllLines(accomFile);
-            //    foreach (var raw in lines)
-            //    {
-            //        var line = raw?.Trim();
-            //        if (string.IsNullOrEmpty(line)) continue;
-            //        if (line.StartsWith("#")) continue;
-            //        var parts = line.Split('|');
-            //        if (parts.Length < 1) continue;
-            //        var key = parts[0].Trim();
-            //        if (!string.IsNullOrEmpty(key)) availableKeys.Add(key);
-            //    }
-            //}
-
-            //if (mapDef.Points != null && availableKeys.Any())
-            //{
-            //    mapDef.Points = mapDef.Points.Where(p => !string.IsNullOrEmpty(p.Key) && availableKeys.Contains(p.Key)).ToArray();
-            //}
-
             SelectedKey = Request.Cookies["selectedItem"];
             var qSelected = Request.Query["selected"].FirstOrDefault();
             if (!string.IsNullOrEmpty(qSelected)) SelectedKey = qSelected;
 
             FilteredMapJson = JsonSerializer.Serialize(mapDef);
-        }
-
-        public class MapDefinition
-        {
-            public string ImageUrl { get; set; } = string.Empty;
-            public int Width { get; set; }
-            public int Height { get; set; }
-            public MapPoint[] Points { get; set; } = Array.Empty<MapPoint>();
-        }
-
-        public class MapPoint
-        {
-            public string Key { get; set; } = string.Empty;
-            public string Title { get; set; } = string.Empty;
-            public string? Description { get; set; }
-            public int X { get; set; }
-            public int Y { get; set; }
-            public string? ImageUrl { get; set; }
         }
     }
 }
