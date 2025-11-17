@@ -11,7 +11,7 @@ using Danplanner.Application.Interfaces.UserInterfaces;
 namespace Danplanner.Infrastructure.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] // vores route bliver api/users
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _repo;
@@ -26,6 +26,7 @@ namespace Danplanner.Infrastructure.Controllers
         {
             var users = await _repo.GetAllUsersAsync();
             return Ok(users);
+            // vi returnerer 200 OK med listen af users
         }
     }
 

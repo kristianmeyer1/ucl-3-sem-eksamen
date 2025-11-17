@@ -16,16 +16,10 @@ namespace Danplanner.Client.Pages.Admin
             _userService = userService;
         }
 
+        // Henter alle brugere til visning i grid, den bliver kørt i html koden så har derfor ingen klassiske "references"
         public async Task OnGetAsync()
         {
             GridData = await _userService.GetAllUsersAsync();
         }
-    }
-
-    public class GridItemUser : AdminGridItem
-    {      
-        public string UserAdress { get; set; } = "";
-        public string UserMobile { get; set; } = "";
-        public string UserEmail { get; set; } = "";
     }
 }
