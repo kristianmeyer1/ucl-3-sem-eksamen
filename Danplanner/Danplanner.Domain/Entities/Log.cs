@@ -2,7 +2,7 @@
 
 namespace Danplanner.Domain.Entities
 {
-    internal class Log
+    public class Log
     {
         [Key]
         public int LogId { get; set; }

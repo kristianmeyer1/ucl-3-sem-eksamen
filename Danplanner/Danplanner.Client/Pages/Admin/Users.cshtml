@@ -24,15 +24,16 @@
             @foreach (var item in Model.GridData)
             {
                 <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">@item.Id</h5>
-                            <p class="card-text">@item.UserAdress</p>
-                            <p class="card-text">@item.UserMobile</p>
-                            <p class="card-text">@item.UserEmail</p>
+                    <a asp-page="/Admin/UserDetails" asp-route-id="@item.UserId" class="text-decoration-none text-dark">
+                        <div class="card h-100 shadow-sm hover-card">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.UserEmail</h5>
+                                <p class="card-text">@item.UserAdress</p>
+                                <p class="card-text">@item.UserMobile</p>
+                            </div>
+                            <div class="card-footer text-muted">@item.UserId</div>
                         </div>
-                        <div class="card-footer text-muted">@item.Id</div>
-                    </div>
+                    </a>
                 </div>
             }
         </div>
@@ -71,5 +72,12 @@
         font-size: 1.25rem;
         font-weight: bold;
         margin-bottom: 1.5rem;
+    }
+
+    .hover-card:hover {
+        cursor: pointer;
+        transform: scale(1.02);
+        transition: 0.15s ease-in-out;
+        box-shadow: 0 0 10px rgba(0,0,0,0.25);
     }
 </style>

@@ -2,7 +2,7 @@
 
 namespace Danplanner.Domain.Entities
 {
-    internal class Orderline
+    public class Orderline
     {
         [Key]
         public int OrderlineId { get; set; }

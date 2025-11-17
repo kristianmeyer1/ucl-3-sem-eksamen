@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="keys\" />
+    <Folder Include="Keys\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 

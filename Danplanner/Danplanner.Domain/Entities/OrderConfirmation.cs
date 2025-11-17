@@ -2,7 +2,7 @@
 
 namespace Danplanner.Domain.Entities
 {
-    internal class OrderConfirmation
+    public class OrderConfirmation
     {
         [Key]
         public int OrderConfirmationId { get; set; }

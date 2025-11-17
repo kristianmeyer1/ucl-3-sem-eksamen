@@ -2,7 +2,7 @@
 
 namespace Danplanner.Domain.Entities
 {
-    internal class Addon
+    public class Addon
     {
         [Key]
         public int AddonId { get; set; }

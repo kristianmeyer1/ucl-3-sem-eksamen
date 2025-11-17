@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Danplanner.Application.Interfaces.UserInterfaces;
+using Danplanner.Application.Models;
+using System.Net.Http.Json;
+
+namespace Danplanner.Application.Services
+{
+    public class UserService : IUserService
+    {
+        private readonly HttpClient _httpClient;
+
+        public UserService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
+        public async Task<List<UserDto>> GetAllUsersAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<List<UserDto>>("https://localhost:7026/api/users");
+        }
+    }
+}

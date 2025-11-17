@@ -1,4 +1,4 @@
-using Danplanner.Application.Interfaces;
+using Danplanner.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

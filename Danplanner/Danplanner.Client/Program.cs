@@ -5,6 +5,8 @@ using Danplanner.Persistence.Repositories;
 using Danplanner.Domain.Interfaces;
 using Danplanner.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Danplanner.Application.Interfaces.AdminInterfaces;
+using Danplanner.Application.Interfaces.UserInterfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,19 +15,23 @@ var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DbManager>(options =>
     options.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddControllers();
 builder.Services.AddRazorPages();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddControllers();
-
 builder.Services.AddSingleton<ITranslationService>(sp =>
     new GoogleTranslationService(builder.Configuration["GoogleCloud:danplanner"]));
-
 builder.Services.AddScoped<ContentTranslationHandler>();
+
+// Service builders
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddHttpClient<IUserService, UserService>();
+
+// Repository builders
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 app.MapControllers();
@@ -41,5 +47,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.MapRazorPages();
+app.MapControllers();
 
 app.Run();

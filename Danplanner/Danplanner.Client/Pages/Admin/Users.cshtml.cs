@@ -1,18 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Danplanner.Application.Interfaces;
+using Danplanner.Application.Models;
+using Danplanner.Application.Interfaces.UserInterfaces;
 
 namespace Danplanner.Client.Pages.Admin
 {
     public class UsersModel : PageModel
     {
-        public List<GridItemUser> GridData { get; set; } = new List<GridItemUser>();
+        public List<UserDto> GridData { get; set; } = new List<UserDto>();
 
-        public void OnGet()
+        private readonly IUserService _userService;
+
+        public UsersModel(IUserService userService)
         {
-            GridData.Add(new GridItemUser { Id = 1, UserAdress = "Bruger Adresse", UserMobile = "Bruger Tlf", UserEmail = "Bruger Email" });
-            GridData.Add(new GridItemUser { Id = 2, UserAdress = "Bruger Adresse", UserMobile = "Bruger Tlf", UserEmail = "Bruger Email" });
+            _userService = userService;
+        }
 
+        public async Task OnGetAsync()
+        {
+            GridData = await _userService.GetAllUsersAsync();
         }
     }
 
