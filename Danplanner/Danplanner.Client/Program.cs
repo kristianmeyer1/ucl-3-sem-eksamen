@@ -25,6 +25,7 @@ builder.Services.AddSingleton<ITranslationService>(sp =>
 builder.Services.AddScoped<ContentTranslationHandler>();
 
 // Service builders
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IUserService, UserService>();
 
