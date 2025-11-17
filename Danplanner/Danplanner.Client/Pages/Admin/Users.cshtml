@@ -27,7 +27,8 @@
                     <a asp-page="/Admin/UserDetails" asp-route-id="@item.UserId" class="text-decoration-none text-dark">
                         <div class="card h-100 shadow-sm hover-card">
                             <div class="card-body">
-                                <h5 class="card-title">@item.UserEmail</h5>
+                                <h5 class="card-title">@item.UserName</h5>
+                                <p class="card-text">@item.UserEmail</p>
                                 <p class="card-text">@item.UserAdress</p>
                                 <p class="card-text">@item.UserMobile</p>
                             </div>

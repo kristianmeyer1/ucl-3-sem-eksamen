@@ -16,5 +16,6 @@ namespace Danplanner.Application.Models
         public string UserMobile { get; set; }
         [Required]
         public string UserEmail { get; set; }
+        public string? UserName { get; set; }
     }
 }
