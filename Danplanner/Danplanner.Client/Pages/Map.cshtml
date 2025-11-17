@@ -35,13 +35,9 @@
 
 <div class="map-wrapper">
     <div id="map" aria-label="Kort over campingplads"></div>
-
     <div class="map-side" aria-hidden="false">
         <div class="map-legend"><strong>Pladser / Hytter</strong></div>
         <ul id="points" class="points-list"></ul>
-        <div style="margin-top:14px;">
-            <small>Skift baggrundsbillede og punkter ved at redigere <code>/wwwroot/data/map.json</code></small>
-        </div>
     </div>
 </div>
 
@@ -108,7 +104,9 @@
     (function addPoints() {
         (mapDef.Points || []).forEach(point => {
             // Leaflet uses [lat, lng] => [y, x] for CRS.Simple using the same bounds as the image
-            const latlng = [point.Y, point.X];
+            const lat = mapDef.Height - point.Y;
+            const lng = point.X;
+            const latlng = [lat, lng];
 
             // create marker initially with defaultIcon to avoid broken images
             const marker = L.marker(latlng, { icon: defaultIcon }).addTo(map);

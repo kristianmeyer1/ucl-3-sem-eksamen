@@ -45,27 +45,27 @@ namespace Danplanner.Client.Pages
                 throw new FileNotFoundException("Map definition file not found.", mapFile);
             }
 
-            var accomFile = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "accommodations.txt");
-            HashSet<string> availableKeys = new(StringComparer.OrdinalIgnoreCase);
-            if (System.IO.File.Exists(accomFile))
-            {
-                var lines = System.IO.File.ReadAllLines(accomFile);
-                foreach (var raw in lines)
-                {
-                    var line = raw?.Trim();
-                    if (string.IsNullOrEmpty(line)) continue;
-                    if (line.StartsWith("#")) continue;
-                    var parts = line.Split('|');
-                    if (parts.Length < 1) continue;
-                    var key = parts[0].Trim();
-                    if (!string.IsNullOrEmpty(key)) availableKeys.Add(key);
-                }
-            }
+            //var accomFile = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "accommodations.txt");
+            //HashSet<string> availableKeys = new(StringComparer.OrdinalIgnoreCase);
+            //if (System.IO.File.Exists(accomFile))
+            //{
+            //    var lines = System.IO.File.ReadAllLines(accomFile);
+            //    foreach (var raw in lines)
+            //    {
+            //        var line = raw?.Trim();
+            //        if (string.IsNullOrEmpty(line)) continue;
+            //        if (line.StartsWith("#")) continue;
+            //        var parts = line.Split('|');
+            //        if (parts.Length < 1) continue;
+            //        var key = parts[0].Trim();
+            //        if (!string.IsNullOrEmpty(key)) availableKeys.Add(key);
+            //    }
+            //}
 
-            if (mapDef.Points != null && availableKeys.Any())
-            {
-                mapDef.Points = mapDef.Points.Where(p => !string.IsNullOrEmpty(p.Key) && availableKeys.Contains(p.Key)).ToArray();
-            }
+            //if (mapDef.Points != null && availableKeys.Any())
+            //{
+            //    mapDef.Points = mapDef.Points.Where(p => !string.IsNullOrEmpty(p.Key) && availableKeys.Contains(p.Key)).ToArray();
+            //}
 
             SelectedKey = Request.Cookies["selectedItem"];
             var qSelected = Request.Query["selected"].FirstOrDefault();
