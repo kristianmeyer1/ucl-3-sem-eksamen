@@ -28,10 +28,12 @@ builder.Services.AddScoped<ContentTranslationHandler>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IUserService, UserService>();
+builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 
 // Repository builders
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAccommodationRepository, AccommodationRepository>();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
