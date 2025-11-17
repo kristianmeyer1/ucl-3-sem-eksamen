@@ -27,7 +27,7 @@ namespace Danplanner.Application.Services
             var existingAdmin = await _adminRepository.GetByIdAsync(request.AdminId);
             if (existingAdmin != null)
             {
-                throw new Exception("Admin with this ID already exists.");
+                return null;            
             }
 
             var admin = new Admin
