@@ -2,7 +2,7 @@
 
 namespace Danplanner.Domain.Entities
 {
-    internal class PaymentConfirmation
+    public class PaymentConfirmation
     {
         [Key]
         public int PaymentConfirmationId { get; set; }

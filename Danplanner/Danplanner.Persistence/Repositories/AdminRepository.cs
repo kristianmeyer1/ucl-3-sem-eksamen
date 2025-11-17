@@ -1,4 +1,4 @@
-﻿using Danplanner.Application.Interfaces;
+﻿using Danplanner.Application.Interfaces.AdminInterfaces;
 using Danplanner.Domain.Entities;
 using Danplanner.Persistence.DbMangagerDir;
 using Microsoft.EntityFrameworkCore;

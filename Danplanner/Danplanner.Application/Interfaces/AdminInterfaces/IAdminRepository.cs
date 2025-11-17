@@ -1,6 +1,6 @@
 ﻿using Danplanner.Domain.Entities;
 
-namespace Danplanner.Application.Interfaces
+namespace Danplanner.Application.Interfaces.AdminInterfaces
 {
     public interface IAdminRepository
     {

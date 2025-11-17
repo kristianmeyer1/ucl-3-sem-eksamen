@@ -2,7 +2,7 @@
 
 namespace Danplanner.Domain.Entities
 {
-    internal class Booking
+    public class Booking
     {
         [Key]
         public int BookingId { get; set; }

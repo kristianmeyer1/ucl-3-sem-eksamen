@@ -8,6 +8,7 @@ namespace Danplanner.Persistence.DbMangagerDir
         public DbManager(DbContextOptions<DbManager> options) : base(options) { }
 
         public DbSet<Admin> Admin => Set<Admin>();
+        public DbSet<User> User => Set<User>();
     }
 
 }
