@@ -7,16 +7,13 @@ namespace Danplanner.Domain.Entities
         [Key]
         public int AccommodationId { get; set; }
         [Required]
-        public string AccommodationName { get; set; }
-        public string AccommodationDescription { get; set; }
+        public string AccommodationName { get; set; } = string.Empty;
         [Required]
-        public string Name { get; set; } = string.Empty;
-        [Required]
-        public string Description { get; set; } = string.Empty;
+        public string AccommodationDescription { get; set; } = string.Empty;
         [Required]
         public decimal? PricePerNight { get; set; }
-        public string? ImageUrl { get; set; }
+        [Required]
         public int Availability { get; set; }
-        public string Key { get; set; } = string.Empty;
+        public string? ImageUrl { get; set; }
     }
 }

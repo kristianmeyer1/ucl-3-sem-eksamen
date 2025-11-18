@@ -39,9 +39,9 @@ namespace Danplanner.Persistence.Repositories
 
                 var entity = new Accommodation
                 {
-                    Key = parts[0].Trim(),
-                    Name = parts[1].Trim(),
-                    Description = parts[2].Trim(),
+                    AccommodationId = int.TryParse(parts[0].Trim(), out var id) ? id : 0,
+                    AccommodationName = parts[1].Trim(),
+                    AccommodationDescription = parts[2].Trim(),
                     PricePerNight = decimal.TryParse(parts[3].Trim(), out var price) ? price : null,
                     ImageUrl = parts[4].Trim(),
                 };

@@ -1,10 +1,5 @@
 ﻿using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Danplanner.Application.Services
 {
@@ -27,13 +22,12 @@ namespace Danplanner.Application.Services
 
             return entities.Select(a => new AccommodationDto
             {
-                Key = a.Key,
-                Title = a.Name,
-                Description = a.Description,
-                PriceText = a.PricePerNight.HasValue
-                                ? $"{a.PricePerNight.Value:N0} kr. pr. døgn"
-                                : "Kontakt os for pris",
-                ImageUrl = a.ImageUrl ?? "/images/default.png"
+                AccommodationId = a.AccommodationId,
+                AccommodationName = a.AccommodationName,
+                AccommodationDescription = a.AccommodationDescription,
+                PricePerNight = a.PricePerNight,
+                ImageUrl = a.ImageUrl ?? "/images/default.png",
+                Availability = a.Availability
             }).ToList();
         }
     }

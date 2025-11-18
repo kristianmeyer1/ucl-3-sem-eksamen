@@ -1,17 +1,20 @@
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc;
+using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Text.Json;
 
 namespace Danplanner.Client.Pages
 {
     public class MapModel : PageModel
     {
         private readonly IWebHostEnvironment _env;
+        private readonly IAccommodationService _accommodationService;
 
-        public MapModel(IWebHostEnvironment env)
+        public MapModel(IWebHostEnvironment env, IAccommodationService accommodationService)
         {
             _env = env;
+            _accommodationService = accommodationService;
         }
 
         [BindProperty(SupportsGet = true)]
