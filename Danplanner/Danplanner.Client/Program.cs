@@ -10,33 +10,49 @@ using Danplanner.Application.Interfaces.UserInterfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Database connection
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
-
 builder.Services.AddDbContext<DbManager>(options =>
     options.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
+// Add HttpContextAccessor for Razor pages and layout injection
+builder.Services.AddHttpContextAccessor();
+
+// Controllers & Razor Pages
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+
+// Translation services
 builder.Services.AddSingleton<ITranslationService>(sp =>
     new GoogleTranslationService(builder.Configuration["GoogleCloud:danplanner"]));
 builder.Services.AddScoped<ContentTranslationHandler>();
 
-// Service builders
-
+// Application services
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddHttpClient<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
-// Repository builders
+// Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+
+// HttpClient 
 builder.Services.AddHttpClient();
 
-var app = builder.Build();
-app.MapControllers();
+// Cookies
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/Login";
+    });
+builder.Services.AddAuthorization();
 
+// Build app
+var app = builder.Build();
+
+// Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -45,9 +61,18 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
+app.UseAuthentication(); 
 app.UseAuthorization();
+
 app.MapRazorPages();
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.Run();

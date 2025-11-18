@@ -1,73 +1,103 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Danplanner.Domain.Entities;
-using Danplanner.Application.Models;
-using Microsoft.AspNetCore.Identity;
-using Danplanner.Application.Interfaces;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Danplanner.Application.Interfaces;
+using Danplanner.Application.Models.LoginDto;
+using Danplanner.Application.Models;
 
 namespace Danplanner.Client.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController (IAuthService authService): ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IConfiguration _configuration;
 
-
-        [HttpPost("register")]
-        public async Task<ActionResult<Admin>> Register([FromBody] AdminDto request)
+        public AuthController(IAuthService authService)
         {
-            var admin = await authService.RegisterAsync(request);
+            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+        }
+
+        // Admin registration
+        [HttpPost("register")]
+        public async Task<ActionResult<AdminDto>> Register([FromBody] AdminDto request)
+        {
+            var admin = await _authService.RegisterAsync(request);
             if (admin == null)
-                return BadRequest("User already exists");
+                return BadRequest("Admin already exists.");
             return Ok(admin);
         }
 
+        // Admin or User login
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login([FromBody] AdminDto request)
+        public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
-            var token = await authService.LoginAsync(request);
+            var token = await _authService.LoginAsync(request);
+
             if (token == null)
-                return BadRequest("Invalid credentials");
-            return Ok(token);
+                return BadRequest("Invalid credentials or code.");
+
+            if (token == "OTP_SENT")
+                return Ok("OTP sent to your email.");
+
+            // Optionally sign in the user/admin for Razor UI (cookies)
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            var claims = jwt.Claims.ToList();
+            var identity = new ClaimsIdentity(claims, "jwt");
+            var userPrincipal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync("Cookies", userPrincipal);
+
+            return Ok(token); // Return JWT for API usage
         }
+
+        // User requests OTP login code
+        [HttpPost("user/request-code")]
+        public async Task<IActionResult> RequestUserCode([FromBody] RequestCodeDto request)
+        {
+            var success = await _authService.RequestUserLoginCodeAsync(request.UserEmail);
+            if (!success)
+                return NotFound("User not found.");
+            return Ok("Login code sent to your email.");
+        }
+
+        // User verifies OTP login code
+        [HttpPost("user/verify-code")]
+        public async Task<ActionResult<string>> VerifyUserCode([FromBody] VerifyCodeDto request)
+        {
+            var token = await _authService.VerifyUserLoginCodeAsync(request.UserEmail, request.Code);
+            if (token == null)
+                return BadRequest("Invalid code.");
+
+            // Optionally sign in for Razor UI
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            var claims = jwt.Claims.ToList();
+            var identity = new ClaimsIdentity(claims, "jwt");
+            var userPrincipal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync("Cookies", userPrincipal);
+
+            return Ok(token); // Return JWT for API usage
+        }
+
+        // Logout
         [Authorize]
-        [HttpGet]
-        public IActionResult AuthenticatedOnlyEndpoint()
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
         {
-            return Ok("You are authenticated!");
+            await HttpContext.SignOutAsync(); // signs out the user
+            return RedirectToPage("/Index");  // redirect to home after logout
         }
 
-        private string CreateToken(AdminDto admin)
+        // Example endpoint requiring authentication
+        [Authorize]
+        [HttpGet("authenticated-only")]
+        public IActionResult AuthenticatedOnly()
         {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, admin.AdminId.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, admin.AdminId.ToString())
-            };
-
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration.GetValue<string>("AppSettings:Token")!));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
-            var tokenDescriptor = new JwtSecurityToken(
-                issuer: _configuration.GetValue<string>("AppSettings:Issuer"),
-                audience: _configuration.GetValue<string>("AppSettings:Audience"),
-                claims: claims,
-                expires: DateTime.UtcNow.AddDays(1),
-                signingCredentials: creds
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+            return Ok($"You are authenticated as {User.Identity?.Name ?? "Unknown"}!");
         }
     }
-
 }

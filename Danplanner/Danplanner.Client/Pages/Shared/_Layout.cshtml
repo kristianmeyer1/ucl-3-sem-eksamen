@@ -7,109 +7,118 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Danplanner.Client.styles.css" asp-append-version="true" />
-
-    <!-- Flatpickr CSS (for inline clickable calendars) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
     <style>
-        /* small layout tweaks for inline calendars */
-        /* larger card and centered horizontally */
-        .calendar-card {
-            min-height: 420px;
-            max-width: 760px;
-            margin: 20px auto;
-        }
-
-        /* make the flatpickr calendar fill the card and slightly bigger */
-        .flatpickr-calendar {
-            width: 100% !important;
-            font-size: 1.05rem;
-        }
-
-        /* helper to vertically center content when desired */
-        .center-vertical {
-            min-height: 60vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #google_translate_element {
-            margin-left: 15px; /* juster px efter behov */
-        }
+        .calendar-card { min-height: 420px; max-width: 760px; margin: 20px auto; }
+        .flatpickr-calendar { width: 100% !important; font-size: 1.05rem; }
+        .center-vertical { min-height: 60vh; display: flex; align-items: center; justify-content: center; }
+        #google_translate_element { margin-left: 15px; }
     </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Danplanner</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+<header>
+    <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" asp-page="/Index">Danplanner</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Admin/Admin"><b>Admin</b></a>
-                        </li>
-                    </ul>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Privacy">Privacy</a>
+                    </li>
 
-                    <!-- LOGIN / REGISTER buttons placed in the header -->
-                    <div class="d-flex align-items-center ms-3">
-                        <a class="btn btn-outline-secondary me-2" asp-page="/Login">Login</a>
-                        <a class="btn btn-primary" asp-page="/Register">Registrer</a>
-                    </div>
-                    <div id="google_translate_element"></div>
+                    <!-- Admin link visible only to admins -->
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Admin/Admin"><b>Admin</b></a>
+                            </li>
+                        }
+                </ul>
 
+                <div class="d-flex align-items-center ms-3">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <input type="text" id="loginIdentifier" class="form-control me-2" placeholder="Email or Admin ID" />
+                            <button class="btn btn-outline-secondary me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                            <a class="btn btn-primary" asp-page="/Register">Register</a>
+                        }
+                        else
+                        {
+                            <span class="me-2">Hello, @User.Identity.Name!</span>
+                            <button class="btn btn-outline-danger" id="logoutBtn">Logout</button>
+                        }
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted text-center py-3">
-        <div class="container">
-            &copy; 2025 - Danplanner -
-            <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
-    </footer>
+    </nav>
+</header>
 
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="mb-3" id="adminPasswordGroup" style="display:none;">
+                        <label for="loginPassword" class="form-label">Admin Password</label>
+                        <input type="password" class="form-control" id="loginPassword" placeholder="Admin Password">
+                    </div>
+                    <div class="mb-3" id="userOtpGroup" style="display:none;">
+                        <label for="loginCode" class="form-label">OTP Code</label>
+                        <input type="text" class="form-control" id="loginCode" placeholder="Enter OTP">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- Flatpickr JS + Danish locale -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/da.js"></script>
+<div class="container">
+    <main role="main" class="pb-3">
+            @RenderBody()
+    </main>
+</div>
 
-    @await RenderSectionAsync("Scripts", required: false)
+<footer class="border-top footer text-muted text-center py-3">
+    <div class="container">
+        &copy; 2025 - Danplanner - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    </div>
+</footer>
 
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-          new google.translate.TranslateElement(
-            {
-              pageLanguage: 'en', // your site’s default language
-              includedLanguages: 'da,en,de,nl',
-              layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            },
-            'google_translate_element'
-          );
-        }
-    </script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/da.js"></script>
+<script src="~/js/login.js"></script>
 
-    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script>
+    flatpickr(".flatpickr-input", { locale: "da", dateFormat: "d-m-Y", minDate: "today" });
 
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'da,en,de,nl',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+    }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

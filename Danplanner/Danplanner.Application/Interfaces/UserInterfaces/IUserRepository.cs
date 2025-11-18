@@ -1,8 +1,5 @@
 ﻿using Danplanner.Application.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Danplanner.Application.Interfaces.UserInterfaces
@@ -10,5 +7,7 @@ namespace Danplanner.Application.Interfaces.UserInterfaces
     public interface IUserRepository
     {
         Task<List<UserDto>> GetAllUsersAsync();
+        Task<UserDto?> GetByUserIdAsync(int userId);
+        Task<UserDto?> GetByEmailAsync(string userEmail);
     }
 }
