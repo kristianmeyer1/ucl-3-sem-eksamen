@@ -42,6 +42,34 @@
             }
         </div>
     </div>
+
+    <div class="edit-panel p-3 rounded shadow-sm">
+        <h4>Rediger bruger</h4>
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">Navn</label>
+                <input type="text" class="form-control taller-input" name="UserName" value="@Model.SelectedUser.UserName" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control taller-input" name="UserEmail" value="@Model.SelectedUser.UserEmail" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Adresse</label>
+                <input type="text" class="form-control taller-input" name="UserAdress" value="@Model.SelectedUser.UserAdress" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mobil</label>
+                <input type="text" class="form-control taller-input" name="UserMobile" value="@Model.SelectedUser.UserMobile" />
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Bekræft</button>
+                <button type="submit" name="action" value="delete" class="btn btn-danger">Slet</button>
+            </div>
+        </form>
+    </div>
+
 </div>
 
 <style>
@@ -84,4 +112,19 @@
         transition: 0.15s ease-in-out;
         box-shadow: 0 0 10px rgba(0,0,0,0.25);
     }
+
+    .edit-panel {
+        border: none; /* fjerner kant */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* blød skygge */
+        margin-top: 6rem; /* rykker panel lidt ned */
+        min-width: 300px;
+        max-width: 350px;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .taller-input {
+        height: 40px; /* juster højden efter behov */
+    }
+
 </style>
