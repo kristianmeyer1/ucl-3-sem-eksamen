@@ -1,12 +1,9 @@
 ﻿using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
-using Danplanner.Domain.Entities;
 using Danplanner.Persistence.DbMangagerDir;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Danplanner.Persistence.Repositories
@@ -26,27 +23,42 @@ namespace Danplanner.Persistence.Repositories
                 .Select(u => new UserDto
                 {
                     UserId = u.UserId,
-                    UserAdress = u.UserAdress,
-                    UserMobile = u.UserMobile,
+                    UserName = u.UserName,
                     UserEmail = u.UserEmail,
-                    UserName = u.UserName
+                    UserMobile = u.UserMobile,
+                    UserAdress = u.UserAdress
                 })
                 .ToListAsync();
         }
 
-        public async Task<UserDto?> GetUserByIdAsync(int userId)
+        public async Task<UserDto?> GetByUserIdAsync(int userId)
         {
-            return await _dbManager.User
-                .Where(u => u.UserId == userId)
-                .Select(u => new UserDto
-                {
-                    UserId = u.UserId,
-                    UserAdress = u.UserAdress,
-                    UserMobile = u.UserMobile,
-                    UserEmail = u.UserEmail,
-                    UserName = u.UserName
-                })
-                .FirstOrDefaultAsync();
+            var user = await _dbManager.User.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null) return null;
+
+            return new UserDto
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                UserEmail = user.UserEmail,
+                UserMobile = user.UserMobile,
+                UserAdress = user.UserAdress
+            };
+        }
+
+        public async Task<UserDto?> GetByEmailAsync(string userEmail)
+        {
+            var user = await _dbManager.User.FirstOrDefaultAsync(u => u.UserEmail == userEmail);
+            if (user == null) return null;
+
+            return new UserDto
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                UserEmail = user.UserEmail,
+                UserMobile = user.UserMobile,
+                UserAdress = user.UserAdress
+            };
         }
 
     }
