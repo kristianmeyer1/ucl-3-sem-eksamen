@@ -30,18 +30,18 @@
         @foreach (var item in Model.Items)
         {
             <div class="accom-item">
-                <img src="@(item.ImageUrl)" alt="@item.Title" class="accom-thumb" />
+                <img src="@(item.ImageUrl)" alt="@item.AccommodationName" class="accom-thumb" />
                 <div class="accom-desc">
-                    <h5>@item.Title</h5>
-                    <p>@item.Description</p>
+                    <h5>@item.AccommodationName</h5>
+                    <p>@item.AccommodationDescription</p>
                 </div>
                 <div class="price-box">
                     <strong>Pris:</strong>
-                    <p>@item.PriceText</p>
+                    <p>@item.PricePerNight kr./nat</p>
 
                     <!-- form posts selected key to OnPostSelect -->
                     <form method="post" asp-page-handler="Select" style="display:inline;">
-                        <input type="hidden" name="key" value="@item.Key" />
+                        <input type="hidden" name="key" value="@item.AccommodationId" />
                         <input type="hidden" name="Start" value="@(Model.Start ?? string.Empty)" />
                         <input type="hidden" name="End" value="@(Model.End ?? string.Empty)" />
                         <button type="submit" class="btn btn-sm btn-primary">Vælg</button>

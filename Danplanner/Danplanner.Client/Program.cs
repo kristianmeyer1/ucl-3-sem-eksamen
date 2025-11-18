@@ -9,7 +9,6 @@ using Danplanner.Application.Interfaces.AdminInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
-using Danplanner.Application.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
