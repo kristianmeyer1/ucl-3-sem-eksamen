@@ -4,28 +4,29 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Danplanner</title>
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Danplanner.Client.styles.css" asp-append-version="true" />
 
-    <!-- Flatpickr CSS (for inline clickable calendars) -->
+    <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
     <style>
-        /* small layout tweaks for inline calendars */
-        /* larger card and centered horizontally */
+        /* Kalenderkort */
         .calendar-card {
             min-height: 420px;
             max-width: 760px;
             margin: 20px auto;
         }
 
-        /* make the flatpickr calendar fill the card and slightly bigger */
         .flatpickr-calendar {
             width: 100% !important;
             font-size: 1.05rem;
         }
 
-        /* helper to vertically center content when desired */
+        /* Centering helper */
         .center-vertical {
             min-height: 60vh;
             display: flex;
@@ -33,59 +34,77 @@
             justify-content: center;
         }
 
+        /* Sticky footer layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main.flex-grow-1 {
+            flex: 1 0 auto; /* fylder mellem header og footer */
+        }
+
+        footer {
+            flex-shrink: 0; /* Footer klippes ikke */
+        }
+
+        /* Google Translate */
         #google_translate_element {
-            margin-left: 15px; /* juster px efter behov */
+            display: inline-block;
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
+    <!-- Header / Navbar -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">Danplanner</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse d-sm-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Admin/Admin"><b>Admin</b></a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" asp-page="/Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-page="/Privacy">Privacy</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-page="/Admin/Admin"><b>Admin</b></a></li>
                     </ul>
 
-                    <!-- LOGIN / REGISTER buttons placed in the header -->
                     <div class="d-flex align-items-center ms-3">
                         <a class="btn btn-outline-secondary me-2" asp-page="/Login">Login</a>
-                        <a class="btn btn-primary" asp-page="/Register">Registrer</a>
+                        <a class="btn btn-primary me-2" asp-page="/Register">Registrer</a>
+                        <div id="google_translate_element"></div>
                     </div>
-                    <div id="google_translate_element"></div>
-
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted text-center py-3">
-        <div class="container">
-            &copy; 2025 - Danplanner -
+    <!-- Main content -->
+    <main class="flex-grow-1">
+        <div class="container py-3">
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-top py-3 mt-auto">
+        <div class="container d-flex justify-content-center align-items-center flex-wrap">
+            <span class="me-2">&copy; 2025 - Danplanner -</span>
             <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
 
-
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -96,20 +115,19 @@
 
     @await RenderSectionAsync("Scripts", required: false)
 
+    <!-- Google Translate -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
-          new google.translate.TranslateElement(
-            {
-              pageLanguage: 'en', // your site’s default language
-              includedLanguages: 'da,en,de,nl',
-              layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            },
-            'google_translate_element'
-          );
+            new google.translate.TranslateElement(
+                {
+                    pageLanguage: 'en',
+                    includedLanguages: 'da,en,de,nl',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                },
+                'google_translate_element'
+            );
         }
     </script>
-
     <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
 </body>
 </html>
