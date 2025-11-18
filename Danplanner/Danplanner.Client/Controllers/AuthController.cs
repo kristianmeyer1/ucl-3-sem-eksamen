@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 
 namespace Danplanner.Client.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {

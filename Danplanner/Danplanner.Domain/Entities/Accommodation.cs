@@ -8,7 +8,8 @@ namespace Danplanner.Domain.Entities
         public int AccommodationId { get; set; }
         [Required]
         public string AccommodationName { get; set; }
-        [Required]
         public string AccommodationDescription { get; set; }
+        [Required]
+        public double PricePerNight { get; set; }
     }
 }
