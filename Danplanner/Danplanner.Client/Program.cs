@@ -40,6 +40,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAddonRepository, AddonRepository>();
 builder.Services.AddScoped<IAccommodationRepository, AccommodationRepository>();
+builder.Services.AddScoped<IAccommodationAvailabilityRepository, AccommodationAvailabilityRepository>();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
