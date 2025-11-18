@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Danplanner.Client.Pages
 {
-    public class PaymentModel : PageModel
+    public class ThankyouModel : PageModel
     {
         public void OnGet()
         {
