@@ -9,6 +9,4 @@ namespace Danplanner.Client.Pages.Admin
         {
         }
     }
-
-    
 }

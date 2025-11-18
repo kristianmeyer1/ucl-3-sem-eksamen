@@ -28,6 +28,14 @@ namespace Danplanner.Infrastructure.Controllers
             return Ok(users);
             // vi returnerer 200 OK med listen af users
         }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<UserDto?>> GetUserById(int id)
+        {
+            var user = await _repo.GetUserByIdAsync(id);
+            if (user == null) return NotFound();
+            return Ok(user);
+        }
     }
 
 }
