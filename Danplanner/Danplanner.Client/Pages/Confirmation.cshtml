@@ -36,6 +36,25 @@
             <div>@Model.SelectedAccommodation?.PricePerNight</div>
         </div>
 
+        <div class="guest-item">
+            <span class="guest-label">Voksne</span>
+            <div class="guest-controls">
+                <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('adult', -1)">-</button>
+                <span id="adult-count" class="guest-count">0</span>
+                <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('adult', 1)">+</button>
+            </div>
+        </div>
+
+        <div class="guest-item">
+            <span class="guest-label">Børn</span>
+            <div class="guest-controls">
+                <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('child', -1)">-</button>
+                <span id="child-count" class="guest-count">0</span>
+                <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('child', 1)">+</button>
+            </div>
+        </div>
+
+
         <div class="addons">
             <h5 class="section-title">Tilkøb</h5>
 
@@ -49,9 +68,9 @@
                     </div>
 
                     <div class="addon-controls">
-                        <button type="button" class="btn btn-secondary">-</button>
+                        <button type="button" class="btn btn-secondary small-btn">-</button>
                         <span>0</span>
-                        <button type="button" class="btn btn-secondary">+</button>
+                        <button type="button" class="btn btn-secondary small-btn">+</button>
                     </div>
                 </div>
             }
@@ -66,10 +85,12 @@
     </div>
 
     <aside class="accom-aside">
-        <div class="contact-box">
-            <h6><span class="badge bg-dark">i</span> Kontakt Information</h6>
-            <p>Tlf: 12 34 56 78<br />Email: info@camping.dk</p>
-            <p>Adresse: Strandvej 1, 0000 By</p>
+        <div class="sticky-wrapper">
+            <div class="contact-box">
+                <h6><span class="badge bg-dark">i</span> Kontakt Information</h6>
+                <p>Tlf: 12 34 56 78<br>Email: info@camping.dk</p>
+                <p>Adresse: Strandvej 1, 0000 By</p>
+            </div>
         </div>
     </aside>
 
@@ -97,22 +118,28 @@
     }
 
     .accom-aside {
-        grid-area: aside;
-    }
+    grid-area: aside;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+}
 
-    /* Kontaktboks som i første eksempel */
-    .contact-box {
-        border: 1px solid #333;
-        background: #f7f7f7;
-        padding: 12px;
-        width: 280px;
-        border-radius: 4px;
-        position: sticky;
-        top: 20px;
-        margin-left: 400px;
-    }
+.sticky-wrapper {
+    position: relative;
+    max-height: calc(100vh - 20px); /* 20px top-margin */
+}
 
-    /* Øvrige styles uændret */
+.contact-box {
+    position: sticky;
+    top: 0; /* starter i toppen af wrapper */
+    border: 1px solid #333;
+    background: #f7f7f7;
+    padding: 12px;
+    border-radius: 4px;
+    overflow-y: auto; /* scroll hvis for høj */
+}
+
+
     .form-box {
         border: 1px solid #ccc;
         background: #fafafa;
@@ -168,6 +195,37 @@
         border-bottom: 1px solid #eee;
         font-size: 16px;
     }
+
+    .guest-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .guest-label {
+        font-weight: 500;
+    }
+
+    /* Kontroller: - 0 + */
+    .guest-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .guest-count {
+        min-width: 24px;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .small-btn {
+        padding: 2px 8px;
+        font-size: 0.8rem;
+        height: 28px; /* lavere knap */
+    }
+
 
     /* Tilkøb sektionen */
     .section-title {
