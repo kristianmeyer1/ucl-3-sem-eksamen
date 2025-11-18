@@ -1,4 +1,6 @@
 using System.Globalization;
+using Danplanner.Application.Interfaces.AccommodationInterfaces;
+using Danplanner.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -6,11 +8,11 @@ namespace Danplanner.Client.Pages
 {
     public class AccommodationModel : PageModel
     {
-        private readonly IWebHostEnvironment _env;
+        private readonly IAccommodationService _accommodationService;
 
-        public AccommodationModel(IWebHostEnvironment env)
+        public AccommodationModel(IAccommodationService accommodationService)
         {
-            _env = env;
+            _accommodationService = accommodationService;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -24,40 +26,21 @@ namespace Danplanner.Client.Pages
 
         public string StartDisplay { get; private set; } = "—";
         public string EndDisplay { get; private set; } = "—";
-        public int Days { get; private set; } = 0;
+        public int Days { get; private set; }
 
-        public List<AccommodationItem> Items { get; private set; } = new();
+        public List<AccommodationDto> Items { get; private set; } = new();
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
-            // parse dates
-            DateTime? startDt = null;
-            DateTime? endDt = null;
-            if (!string.IsNullOrEmpty(Start)
-                && DateTime.TryParseExact(Start, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var s))
-            {
-                startDt = s.Date;
-                StartDisplay = s.ToString("d. MMMM", CultureInfo.GetCultureInfo("da-DK"));
-            }
-            else if (!string.IsNullOrEmpty(Start))
-            {
-                StartDisplay = Start;
-            }
+            DateTime? startDt = ParseDate(Start, out var startDisp);
+            DateTime? endDt = ParseDate(End, out var endDisp);
 
-            if (!string.IsNullOrEmpty(End)
-                && DateTime.TryParseExact(End, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var e))
-            {
-                endDt = e.Date;
-                EndDisplay = e.ToString("d. MMMM", CultureInfo.GetCultureInfo("da-DK"));
-            }
-            else if (!string.IsNullOrEmpty(End))
-            {
-                EndDisplay = End;
-            }
+            StartDisplay = startDisp;
+            EndDisplay = endDisp;
 
             if (startDt.HasValue && endDt.HasValue)
             {
-                var computed = Math.Max(0, (endDt.Value - startDt.Value).Days);
+                var computed = Math.Max(0, (endDt.Value.Date - startDt.Value.Date).Days);
                 Days = DaysQuery ?? computed;
             }
             else if (DaysQuery.HasValue)
@@ -65,42 +48,32 @@ namespace Danplanner.Client.Pages
                 Days = DaysQuery.Value;
             }
 
-            // load items from text file
-            var dataFile = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "accommodations.txt");
-            if (System.IO.File.Exists(dataFile))
-            {
-                var lines = System.IO.File.ReadAllLines(dataFile);
-                foreach (var raw in lines)
-                {
-                    var line = raw?.Trim();
-                    if (string.IsNullOrEmpty(line)) continue;
-                    if (line.StartsWith("#")) continue; // comment
-                    // expected format: key|title|description|price|imagePath
-                    var parts = line.Split('|');
-                    if (parts.Length < 5)
-                    {
-                        // skip malformed lines
-                        continue;
-                    }
-
-                    var item = new AccommodationItem
-                    {
-                        Key = parts[0].Trim(),
-                        Title = parts[1].Trim(),
-                        Description = parts[2].Trim(),
-                        PriceText = parts[3].Trim(),
-                        ImageUrl = parts[4].Trim() // should be relative to webroot, e.g. /images/hytte-a.jpg
-                    };
-                    Items.Add(item);
-                }
-            }
-            else
-            {
-                throw new FileNotFoundException("Accommodation data file not found.", dataFile);
-            }
+            Items = (await _accommodationService
+                .GetAccommodationsAsync(startDt, endDt, DaysQuery))
+                .ToList();
         }
 
-        // handler saves the chosen item key in a cookie and redirects to Map
+        private static DateTime? ParseDate(string? raw, out string display)
+        {
+            display = "—";
+            if (string.IsNullOrEmpty(raw))
+                return null;
+
+            if (DateTime.TryParseExact(
+                    raw,
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var dt))
+            {
+                display = dt.ToString("d. MMMM", CultureInfo.GetCultureInfo("da-DK"));
+                return dt.Date;
+            }
+
+            display = raw;
+            return null;
+        }
+
         public IActionResult OnPostSelect(string key, string? category, string? Start, string? End)
         {
             if (!string.IsNullOrEmpty(key))
@@ -113,7 +86,6 @@ namespace Danplanner.Client.Pages
                 Response.Cookies.Append("selectedItem", key, options);
             }
 
-            // keep category cookie if provided (backwards compatible)
             var cat = category;
             if (string.IsNullOrEmpty(cat) && !string.IsNullOrEmpty(key))
             {
@@ -121,6 +93,7 @@ namespace Danplanner.Client.Pages
                 if (t.Contains("plads")) cat = "plads";
                 else if (t.Contains("hytte")) cat = "hytte";
             }
+
             if (!string.IsNullOrEmpty(cat))
             {
                 var options = new CookieOptions
@@ -131,20 +104,11 @@ namespace Danplanner.Client.Pages
                 Response.Cookies.Append("selectedCategory", cat, options);
             }
 
-            // redirect to Map page with same query params if present
             var qs = string.Empty;
             if (!string.IsNullOrEmpty(Start)) qs += $"?Start={Uri.EscapeDataString(Start)}";
             if (!string.IsNullOrEmpty(End)) qs += (qs == "" ? "?" : "&") + $"End={Uri.EscapeDataString(End)}";
-            return Redirect($"/Map{qs}");
-        }
 
-        public class AccommodationItem
-        {
-            public string Key { get; set; } = string.Empty;
-            public string Title { get; set; } = string.Empty;
-            public string Description { get; set; } = string.Empty;
-            public string PriceText { get; set; } = string.Empty;
-            public string ImageUrl { get; set; } = string.Empty;
+            return Redirect($"/Map{qs}");
         }
     }
 }

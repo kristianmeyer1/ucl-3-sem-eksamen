@@ -9,6 +9,8 @@ namespace Danplanner.Persistence.DbMangagerDir
 
         public DbSet<Admin> Admin => Set<Admin>();
         public DbSet<User> User => Set<User>();
+        public DbSet<Addon> Addon => Set<Addon>();
+        public DbSet<Accommodation> Accommodation => Set<Accommodation>();
     }
 
 }

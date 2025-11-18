@@ -6,5 +6,6 @@ namespace Danplanner.Domain.Entities
     {
         [Key]
         public int OrderlineId { get; set; }
+        public int BookingId { get; set; }
     }
 }

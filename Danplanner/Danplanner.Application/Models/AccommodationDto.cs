@@ -1,18 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Danplanner.Domain.Entities
+namespace Danplanner.Application.Models
 {
-    public class Accommodation
+    public class AccommodationDto
     {
-        [Key]
         public int AccommodationId { get; set; }
-        [Required]
         public string AccommodationName { get; set; } = string.Empty;
-        [Required]
         public string AccommodationDescription { get; set; } = string.Empty;
-        [Required]
         public decimal? PricePerNight { get; set; }
-        [Required]
         public int Availability { get; set; }
         public string? ImageUrl { get; set; }
     }

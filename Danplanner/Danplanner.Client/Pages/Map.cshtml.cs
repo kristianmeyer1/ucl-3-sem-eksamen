@@ -1,16 +1,22 @@
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Danplanner.Application.Interfaces.AccommodationInterfaces;
+using Danplanner.Application.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Globalization;
+using System.Text.Json;
 
 namespace Danplanner.Client.Pages
 {
     public class MapModel : PageModel
     {
         private readonly IWebHostEnvironment _env;
+        private readonly IAccommodationAvailabilityRepository _availabilityRepo;
 
-        public MapModel(IWebHostEnvironment env)
+        public MapModel(IWebHostEnvironment env,
+                        IAccommodationAvailabilityRepository availabilityRepo)
         {
             _env = env;
+            _availabilityRepo = availabilityRepo;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -22,18 +28,22 @@ namespace Danplanner.Client.Pages
         public string FilteredMapJson { get; private set; } = "{}";
         public string? SelectedKey { get; private set; }
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
+            // 1) Indlæs map.json (samme som før)
             var dataDir = Path.Combine(_env.WebRootPath ?? string.Empty, "data");
             var mapFile = Path.Combine(dataDir, "map.json");
-            MapDefinition mapDef = null;
+            MapDefinition mapDef;
 
             if (System.IO.File.Exists(mapFile))
             {
                 var raw = System.IO.File.ReadAllText(mapFile);
                 try
                 {
-                    mapDef = JsonSerializer.Deserialize<MapDefinition>(raw, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new MapDefinition();
+                    mapDef = JsonSerializer.Deserialize<MapDefinition>(
+                        raw,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    ) ?? new MapDefinition();
                 }
                 catch
                 {
@@ -45,51 +55,59 @@ namespace Danplanner.Client.Pages
                 throw new FileNotFoundException("Map definition file not found.", mapFile);
             }
 
-            //var accomFile = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "accommodations.txt");
-            //HashSet<string> availableKeys = new(StringComparer.OrdinalIgnoreCase);
-            //if (System.IO.File.Exists(accomFile))
-            //{
-            //    var lines = System.IO.File.ReadAllLines(accomFile);
-            //    foreach (var raw in lines)
-            //    {
-            //        var line = raw?.Trim();
-            //        if (string.IsNullOrEmpty(line)) continue;
-            //        if (line.StartsWith("#")) continue;
-            //        var parts = line.Split('|');
-            //        if (parts.Length < 1) continue;
-            //        var key = parts[0].Trim();
-            //        if (!string.IsNullOrEmpty(key)) availableKeys.Add(key);
-            //    }
-            //}
-
-            //if (mapDef.Points != null && availableKeys.Any())
-            //{
-            //    mapDef.Points = mapDef.Points.Where(p => !string.IsNullOrEmpty(p.Key) && availableKeys.Contains(p.Key)).ToArray();
-            //}
-
+            // 2) Forvalgt pin (din eksisterende logik)
             SelectedKey = Request.Cookies["selectedItem"];
             var qSelected = Request.Query["selected"].FirstOrDefault();
-            if (!string.IsNullOrEmpty(qSelected)) SelectedKey = qSelected;
+            if (!string.IsNullOrEmpty(qSelected))
+                SelectedKey = qSelected;
 
-            FilteredMapJson = JsonSerializer.Serialize(mapDef);
+            // 3) Hent ledige AccommodationId'er fra databasen via EF
+            var availableIds = await _availabilityRepo.GetAvailableIdsAsync();
+            MapPoint[] filteredPoints;
+
+            if (availableIds == null || availableIds.Count == 0)
+            {
+                // sikkerhedsnet: vis alle pins hvis der ikke kommer noget
+                filteredPoints = mapDef.Points;
+            }
+            else
+            {
+                var idSet = new HashSet<int>(availableIds);
+
+                // 4) Filtrér punkterne i map.json på AccommodationId
+                filteredPoints = mapDef.Points
+                    .Where(p => p.AccommodationId.HasValue &&
+                                idSet.Contains(p.AccommodationId.Value))
+                    .ToArray();
+            }
+
+            var filteredMap = new MapDefinition
+            {
+                ImageUrl = mapDef.ImageUrl,
+                Width = mapDef.Width,
+                Height = mapDef.Height,
+                Points = filteredPoints
+            };
+
+            // 5) Send til JavaScript
+            FilteredMapJson = JsonSerializer.Serialize(filteredMap);
         }
 
-        public class MapDefinition
+        private static DateTime? ParseDate(string? raw)
         {
-            public string ImageUrl { get; set; } = string.Empty;
-            public int Width { get; set; }
-            public int Height { get; set; }
-            public MapPoint[] Points { get; set; } = Array.Empty<MapPoint>();
-        }
+            if (string.IsNullOrWhiteSpace(raw)) return null;
 
-        public class MapPoint
-        {
-            public string Key { get; set; } = string.Empty;
-            public string Title { get; set; } = string.Empty;
-            public string? Description { get; set; }
-            public int X { get; set; }
-            public int Y { get; set; }
-            public string? ImageUrl { get; set; }
+            if (DateTime.TryParseExact(
+                    raw,
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var dt))
+            {
+                return dt.Date;
+            }
+
+            return null;
         }
     }
 }

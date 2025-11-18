@@ -3,87 +3,10 @@
 @{
     ViewData["Title"] = "Home";
 }
-<style>
-    /* Calendar visual styling to match screenshot */
-    .calendar-top {
-        background: #5f9aa5;
-        color: #fff;
-        padding: 8px 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-    }
-
-        .calendar-top .info {
-            font-size: 0.95rem;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-            .calendar-top .info strong {
-                margin-left: 6px;
-            }
-
-    .calendar-wrapper {
-        border-top: 1px solid #e6e6e6;
-        padding-top: 12px;
-    }
-
-    /* flatpickr range styling */
-    .flatpickr-calendar {
-        box-shadow: none;
-        border: none;
-    }
-
-    .flatpickr-day.startRange, .flatpickr-day.endRange {
-        background: #3f8f97 !important;
-        color: #fff !important;
-        border-radius: 6px !important;
-    }
-
-    .flatpickr-day.inRange {
-        background: #cfe8ea !important;
-        color: #000 !important;
-    }
-
-    .flatpickr-weekwrapper {
-        background: #f3f3f3;
-        border-right: 1px solid #e6e6e6;
-    }
-
-    .flatpickr-weekday:before {
-        display: none;
-    }
-
-    /* give the two months more breathing room */
-    .flatpickr-months {
-        gap: 28px;
-    }
-
-    /* small tweaks for the control area */
-    .calendar-controls {
-        margin-top: 10px;
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-        .calendar-controls .small {
-            color: #6c757d;
-        }
-
-    /* clear button */
-    #clearSelection {
-        margin-left: auto;
-    }
-</style>
 
 <div class="booking-page center-vertical">
     <div class="row g-4 justify-content-center w-100">
-        <div class="col-11 col-sm-10 col-md-8 col-lg-7 col-xl-6">
+        <div class="col-13 col-sm-12 col-md-11 col-lg-9 col-xl-8">
             <div class="card calendar-card">
                 <div class="card-header">Vælg periode</div>
                 <div class="card-body">
@@ -153,3 +76,105 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 }
+<style>
+    .flatpickr-innerContainer {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        gap: 32px !important; /* afstand mellem månederne */
+        width: 100% !important;
+    }
+
+    .flatpickr-days {
+        width: auto !important;
+        flex: 1 1 0 !important;
+    }
+
+
+    .flatpickr-months {
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+
+    .calendar-card .card-body {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    /* Calendar visual styling to match screenshot */
+    .calendar-top {
+        background: #5f9aa5;
+        color: #fff;
+        padding: 8px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .calendar-top .info {
+            font-size: 0.95rem;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+            .calendar-top .info strong {
+                margin-left: 6px;
+            }
+
+    .calendar-wrapper {
+        border-top: 1px solid #e6e6e6;
+        padding-top: 12px;
+    }
+
+    /* flatpickr range styling */
+    .flatpickr-calendar {
+        box-shadow: none;
+        border: none;
+    }
+
+    .flatpickr-day.startRange, .flatpickr-day.endRange {
+        background: #3f8f97 !important;
+        color: #fff !important;
+        border-radius: 6px !important;
+    }
+
+    .flatpickr-day.inRange {
+        background: #cfe8ea !important;
+        color: #000 !important;
+    }
+
+    .flatpickr-weekwrapper {
+        background: #f3f3f3;
+        border-right: 1px solid #e6e6e6;
+    }
+
+    .flatpickr-weekday:before {
+        display: none;
+    }
+
+    .flatpickr-month,
+    .flatpickr-rContainer {
+        width: 100% !important;
+    }
+
+
+    /* small tweaks for the control area */
+    .calendar-controls {
+        margin-top: 10px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+        .calendar-controls .small {
+            color: #6c757d;
+        }
+
+    /* clear button */
+    #clearSelection {
+        margin-left: auto;
+    }
+</style>

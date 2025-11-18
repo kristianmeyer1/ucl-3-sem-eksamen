@@ -11,12 +11,12 @@ using Danplanner.Application.Interfaces.UserInterfaces;
 namespace Danplanner.Infrastructure.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] // vores route bliver api/users
-    public class UsersController : ControllerBase
+    [Route("api/user/[controller]")] // vores route bliver api/user
+    public class UserController : ControllerBase
     {
         private readonly IUserRepository _repo;
 
-        public UsersController(IUserRepository repo)
+        public UserController(IUserRepository repo)
         {
             _repo = repo;
         }
@@ -27,6 +27,14 @@ namespace Danplanner.Infrastructure.Controllers
             var users = await _repo.GetAllUsersAsync();
             return Ok(users);
             // vi returnerer 200 OK med listen af users
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<UserDto?>> GetUserById(int id)
+        {
+            var user = await _repo.GetUserByIdAsync(id);
+            if (user == null) return NotFound();
+            return Ok(user);
         }
     }
 

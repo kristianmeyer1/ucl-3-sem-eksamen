@@ -9,5 +9,6 @@ namespace Danplanner.Application.Interfaces.UserInterfaces
         Task<List<UserDto>> GetAllUsersAsync();
         Task<UserDto?> GetByUserIdAsync(int userId);
         Task<UserDto?> GetByEmailAsync(string userEmail);
+        Task<UserDto> GetUserByIdAsync(int userId);
     }
 }

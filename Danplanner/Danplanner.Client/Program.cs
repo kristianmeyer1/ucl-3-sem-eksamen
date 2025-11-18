@@ -7,6 +7,9 @@ using Danplanner.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Danplanner.Application.Interfaces.AdminInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
+using Danplanner.Application.Interfaces.AddonInterfaces;
+using Danplanner.Application.Interfaces.AccommodationInterfaces;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,12 +36,19 @@ builder.Services.AddScoped<ContentTranslationHandler>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddHttpClient<IUserRepository, UserService>();
+builder.Services.AddHttpClient<IAddonRepository, AddonService>();
+builder.Services.AddHttpClient<UserService>();
+builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 // HttpClient 
+builder.Services.AddScoped<IAddonRepository, AddonRepository>();
+builder.Services.AddScoped<IAccommodationRepository, AccommodationRepository>();
+builder.Services.AddScoped<IAccommodationAvailabilityRepository, AccommodationAvailabilityRepository>();
 builder.Services.AddHttpClient();
 
 // Cookies

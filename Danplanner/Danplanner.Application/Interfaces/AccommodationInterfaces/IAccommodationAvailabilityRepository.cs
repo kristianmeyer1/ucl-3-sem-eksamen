@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Danplanner.Application.Interfaces.AccommodationInterfaces
+{
+    public interface IAccommodationAvailabilityRepository
+    {
+        Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(
+            CancellationToken cancellationToken = default);
+    }
+}

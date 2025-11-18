@@ -11,6 +11,9 @@
         <div class="sidebar-header">Admin Panel</div>
         <nav class="nav flex-column">
             <a class="nav-link" asp-page="/Admin/Users"><i class="bi bi-people"></i> Brugere</a>
+            <a class="nav-link" asp-page="/Admin/Addons"><i class="bi bi-bag-plus"></i> Tilkøb</a>
+            <a class="nav-link" asp-page="/Admin/Packages"><i class="bi bi-box-seam"></i> Pakke-løsninger</a>
+            <a class="nav-link" asp-page="/Admin/Seasons"><i class="bi bi-calendar-range"></i> Sæsoner</a>
             <a class="nav-link" asp-page="/Admin/Map"><i class="bi bi-grid-1x2"></i> Pladskort</a>
             <a class="nav-link" asp-page="/Admin/Calendar"><i class="bi bi-calendar3"></i> Kalender</a>
             <a class="nav-link" asp-page="/Admin/Log"><i class="bi bi-journal-text"></i> Logbog</a>
@@ -24,7 +27,7 @@
             @foreach (var item in Model.GridData)
             {
                 <div class="col">
-                    <a asp-page="/Admin/UserDetails" asp-route-id="@item.UserId" class="text-decoration-none text-dark">
+                    <a asp-page="/Admin/Users" asp-route-id="@item.UserId" class="text-decoration-none text-dark">
                         <div class="card h-100 shadow-sm hover-card">
                             <div class="card-body">
                                 <h5 class="card-title">@item.UserName</h5>
@@ -39,6 +42,34 @@
             }
         </div>
     </div>
+
+    <div class="edit-panel p-3 rounded shadow-sm">
+        <h4>Rediger bruger</h4>
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">Navn</label>
+                <input type="text" class="form-control taller-input" name="UserName" value="@Model.SelectedUser.UserName" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control taller-input" name="UserEmail" value="@Model.SelectedUser.UserEmail" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Adresse</label>
+                <input type="text" class="form-control taller-input" name="UserAdress" value="@Model.SelectedUser.UserAdress" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mobil</label>
+                <input type="text" class="form-control taller-input" name="UserMobile" value="@Model.SelectedUser.UserMobile" />
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Bekræft</button>
+                <button type="submit" name="action" value="delete" class="btn btn-danger">Slet</button>
+            </div>
+        </form>
+    </div>
+
 </div>
 
 <style>
@@ -81,4 +112,19 @@
         transition: 0.15s ease-in-out;
         box-shadow: 0 0 10px rgba(0,0,0,0.25);
     }
+
+    .edit-panel {
+        border: none; /* fjerner kant */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* blød skygge */
+        margin-top: 6rem; /* rykker panel lidt ned */
+        min-width: 300px;
+        max-width: 350px;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .taller-input {
+        height: 40px; /* juster højden efter behov */
+    }
+
 </style>

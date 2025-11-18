@@ -11,29 +11,13 @@
         <div class="sidebar-header">Admin Panel</div>
         <nav class="nav flex-column">
             <a class="nav-link" asp-page="/Admin/Users"><i class="bi bi-people"></i> Brugere</a>
+            <a class="nav-link" asp-page="/Admin/Addons"><i class="bi bi-bag-plus"></i> Tilkøb</a>
+            <a class="nav-link" asp-page="/Admin/Packages"><i class="bi bi-box-seam"></i> Pakke-løsninger</a>
+            <a class="nav-link" asp-page="/Admin/Seasons"><i class="bi bi-calendar-range"></i> Sæsoner</a>
             <a class="nav-link" asp-page="/Admin/Map"><i class="bi bi-grid-1x2"></i> Pladskort</a>
             <a class="nav-link" asp-page="/Admin/Calendar"><i class="bi bi-calendar3"></i> Kalender</a>
             <a class="nav-link" asp-page="/Admin/Log"><i class="bi bi-journal-text"></i> Logbog</a>
         </nav>
-    </div>
-
-    <!-- Grid -->
-    <div class="content flex-grow-1" style="padding: 2rem;">
-        <h1>Log Bog</h1>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-4">
-            @foreach (var item in Model.GridData)
-            {
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">@item.Id</h5>
-                            <p class="card-text">@item.LogDescription</p>
-                        </div>
-                        <div class="card-footer text-muted">@item.Id</div>
-                    </div>
-                </div>
-            }
-        </div>
     </div>
 </div>
 
