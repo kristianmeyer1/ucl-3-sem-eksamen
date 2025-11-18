@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Danplanner.Application.Interfaces.AdminInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
+using Danplanner.Application.Interfaces.AccommodationInterfaces;
+using Danplanner.Application.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +33,7 @@ builder.Services.AddScoped<ContentTranslationHandler>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IUserRepository, UserService>();
 builder.Services.AddHttpClient<IAddonRepository, AddonService>();
-builder.Services.AddHttpClient<IUserService, UserService>();
+builder.Services.AddHttpClient<UserService>();
 builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 
 // Repository builders

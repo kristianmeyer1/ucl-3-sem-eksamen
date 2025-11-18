@@ -12,7 +12,7 @@ namespace Danplanner.Application.Models
         public int AccommodationId { get; set; }
         public string AccommodationName { get; set; }
         public string AccommodationDescription { get; set; }
-        public double PricePerNight { get; set; }
+        public decimal PricePerNight { get; set; }
         public string Key { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

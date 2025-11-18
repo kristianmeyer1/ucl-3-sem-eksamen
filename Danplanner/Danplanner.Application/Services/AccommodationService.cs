@@ -1,4 +1,4 @@
-﻿using Danplanner.Application.Interfaces;
+﻿using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Models;
 using System;
 using System.Collections.Generic;

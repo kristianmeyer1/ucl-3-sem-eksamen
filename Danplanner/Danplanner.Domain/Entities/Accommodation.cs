@@ -10,7 +10,6 @@ namespace Danplanner.Domain.Entities
         public string AccommodationName { get; set; }
         public string AccommodationDescription { get; set; }
         [Required]
-        public double PricePerNight { get; set; }
         public string Name { get; set; } = string.Empty;
         [Required]
         public string Description { get; set; } = string.Empty;

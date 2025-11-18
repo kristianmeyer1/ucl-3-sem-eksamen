@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Danplanner.Application.Interfaces
+namespace Danplanner.Application.Interfaces.AccommodationInterfaces
 {
     public interface IAccommodationRepository
     {

@@ -1,4 +1,4 @@
-﻿using Danplanner.Application.Interfaces;
+﻿using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Domain.Entities;
 using Microsoft.AspNetCore.Hosting;
 using System;
