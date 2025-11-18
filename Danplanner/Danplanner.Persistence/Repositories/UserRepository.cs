@@ -34,5 +34,20 @@ namespace Danplanner.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<UserDto?> GetUserByIdAsync(int userId)
+        {
+            return await _dbManager.User
+                .Where(u => u.UserId == userId)
+                .Select(u => new UserDto
+                {
+                    UserId = u.UserId,
+                    UserAdress = u.UserAdress,
+                    UserMobile = u.UserMobile,
+                    UserEmail = u.UserEmail,
+                    UserName = u.UserName
+                })
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

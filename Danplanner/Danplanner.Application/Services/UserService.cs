@@ -24,5 +24,10 @@ namespace Danplanner.Application.Services
             // Men da vi bruger så få og så simpel API som vi gør her, så er det ikke et problem i vores tilfælde
             return await _httpClient.GetFromJsonAsync<List<UserDto>>("https://localhost:7026/api/user");
         }
+
+        public async Task<UserDto?> GetUserByIdAsync(int userId)
+        {
+            return await _httpClient.GetFromJsonAsync<UserDto?>($"https://localhost:7026/api/user/{userId}");
+        }
     }
 }

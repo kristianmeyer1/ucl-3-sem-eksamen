@@ -10,5 +10,6 @@ namespace Danplanner.Application.Interfaces.UserInterfaces
     public interface IUserRepository
     {
         Task<List<UserDto>> GetAllUsersAsync();
+        Task<UserDto> GetUserByIdAsync(int userId);
     }
 }

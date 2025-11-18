@@ -27,7 +27,7 @@
             @foreach (var item in Model.GridData)
             {
                 <div class="col">
-                    <a asp-page="/Admin/UserDetails" asp-route-id="@item.UserId" class="text-decoration-none text-dark">
+                    <a asp-page="/Admin/Users" asp-route-id="@item.UserId" class="text-decoration-none text-dark">
                         <div class="card h-100 shadow-sm hover-card">
                             <div class="card-body">
                                 <h5 class="card-title">@item.UserName</h5>
