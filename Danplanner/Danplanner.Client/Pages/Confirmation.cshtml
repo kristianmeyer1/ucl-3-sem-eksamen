@@ -1,4 +1,204 @@
 ﻿@page
 @model Danplanner.Client.Pages.ConfirmationModel
 @{
+    ViewData["Title"] = "Confirmation";
 }
+
+<div class="container">
+
+    <div class="form-box">
+        <h5>Dine oplysninger</h5>
+
+        <div class="form-fields">
+            <input class="form-control" placeholder="Navn" />
+            <input class="form-control" placeholder="Email" />
+            <input class="form-control" placeholder="Adresse" />
+        </div>
+    </div>
+
+    <div class="accom-box">
+
+        <div class="accom-header">
+            <div class="accom-info">
+                <h4>@Model.SelectedAccommodation?.AccommodationName</h4>
+                <p class="accom-desc">@Model.SelectedAccommodation?.AccommodationDescription</p>
+            </div>
+
+            <div class="date-box">
+                <div><strong>Ankomst:</strong> @Model.StartDisplay</div>
+                <div><strong>Afrejse:</strong> @Model.EndDisplay</div>
+                <div><strong>Dage:</strong> @Model.Days</div>
+            </div>
+        </div>
+
+        <div class="price-box-confirm">
+            <div><strong>Pris pr. nat:</strong></div>
+            <div>@Model.SelectedAccommodation?.PricePerNight</div>
+        </div>
+
+        <div class="addons">
+            <h5 class="section-title">Tilkøb</h5>
+
+            @foreach (var addon in Model.Addons)
+            {
+                <div class="addon-item">
+                    <div class="addon-text">
+                        <strong>@addon.AddonName</strong>
+                        <small>@addon.AddonDescription</small>
+                        <small>@addon.AddonPrice kr.</small>
+                    </div>
+
+                    <div class="addon-controls">
+                        <button type="button" class="btn btn-secondary">-</button>
+                        <span>0</span>
+                        <button type="button" class="btn btn-secondary">+</button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="total-box">
+            <div>Total pris:</div>
+            <div>@Model.TotalPriceDisplay</div>
+        </div>
+
+        <button class="btn btn-primary pay-btn">Betal</button>
+    </div>
+
+    <aside class="accom-aside">
+        <div class="contact-box">
+            <h6><span class="badge bg-dark">i</span> Kontakt Information</h6>
+            <p>Tlf: 12 34 56 78<br />Email: info@camping.dk</p>
+            <p>Adresse: Strandvej 1, 0000 By</p>
+        </div>
+    </aside>
+
+</div>
+
+
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        grid-template-areas:
+            "form aside"
+            "accom aside";
+        gap: 24px;
+        align-items: start;
+    }
+
+    /* Tildel grid-områder */
+    .form-box {
+        grid-area: form;
+    }
+
+    .accom-box {
+        grid-area: accom;
+    }
+
+    .accom-aside {
+        grid-area: aside;
+    }
+
+    /* Kontaktboks som i første eksempel */
+    .contact-box {
+        border: 1px solid #333;
+        background: #f7f7f7;
+        padding: 12px;
+        width: 280px;
+        border-radius: 4px;
+        position: sticky;
+        top: 20px;
+        margin-left: 400px;
+    }
+
+    /* Øvrige styles uændret */
+    .form-box {
+        border: 1px solid #ccc;
+        background: #fafafa;
+        padding: 14px;
+        border-radius: 6px;
+    }
+
+    .form-fields {
+        display: grid;
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    /* Bedre spacing og jævn struktur */
+    .accom-box {
+        border: 1px solid #ccc;
+        background: #fff;
+        padding: 20px;
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Header */
+    .accom-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .accom-info h4 {
+        margin: 0 0 6px 0;
+    }
+
+    .accom-desc {
+        margin: 0;
+        color: #444;
+    }
+
+    /* Datoer */
+    .date-box div {
+        margin-bottom: 4px;
+        white-space: nowrap;
+    }
+
+    /* Pris-boks */
+    .price-box-confirm {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+        font-size: 16px;
+    }
+
+    /* Tilkøb sektionen */
+    .section-title {
+        margin: 0 0 10px 0;
+    }
+
+    .addon-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .addon-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    /* Total */
+    .total-box {
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    /* Betal knap */
+    .pay-btn {
+        width: 100%;
+        padding: 12px;
+    }
+
+</style>

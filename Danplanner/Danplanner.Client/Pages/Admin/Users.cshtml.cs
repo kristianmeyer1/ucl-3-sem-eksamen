@@ -9,17 +9,17 @@ namespace Danplanner.Client.Pages.Admin
     {
         public List<UserDto> GridData { get; set; } = new List<UserDto>();
 
-        private readonly IUserService _userService;
+        private readonly IUserRepository _repo;
 
-        public UsersModel(IUserService userService)
+        public UsersModel(IUserRepository userService)
         {
-            _userService = userService;
+            _repo = userService;
         }
 
         // Henter alle brugere til visning i grid, den bliver kørt i html koden så har derfor ingen klassiske "references"
         public async Task OnGetAsync()
         {
-            GridData = await _userService.GetAllUsersAsync();
+            GridData = await _repo.GetAllUsersAsync();
         }
     }
 }

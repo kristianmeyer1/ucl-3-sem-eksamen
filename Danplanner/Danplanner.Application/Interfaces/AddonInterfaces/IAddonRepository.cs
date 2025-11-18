@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Danplanner.Application.Interfaces.UserInterfaces
+namespace Danplanner.Application.Interfaces.AddonInterfaces
 {
-    public interface IUserService
+    public interface IAddonRepository
     {
-        Task<List<UserDto>> GetAllUsersAsync();
+        Task<List<AddonDto>> GetAllAddonsAsync();
     }
 }

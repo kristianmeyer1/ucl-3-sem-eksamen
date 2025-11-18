@@ -8,5 +8,6 @@ namespace Danplanner.Domain.Entities
         public int PaymentConfirmationId { get; set; }
         [Required]
         public DateTime PaymentConfirmationDate { get; set; }
+        public int PaymentId { get; set; }
     }
 }

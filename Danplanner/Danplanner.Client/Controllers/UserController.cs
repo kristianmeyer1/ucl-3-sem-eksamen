@@ -11,12 +11,12 @@ using Danplanner.Application.Interfaces.UserInterfaces;
 namespace Danplanner.Infrastructure.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] // vores route bliver api/users
-    public class UsersController : ControllerBase
+    [Route("api/user/[controller]")] // vores route bliver api/user
+    public class UserController : ControllerBase
     {
         private readonly IUserRepository _repo;
 
-        public UsersController(IUserRepository repo)
+        public UserController(IUserRepository repo)
         {
             _repo = repo;
         }

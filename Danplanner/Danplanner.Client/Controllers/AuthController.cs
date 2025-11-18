@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Danplanner.Client.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth/[controller]")]
     [ApiController]
     public class AuthController (IAuthService authService): ControllerBase
     {
