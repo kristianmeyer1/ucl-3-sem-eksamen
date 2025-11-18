@@ -9,61 +9,48 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Danplanner.Client.Controllers
 {
     [Route("api/auth/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController (IAuthService authService): ControllerBase
     {
         private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
 
-        public AuthController(IAuthService authService, IConfiguration configuration)
-        {
-            _authService = authService;
-            _configuration = configuration;
-        }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] AdminDto request)
+        public async Task<ActionResult<Admin>> Register([FromBody] AdminDto request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.AdminDtoPassword))
-                return BadRequest("Invalid request");
-
-            try
-            {
-                var result = await _authService.RegisterAsync(request);
-                return Ok(result);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var admin = await authService.RegisterAsync(request);
+            if (admin == null)
+                return BadRequest("User already exists");
+            return Ok(admin);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] AdminDto request)
+        public async Task<ActionResult<string>> Login([FromBody] AdminDto request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.AdminDtoPassword))
-                return BadRequest("Invalid request");
-
-            var admin = await _authService.LoginAsync(request);
-
-            if (admin == null)
-                return Unauthorized("Invalid credentials");
-
-            // Here you would generate a JWT token; for now, a placeholder string:
-            string token = CreateToken(admin);
-
+            var token = await authService.LoginAsync(request);
+            if (token == null)
+                return BadRequest("Invalid credentials");
             return Ok(token);
+        }
+        [Authorize]
+        [HttpGet]
+        public IActionResult AuthenticatedOnlyEndpoint()
+        {
+            return Ok("You are authenticated!");
         }
 
         private string CreateToken(AdminDto admin)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, admin.AdminId.ToString())
+                new Claim(ClaimTypes.Name, admin.AdminId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, admin.AdminId.ToString())
             };
 
             var key = new SymmetricSecurityKey(

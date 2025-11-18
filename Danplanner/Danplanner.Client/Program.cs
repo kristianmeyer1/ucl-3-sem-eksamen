@@ -27,14 +27,18 @@ builder.Services.AddSingleton<ITranslationService>(sp =>
 builder.Services.AddScoped<ContentTranslationHandler>();
 
 // Service builders
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IUserRepository, UserService>();
 builder.Services.AddHttpClient<IAddonRepository, AddonService>();
+builder.Services.AddHttpClient<IUserService, UserService>();
+builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 
 // Repository builders
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAddonRepository, AddonRepository>();
+builder.Services.AddScoped<IAccommodationRepository, AccommodationRepository>();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
