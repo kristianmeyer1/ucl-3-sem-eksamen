@@ -27,20 +27,38 @@ builder.Services.AddSingleton<ITranslationService>(sp =>
     new GoogleTranslationService(builder.Configuration["GoogleCloud:danplanner"]));
 builder.Services.AddScoped<ContentTranslationHandler>();
 
-// Service builders
+// Addon builders
+builder.Services.AddHttpClient<IAddonGetAll, AddonService>();
+builder.Services.AddScoped<IAddonGetAll, AddonRepository>();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddHttpClient<IUserRepository, UserService>();
-builder.Services.AddHttpClient<IAddonRepository, AddonService>();
-builder.Services.AddHttpClient<UserService>();
-builder.Services.AddScoped<IAccommodationService, AccommodationService>();
-
-// Repository builders
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+// Admin builders
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-builder.Services.AddScoped<IAddonRepository, AddonRepository>();
+
+// Calender builders
+
+// Log builders
+
+// Map Builders
+
+// Packages builders
+
+// Seasons builders
+
+// User builders
+builder.Services.AddHttpClient<UserService>();
+builder.Services.AddScoped<IUserGetAll, UserRepository>();
+builder.Services.AddScoped<IUserGetById, UserRepository>();
+//builder.Services.AddHttpClient<IUserRepository, UserService>();
+
+// Authentication builders
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Accommodation builders
+builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 builder.Services.AddScoped<IAccommodationRepository, AccommodationRepository>();
 builder.Services.AddScoped<IAccommodationAvailabilityRepository, AccommodationAvailabilityRepository>();
+
+// HttpClient for general use
 builder.Services.AddHttpClient();
 
 var app = builder.Build();

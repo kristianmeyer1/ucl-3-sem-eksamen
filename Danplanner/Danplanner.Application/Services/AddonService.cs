@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Danplanner.Application.Services
 {
-    public class AddonService : IAddonRepository
+    public class AddonService : IAddonGetAll
     {
         private readonly HttpClient _httpClient;
 

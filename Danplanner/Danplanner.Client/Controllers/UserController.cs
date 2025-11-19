@@ -14,17 +14,19 @@ namespace Danplanner.Infrastructure.Controllers
     [Route("api/user/[controller]")] // vores route bliver api/user
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository _repo;
+        private readonly IUserGetAll _userGetAll;
+        private readonly IUserGetById _userGetById;
 
-        public UserController(IUserRepository repo)
+        public UserController(IUserGetAll userGetAll, IUserGetById userGetById)
         {
-            _repo = repo;
+            _userGetAll = userGetAll;
+            _userGetById = userGetById;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<UserDto>>> GetUsers()
         {
-            var users = await _repo.GetAllUsersAsync();
+            var users = await _userGetAll.GetAllUsersAsync();
             return Ok(users);
             // vi returnerer 200 OK med listen af users
         }
@@ -32,7 +34,7 @@ namespace Danplanner.Infrastructure.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<UserDto?>> GetUserById(int id)
         {
-            var user = await _repo.GetUserByIdAsync(id);
+            var user = await _userGetById.GetUserByIdAsync(id);
             if (user == null) return NotFound();
             return Ok(user);
         }

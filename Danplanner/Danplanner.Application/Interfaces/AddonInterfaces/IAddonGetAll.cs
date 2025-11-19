@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Danplanner.Application.Interfaces.AddonInterfaces
 {
-    public interface IAddonRepository
+    public interface IAddonGetAll
     {
         Task<List<AddonDto>> GetAllAddonsAsync();
     }

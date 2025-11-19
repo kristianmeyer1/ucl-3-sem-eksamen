@@ -9,9 +9,10 @@ using System.Net.Http.Json;
 
 namespace Danplanner.Application.Services
 {
-    public class UserService : IUserRepository
+    public class UserService : IUserGetAll, IUserGetById
     {
         private readonly HttpClient _httpClient;
+
 
         public UserService(HttpClient httpClient)
         {

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Danplanner.Persistence.Repositories
 {
-    public class AddonRepository : IAddonRepository
+    public class AddonRepository : IAddonGetAll
     {
         private readonly DbManager _dbManager;
 

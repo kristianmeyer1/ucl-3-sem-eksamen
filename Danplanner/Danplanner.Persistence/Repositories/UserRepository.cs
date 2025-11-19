@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Danplanner.Persistence.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : IUserGetAll, IUserGetById
     {
         private readonly DbManager _dbManager;
 

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Danplanner.Application.Interfaces.UserInterfaces
 {
-    //public interface IUserRepository
-    //{
-    //    Task<List<UserDto>> GetAllUsersAsync();
-    //    Task<UserDto> GetUserByIdAsync(int userId);
-    //}
+    public interface IUserGetAll
+    {
+        Task<List<UserDto>> GetAllUsersAsync();
+
+    }
 }
