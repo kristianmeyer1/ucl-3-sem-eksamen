@@ -8,9 +8,9 @@ namespace Danplanner.Client.Controllers
     [Route("api/addon/[controller]")]
     public class AddonController : ControllerBase
     {
-        private readonly IAddonRepository _repo;
+        private readonly IAddonGetAll _repo;
 
-        public AddonController(IAddonRepository repo)
+        public AddonController(IAddonGetAll repo)
         {
             _repo = repo;
         }

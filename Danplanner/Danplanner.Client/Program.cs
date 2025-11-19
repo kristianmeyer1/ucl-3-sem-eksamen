@@ -32,24 +32,30 @@ builder.Services.AddSingleton<ITranslationService>(sp =>
     new GoogleTranslationService(builder.Configuration["GoogleCloud:danplanner"]));
 builder.Services.AddScoped<ContentTranslationHandler>();
 
-// Application services
+// Addon builders
+builder.Services.AddHttpClient<AddonService>();
+builder.Services.AddScoped<IAddonGetAll, AddonRepository>();
+
+// Admin builders
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+
+// User builders
+builder.Services.AddHttpClient<UserService>();
+builder.Services.AddScoped<IUserGetAll, UserRepository>();
+builder.Services.AddScoped<IUserGetByEmail, UserRepository>();
+builder.Services.AddScoped<IUserGetById, UserRepository>();
+
+
+// Authentication builders
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IAccommodationService, AccommodationService>();
-builder.Services.AddScoped<IUserGetAll, UserService>();
-builder.Services.AddScoped<IUserGetByEmail, UserRepository>();
-builder.Services.AddScoped<IUserGetById, UserService>();
-//builder.Services.AddScoped<UserService>();
 
-// Repositories
-builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-builder.Services.AddScoped<IAddonRepository, AddonRepository>();
+// Accommodation builders
+builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 builder.Services.AddScoped<IAccommodationRepository, AccommodationRepository>();
 builder.Services.AddScoped<IAccommodationAvailabilityRepository, AccommodationAvailabilityRepository>();
 
 // HttpClient 
-builder.Services.AddHttpClient<IAddonRepository, AddonService>();
-builder.Services.AddHttpClient<UserService>();
 builder.Services.AddHttpClient();
 
 // Cookies
