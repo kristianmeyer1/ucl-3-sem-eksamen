@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Danplanner.Application.Interfaces;
+﻿using Danplanner.Application.Interfaces;
 using Danplanner.Application.Interfaces.AdminInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
 using Danplanner.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Concurrent;
 
 namespace Danplanner.Application.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IAdminRepository _adminRepository;
-        private readonly IUserRepository _userRepository;
         private readonly ITokenService _tokenService;
         private readonly PasswordHasher<Admin> _passwordHasher;
+        private readonly IUserGetByEmail _userRepository;
 
         // Temporary in-memory OTP store
         private static readonly ConcurrentDictionary<string, string> _userOtps = new();
 
-        public AuthService(IAdminRepository adminRepository, IUserRepository userRepository, ITokenService tokenService)
+        public AuthService(IAdminRepository adminRepository, IUserGetByEmail userRepository, ITokenService tokenService)
         {
             _adminRepository = adminRepository;
             _userRepository = userRepository;
@@ -89,7 +86,7 @@ namespace Danplanner.Application.Services
             // ----- User Login via OTP -----
             if (!string.IsNullOrEmpty(request.Email))
             {
-                var user = await _userRepository.GetByEmailAsync(request.Email);
+                var user = await _userRepository.GetUserByEmailAsync(request.Email);
                 if (user == null) return null;
 
                 // Step 1: Request OTP
@@ -121,7 +118,7 @@ namespace Danplanner.Application.Services
         // --------------------------
         public async Task<bool> RequestUserLoginCodeAsync(string email)
         {
-            var user = await _userRepository.GetByEmailAsync(email);
+            var user = await _userRepository.GetUserByEmailAsync(email);
             if (user == null) return false;
 
             var code = new Random().Next(100000, 999999).ToString();
@@ -141,7 +138,7 @@ namespace Danplanner.Application.Services
 
             _userOtps.TryRemove(email, out _);
 
-            var user = await _userRepository.GetByEmailAsync(email);
+            var user = await _userRepository.GetUserByEmailAsync(email);
             if (user == null) return null;
 
             return CreateTokenForUser(user);

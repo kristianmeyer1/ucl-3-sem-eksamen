@@ -1,5 +1,4 @@
 ﻿using Danplanner.Domain.Entities;
-using Danplanner.Application.Models;
 
 namespace Danplanner.Application.Interfaces.AdminInterfaces
 {

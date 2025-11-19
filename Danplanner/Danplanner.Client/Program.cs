@@ -1,14 +1,14 @@
 using Danplanner.Application.Interfaces;
-using Danplanner.Application.Services;
-using Danplanner.Persistence.DbMangagerDir;
-using Danplanner.Persistence.Repositories;
-using Danplanner.Domain.Interfaces;
-using Danplanner.Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
+using Danplanner.Application.Interfaces.AccommodationInterfaces;
+using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Interfaces.AdminInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
-using Danplanner.Application.Interfaces.AddonInterfaces;
-using Danplanner.Application.Interfaces.AccommodationInterfaces;
+using Danplanner.Application.Services;
+using Danplanner.Domain.Interfaces;
+using Danplanner.Infrastructure.Services;
+using Danplanner.Persistence.DbMangagerDir;
+using Danplanner.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,23 +32,30 @@ builder.Services.AddSingleton<ITranslationService>(sp =>
     new GoogleTranslationService(builder.Configuration["GoogleCloud:danplanner"]));
 builder.Services.AddScoped<ContentTranslationHandler>();
 
-// Application services
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddHttpClient<IUserRepository, UserService>();
-builder.Services.AddHttpClient<IAddonRepository, AddonService>();
-builder.Services.AddHttpClient<UserService>();
-builder.Services.AddScoped<IAccommodationService, AccommodationService>();
+// Addon builders
+builder.Services.AddHttpClient<AddonService>();
+builder.Services.AddScoped<IAddonGetAll, AddonRepository>();
 
-// Repositories
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+// Admin builders
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
-// HttpClient 
-builder.Services.AddScoped<IAddonRepository, AddonRepository>();
+// User builders
+builder.Services.AddHttpClient<UserService>();
+builder.Services.AddScoped<IUserGetAll, UserRepository>();
+builder.Services.AddScoped<IUserGetByEmail, UserRepository>();
+builder.Services.AddScoped<IUserGetById, UserRepository>();
+
+
+// Authentication builders
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+// Accommodation builders
+builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 builder.Services.AddScoped<IAccommodationRepository, AccommodationRepository>();
 builder.Services.AddScoped<IAccommodationAvailabilityRepository, AccommodationAvailabilityRepository>();
+
+// HttpClient 
 builder.Services.AddHttpClient();
 
 // Cookies
@@ -73,7 +80,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

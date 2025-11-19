@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Danplanner.Application.Interfaces;
-using Danplanner.Application.Models.LoginDto;
+﻿using Danplanner.Application.Interfaces;
 using Danplanner.Application.Models;
+using Danplanner.Application.Models.LoginDto;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Danplanner.Client.Controllers
 {

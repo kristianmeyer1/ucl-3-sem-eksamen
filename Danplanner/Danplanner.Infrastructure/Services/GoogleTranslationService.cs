@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Danplanner.Domain.Interfaces;
+﻿using Danplanner.Domain.Interfaces;
 using Google.Cloud.Translate.V3;
 
 namespace Danplanner.Infrastructure.Services
@@ -23,7 +18,7 @@ namespace Danplanner.Infrastructure.Services
         {
             var response = await _client.TranslateTextAsync(
                 contents: new[] { text },
-                targetLanguageCode : targetLanguageCode,
+                targetLanguageCode: targetLanguageCode,
                 parent: $"projects/{_projectId}/locations/global");
 
             return response.Translations.First().TranslatedText;

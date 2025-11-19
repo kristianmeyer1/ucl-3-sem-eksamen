@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Danplanner.Application.Interfaces;
+﻿using Danplanner.Application.Interfaces;
 using Danplanner.Application.Models;
 using Danplanner.Domain.Entities;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Danplanner.Application.Services
 {
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
-        
+
         public TokenService(IConfiguration configuration)
         {
             _configuration = configuration;
