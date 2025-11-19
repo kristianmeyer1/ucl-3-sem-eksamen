@@ -1,6 +1,5 @@
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
-using Danplanner.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -9,11 +8,13 @@ namespace Danplanner.Client.Pages.Admin
     public class UsersModel : PageModel
     {
 
-        private readonly IUserRepository _userRepo;
+        private readonly IUserGetAll _userGetAll;
+        private readonly IUserGetById _userGetById;
 
-        public UsersModel(IUserRepository userRepo)
+        public UsersModel(IUserGetAll userGetAll, IUserGetById userGetById)
         {
-            _userRepo = userRepo;
+            _userGetAll = userGetAll;
+            _userGetById = userGetById;
         }
 
         [BindProperty]
@@ -24,11 +25,11 @@ namespace Danplanner.Client.Pages.Admin
         // Henter alle brugere til visning i grid, den bliver kørt i html koden så har derfor ingen klassiske "references"
         public async Task OnGetAsync(int? id)
         {
-            GridData = await _userRepo.GetAllUsersAsync();
+            GridData = await _userGetAll.GetAllUsersAsync();
 
             if (id.HasValue)
             {
-                SelectedUser = await _userRepo.GetUserByIdAsync(id.Value);
+                SelectedUser = await _userGetById.GetUserByIdAsync(id.Value);
             }
         }
         public IActionResult OnPost()

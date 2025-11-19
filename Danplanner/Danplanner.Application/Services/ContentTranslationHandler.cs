@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Danplanner.Domain.Interfaces;
+﻿using Danplanner.Domain.Interfaces;
 
 namespace Danplanner.Application.Services
 {

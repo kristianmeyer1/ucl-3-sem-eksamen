@@ -22,5 +22,5 @@ namespace Danplanner.Client.Controllers
             return Ok(addons);
         }
     }
-    
+
 }

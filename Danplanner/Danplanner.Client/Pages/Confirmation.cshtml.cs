@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Danplanner.Application.Models;
 using Danplanner.Application.Interfaces.AddonInterfaces;
+using Danplanner.Application.Models;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Danplanner.Client.Pages
 {

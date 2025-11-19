@@ -10,36 +10,32 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Danplanner.Client.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-  
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container">
-            <a class="navbar-brand" asp-page="/Index">Danplanner</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <!-- Header / Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-page="/Index">Danplanner</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-page="/Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-page="/Privacy">Privacy</a>
-                    </li>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item"><a class="nav-link" asp-page="/Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-page="/Privacy">Privacy</a></li>
 
-                    <!-- Admin link visible only to admins -->
+                        <!-- Admin link visible only to admins -->
                         @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-page="/Admin/Admin"><b>Admin</b></a>
                             </li>
                         }
-                </ul>
+                    </ul>
 
-                <div class="d-flex align-items-center ms-3">
+                    <div class="d-flex align-items-center ms-3">
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <input type="text" id="loginIdentifier" class="form-control me-2" placeholder="Email or Admin ID" />
@@ -51,82 +47,8 @@
                             <span class="me-2">Hello, @User.Identity.Name!</span>
                             <button class="btn btn-outline-danger" id="logoutBtn">Logout</button>
                         }
-                </div>
-            </div>
-
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-
-    <style>
-        /* Kalenderkort */
-        .calendar-card {
-            min-height: 420px;
-            max-width: 760px;
-            margin: 20px auto;
-        }
-
-        .flatpickr-calendar {
-            width: 100% !important;
-            font-size: 1.05rem;
-        }
-
-        /* Centering helper */
-        .center-vertical {
-            min-height: 60vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Sticky footer layout */
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        main.flex-grow-1 {
-            flex: 1 0 auto; /* fylder mellem header og footer */
-        }
-
-        footer {
-            flex-shrink: 0; /* Footer klippes ikke */
-        }
-
-        /* Google Translate */
-        #google_translate_element {
-            display: inline-block;
-            margin-left: 10px;
-        }
-    </style>
-</head>
-<body>
-    <!-- Header / Navbar -->
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Danplanner</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="navbar-collapse collapse d-sm-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item"><a class="nav-link" asp-page="/Index">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-page="/Admin/Admin"><b>Admin</b></a></li>
-                    </ul>
-
-                    <div class="d-flex align-items-center ms-3">
-                        <a class="btn btn-outline-secondary me-2" asp-page="/Login">Login</a>
-                        <a class="btn btn-primary me-2" asp-page="/Register">Registrer</a>
-                        <div id="google_translate_element"></div>
                     </div>
+                    <div id="google_translate_element"></div>
                 </div>
             </div>
         </nav>
@@ -140,80 +62,106 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-top py-3 mt-auto">
-        <div class="container d-flex justify-content-center align-items-center flex-wrap">
-            <span class="me-2">&copy; 2025 - Danplanner -</span>
-            <a asp-area="" asp-page="/Privacy">Privacy</a>
+    <footer class="border-top footer text-muted text-center py-3">
+        <div class="container">
+            &copy; 2025 - Danplanner - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
-    </nav>
-</header>
+    </footer>
 
-
-<!-- Login Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Login</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="loginForm">
-                    <div class="mb-3" id="adminPasswordGroup" style="display:none;">
-                        <label for="loginPassword" class="form-label">Admin Password</label>
-                        <input type="password" class="form-control" id="loginPassword" placeholder="Admin Password">
-                    </div>
-                    <div class="mb-3" id="userOtpGroup" style="display:none;">
-                        <label for="loginCode" class="form-label">OTP Code</label>
-                        <input type="text" class="form-control" id="loginCode" placeholder="Enter OTP">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3" id="adminPasswordGroup" style="display:none;">
+                            <label for="loginPassword" class="form-label">Admin Password</label>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Admin Password">
+                        </div>
+                        <div class="mb-3" id="userOtpGroup" style="display:none;">
+                            <label for="loginCode" class="form-label">OTP Code</label>
+                            <input type="text" class="form-control" id="loginCode" placeholder="Enter OTP">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="container">
-    <main role="main" class="pb-3">
-            @RenderBody()
-    </main>
-</div>
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/da.js"></script>
+    <script src="~/js/login.js"></script>
 
-<footer class="border-top footer text-muted text-center py-3">
-    <div class="container">
-        &copy; 2025 - Danplanner - <a asp-area="" asp-page="/Privacy">Privacy</a>
-    </div>
-</footer>
+    <script>
+        flatpickr(".flatpickr-input", { locale: "da", dateFormat: "d-m-Y", minDate: "today" });
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/da.js"></script>
-<script src="~/js/login.js"></script>
-
-<script>
-    flatpickr(".flatpickr-input", { locale: "da", dateFormat: "d-m-Y", minDate: "today" });
-
-    <!-- Google Translate -->
-    <script type="text/javascript">
         function googleTranslateElementInit() {
-            new google.translate.TranslateElement(
-                {
-                    pageLanguage: 'en',
-                    includedLanguages: 'da,en,de,nl',
-                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                },
-                'google_translate_element'
-            );
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'da,en,de,nl',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
         }
     </script>
     <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-          @RenderSection("Scripts", required: false)
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
+
+<style>
+    /* Kalenderkort */
+    .calendar-card {
+        min-height: 420px;
+        max-width: 760px;
+        margin: 20px auto;
+    }
+
+    .flatpickr-calendar {
+        width: 100% !important;
+        font-size: 1.05rem;
+    }
+
+    /* Centering helper */
+    .center-vertical {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Sticky footer layout */
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    main.flex-grow-1 {
+        flex: 1 0 auto; /* fylder mellem header og footer */
+    }
+
+    footer {
+        flex-shrink: 0; /* Footer klippes ikke */
+    }
+
+    /* Google Translate */
+    #google_translate_element {
+        display: inline-block;
+        margin-left: 10px;
+    }
+</style>

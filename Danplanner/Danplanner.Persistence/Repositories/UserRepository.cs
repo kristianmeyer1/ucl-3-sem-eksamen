@@ -2,13 +2,10 @@
 using Danplanner.Application.Models;
 using Danplanner.Persistence.DbMangagerDir;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Danplanner.Persistence.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : IUserGetAll, IUserGetById, IUserGetByEmail
     {
         private readonly DbManager _dbManager;
 
@@ -31,7 +28,7 @@ namespace Danplanner.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<UserDto?> GetByUserIdAsync(int userId)
+        public async Task<UserDto?> GetUserByIdAsync(int userId)
         {
             var user = await _dbManager.User.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null) return null;
@@ -46,7 +43,7 @@ namespace Danplanner.Persistence.Repositories
             };
         }
 
-        public async Task<UserDto?> GetByEmailAsync(string userEmail)
+        public async Task<UserDto?> GetUserByEmailAsync(string userEmail)
         {
             var user = await _dbManager.User.FirstOrDefaultAsync(u => u.UserEmail == userEmail);
             if (user == null) return null;

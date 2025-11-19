@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Danplanner.Application.Models;
+﻿using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
 
 namespace Danplanner.Application.Interfaces

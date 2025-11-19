@@ -1,11 +1,6 @@
 ﻿using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Domain.Entities;
 using Microsoft.AspNetCore.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Danplanner.Persistence.Repositories
 {
@@ -15,7 +10,7 @@ namespace Danplanner.Persistence.Repositories
 
         public AccommodationRepository(IWebHostEnvironment env)
         {
-            _dataFilePath = Path.Combine(env.WebRootPath ?? string.Empty, "data","accommodations.txt");
+            _dataFilePath = Path.Combine(env.WebRootPath ?? string.Empty, "data", "accommodations.txt");
         }
 
         public async Task<IReadOnlyList<Accommodation>> GetAllAsync(CancellationToken cancellationToken = default)

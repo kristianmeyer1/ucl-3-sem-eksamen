@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Danplanner.Persistence.Repositories;
+﻿using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
-using Danplanner.Application.Interfaces.UserInterfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Danplanner.Infrastructure.Controllers
 {
@@ -14,17 +8,19 @@ namespace Danplanner.Infrastructure.Controllers
     [Route("api/user/[controller]")] // vores route bliver api/user
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository _repo;
+        private readonly IUserGetAll _getAll;
+        private readonly IUserGetById _getById;
 
-        public UserController(IUserRepository repo)
+        public UserController(IUserGetAll getAll, IUserGetById getById)
         {
-            _repo = repo;
+            _getAll = getAll;
+            _getById = getById;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<UserDto>>> GetUsers()
         {
-            var users = await _repo.GetAllUsersAsync();
+            var users = await _getAll.GetAllUsersAsync();
             return Ok(users);
             // vi returnerer 200 OK med listen af users
         }
@@ -32,7 +28,7 @@ namespace Danplanner.Infrastructure.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<UserDto?>> GetUserById(int id)
         {
-            var user = await _repo.GetUserByIdAsync(id);
+            var user = await _getById.GetUserByIdAsync(id);
             if (user == null) return NotFound();
             return Ok(user);
         }
