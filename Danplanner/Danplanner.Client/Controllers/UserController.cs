@@ -2,7 +2,7 @@
 using Danplanner.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Danplanner.Infrastructure.Controllers
+namespace Danplanner.Client.Controllers
 {
     [ApiController]
     [Route("api/user/[controller]")] // vores route bliver api/user
