@@ -28,7 +28,7 @@ builder.Services.AddSingleton<ITranslationService>(sp =>
 builder.Services.AddScoped<ContentTranslationHandler>();
 
 // Addon builders
-builder.Services.AddHttpClient<IAddonGetAll, AddonService>();
+builder.Services.AddHttpClient<AddonService>();
 builder.Services.AddScoped<IAddonGetAll, AddonRepository>();
 
 // Admin builders
@@ -48,7 +48,6 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddHttpClient<UserService>();
 builder.Services.AddScoped<IUserGetAll, UserRepository>();
 builder.Services.AddScoped<IUserGetById, UserRepository>();
-//builder.Services.AddHttpClient<IUserRepository, UserService>();
 
 // Authentication builders
 builder.Services.AddScoped<IAuthService, AuthService>();
