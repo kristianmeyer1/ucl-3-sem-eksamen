@@ -15,5 +15,6 @@ namespace Danplanner.Domain.Entities
         [Required]
         public int Availability { get; set; }
         public string? ImageUrl { get; set; }
+        public string? Category { get; set; }
     }
 }

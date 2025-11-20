@@ -2,7 +2,7 @@
 
 namespace Danplanner.Application.Interfaces.AccommodationInterfaces
 {
-    public interface IAccommodationRepository
+    public interface IAccommodationGetAll
     {
         Task<IReadOnlyList<Accommodation>> GetAllAsync(CancellationToken cancellationToken = default);
     }

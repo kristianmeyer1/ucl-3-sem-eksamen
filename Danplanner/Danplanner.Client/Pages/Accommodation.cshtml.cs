@@ -8,9 +8,9 @@ namespace Danplanner.Client.Pages
 {
     public class AccommodationModel : PageModel
     {
-        private readonly IAccommodationService _accommodationService;
+        private readonly IAccommodationTransfer _accommodationService;
 
-        public AccommodationModel(IAccommodationService accommodationService)
+        public AccommodationModel(IAccommodationTransfer accommodationService)
         {
             _accommodationService = accommodationService;
         }
@@ -87,11 +87,12 @@ namespace Danplanner.Client.Pages
             }
 
             var cat = category;
-            if (string.IsNullOrEmpty(cat) && !string.IsNullOrEmpty(key))
+            if (string.IsNullOrWhiteSpace(cat) && !string.IsNullOrWhiteSpace(key))
             {
                 var t = key.ToLowerInvariant();
-                if (t.Contains("plads")) cat = "plads";
+                if (t.Contains("luksus")) cat = "luksushytte";
                 else if (t.Contains("hytte")) cat = "hytte";
+                else if (t.Contains("plads")) cat = "plads";
             }
 
             if (!string.IsNullOrEmpty(cat))
@@ -101,7 +102,7 @@ namespace Danplanner.Client.Pages
                     Expires = DateTimeOffset.UtcNow.AddDays(30),
                     Path = "/"
                 };
-                Response.Cookies.Append("selectedCategory", cat, options);
+                Response.Cookies.Append("selectedCategory", cat.ToLowerInvariant(), options);
             }
 
             var qs = string.Empty;
