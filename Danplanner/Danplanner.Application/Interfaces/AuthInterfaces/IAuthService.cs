@@ -1,7 +1,7 @@
 ﻿using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
 
-namespace Danplanner.Application.Interfaces
+namespace Danplanner.Application.Interfaces.AuthInterfaces
 {
     public interface IAuthService
     {
