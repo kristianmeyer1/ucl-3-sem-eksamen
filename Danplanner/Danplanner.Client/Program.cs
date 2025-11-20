@@ -1,7 +1,7 @@
-using Danplanner.Application.Interfaces;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Interfaces.AdminInterfaces;
+using Danplanner.Application.Interfaces.AuthInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Services;
 using Danplanner.Domain.Interfaces;

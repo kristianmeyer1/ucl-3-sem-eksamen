@@ -1,4 +1,4 @@
-﻿using Danplanner.Application.Interfaces;
+﻿using Danplanner.Application.Interfaces.AuthInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
 using Microsoft.AspNetCore.Authentication;
@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace Danplanner.Client.Controllers
 {
-    [Route("api/auth/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {

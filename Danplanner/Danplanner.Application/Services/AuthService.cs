@@ -1,5 +1,5 @@
-﻿using Danplanner.Application.Interfaces;
-using Danplanner.Application.Interfaces.AdminInterfaces;
+﻿using Danplanner.Application.Interfaces.AdminInterfaces;
+using Danplanner.Application.Interfaces.AuthInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
@@ -52,8 +52,8 @@ namespace Danplanner.Application.Services
             var admin = new Admin
             {
                 AdminId = request.AdminId,
-                AdminPassword = _passwordHasher.HashPassword(null, request.AdminDtoPassword)
             };
+            admin.AdminPassword = _passwordHasher.HashPassword(admin, request.AdminDtoPassword);
 
             await _adminRepository.AddAsync(admin);
 
@@ -71,16 +71,19 @@ namespace Danplanner.Application.Services
         public async Task<string?> LoginAsync(LoginDto request)
         {
             // ----- Admin Login -----
-            if (!string.IsNullOrEmpty(request.AdminId) && !string.IsNullOrEmpty(request.Password))
+            if (request.AdminId.HasValue && !string.IsNullOrEmpty(request.Password))
             {
-                var admin = await _adminRepository.GetByIdAsync(Convert.ToInt32(request.AdminId));
-                if (admin == null) return null;
+                // Get admin by int ID directly
+                var admin = await _adminRepository.GetByIdAsync(request.AdminId.Value);
+                if (admin == null)
+                    return null; // Admin does not exist
 
-                var result = _passwordHasher.VerifyHashedPassword(null, admin.AdminPassword, request.Password);
+                // Verify hashed password
+                var result = _passwordHasher.VerifyHashedPassword(admin, admin.AdminPassword, request.Password);
                 if (result == PasswordVerificationResult.Success)
-                    return CreateTokenForAdmin(admin); // Use domain entity
+                    return CreateTokenForAdmin(admin); // Return JWT token
 
-                return null;
+                return null; // Wrong password
             }
 
             // ----- User Login via OTP -----
@@ -94,8 +97,6 @@ namespace Danplanner.Application.Services
                 {
                     var code = new Random().Next(100000, 999999).ToString();
                     _userOtps[request.Email] = code;
-
-                    // For testing, print OTP to console
                     Console.WriteLine($"OTP for {request.Email}: {code}");
                     return "OTP_SENT";
                 }
@@ -104,13 +105,13 @@ namespace Danplanner.Application.Services
                 if (_userOtps.TryGetValue(request.Email, out var storedCode) && storedCode == request.Code)
                 {
                     _userOtps.TryRemove(request.Email, out _);
-                    return CreateTokenForUser(user); // Use domain entity
+                    return CreateTokenForUser(user);
                 }
 
                 return null; // Wrong OTP
             }
 
-            return null;
+            return null; // Neither AdminId nor Email provided
         }
 
         // --------------------------

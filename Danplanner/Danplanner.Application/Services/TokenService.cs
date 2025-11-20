@@ -1,4 +1,4 @@
-﻿using Danplanner.Application.Interfaces;
+﻿using Danplanner.Application.Interfaces.AuthInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Domain.Entities;
 using Microsoft.Extensions.Configuration;
