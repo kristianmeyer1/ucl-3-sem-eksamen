@@ -131,16 +131,24 @@
                 img.src = point.ImageUrl;
             }
 
-            const popupHtml = `<div style="min-width:160px"><strong>${escapeHtml(point.Title)}</strong><div style="margin-top:6px">${escapeHtml(point.Description || '')}</div><div style="margin-top:8px;text-align:right"><button data-key="${escapeHtml(point.Key)}" class="choose-btn btn-small">Vælg</button></div></div>`;
+            const popupHtml = `<div style="min-width:160px">
+                <strong>${escapeHtml(point.Title)}</strong>
+                <div style="margin-top:6px">${escapeHtml(point.Description || '')}</div>
+                <div style="margin-top:8px;text-align:right">
+                    <button data-key="${escapeHtml(point.Key)}" class="choose-btn btn-small">Vælg</button>
+                </div>
+            </div>`;
             marker.bindPopup(popupHtml, { closeButton: true });
 
-            marker.on('popupopen', () => {
-                // hook choose button inside popup
+                marker.on('popupopen', () => {
                 setTimeout(() => {
-                    const btn = document.querySelector('.choose-btn[data-key="'+point.Key+'"]');
+                    const btn = document.querySelector('.choose-btn[data-key="' + point.Key + '"]');
                     if (btn) {
                         btn.addEventListener('click', () => {
-                            const url = `/Booking?type=${encodeURIComponent(point.Key)}&start=${encodeURIComponent(startQuery)}&end=${encodeURIComponent(endQuery)}`;
+                            const unitId = point.AccommodationId;   // den KONKRETE plads/hytte
+                            const placeKey = point.Key;            // fx "Plads 5"
+
+                            const url = `/Confirmation?Start=${encodeURIComponent(startQuery)}&End=${encodeURIComponent(endQuery)}&unitId=${encodeURIComponent(unitId)}&placeKey=${encodeURIComponent(placeKey)}`;
                             window.location.href = url;
                         });
                     }
