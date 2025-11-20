@@ -3,11 +3,11 @@
     $("#loginIdentifier").on("input", function () {
         var val = $(this).val() || "";
         if (val.includes("@")) {
-            // User
-            $("#userOtpGroup").show();
+            // User email
+            $("#userOtpGroup").hide(); // hide initially
             $("#adminPasswordGroup").hide();
         } else if (val.length > 0) {
-            // Admin
+            // Admin ID
             $("#adminPasswordGroup").show();
             $("#userOtpGroup").hide();
         } else {
@@ -26,44 +26,66 @@
             return;
         }
 
-        // Determine if user or admin
-        var payload, url;
         if (identifier.includes("@")) {
             // User login via OTP
             var code = $("#loginCode").val().trim();
-            if (!code) { alert("Please enter OTP code."); return; }
-            payload = { Email: identifier, Code: code };
-            url = "/api/auth/user/verify-code";
-        } else {
-            // Admin login via password
-            var password = $("#loginPassword").val().trim();
-            if (!password) { alert("Please enter password."); return; }
-            payload = { AdminId: identifier, Password: password };
-            url = "/api/auth/login";
-        }
 
-        $.ajax({
-            type: "POST",
-            url: url,
-            contentType: "application/json",
-            data: JSON.stringify(payload),
-            success: function (res) {
-                if (res === "OTP_SENT") {
-                    alert("OTP sent to your email!");
-                } else {
-                    alert("Logged in successfully!");
-                    $("#loginModal").modal("hide"); // close modal
-                    location.reload();
-                }
-            },
-            error: function (xhr) {
-                if (xhr.responseJSON && xhr.responseJSON.error) {
-                    alert(xhr.responseJSON.error);
-                } else {
-                    alert("Invalid credentials or code.");
-                }
+            if (!code) {
+                // Step 1: Request OTP
+                $.ajax({
+                    type: "POST",
+                    url: "/api/auth/user/request-code",
+                    contentType: "application/json",
+                    data: JSON.stringify({ UserEmail: identifier }),
+                    success: function () {
+                        alert("OTP sent to your email!");
+                        $("#userOtpGroup").show();
+                        $("#loginCode").focus();
+                    },
+                    error: function () {
+                        alert("Failed to send OTP. Please try again.");
+                    }
+                });
+            } else {
+                // Step 2: Verify OTP
+                $.ajax({
+                    type: "POST",
+                    url: "/api/auth/user/verify-code",
+                    contentType: "application/json",
+                    data: JSON.stringify({ UserEmail: identifier, Code: code }),
+                    success: function () {
+                        alert("Logged in successfully!");
+                        $("#loginModal").modal("hide");
+                        location.reload();
+                    },
+                    error: function () {
+                        alert("Invalid OTP code. Please try again.");
+                    }
+                });
             }
-        });
+        } else {
+            // Admin login
+            var password = $("#loginPassword").val().trim();
+            if (!password) {
+                alert("Please enter password.");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/api/auth/login",
+                contentType: "application/json",
+                data: JSON.stringify({ AdminId: parseInt(identifier), Password: password }),
+                success: function () {
+                    alert("Logged in successfully!");
+                    $("#loginModal").modal("hide");
+                    location.reload();
+                },
+                error: function () {
+                    alert("Invalid credentials. Please try again.");
+                }
+            });
+        }
     });
 
     // Logout

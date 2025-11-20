@@ -15,30 +15,29 @@ namespace Danplanner.Application.Services
         private readonly ITokenService _tokenService;
         private readonly PasswordHasher<Admin> _passwordHasher;
         private readonly IUserGetByEmail _userRepository;
+        private readonly IEmailService _emailService;
 
-        // Temporary in-memory OTP store
-        private static readonly ConcurrentDictionary<string, string> _userOtps = new();
+        // In-memory OTP store
+        private static readonly ConcurrentDictionary<string, UserOtp> _userOtps = new();
 
-        public AuthService(IAdminRepository adminRepository, IUserGetByEmail userRepository, ITokenService tokenService)
+        public AuthService(
+            IAdminRepository adminRepository,
+            IUserGetByEmail userRepository,
+            ITokenService tokenService,
+            IEmailService emailService)
         {
             _adminRepository = adminRepository;
             _userRepository = userRepository;
             _tokenService = tokenService;
+            _emailService = emailService;
             _passwordHasher = new PasswordHasher<Admin>();
         }
 
         // --------------------------
         // Token creation
         // --------------------------
-        private string CreateTokenForAdmin(Admin admin)
-        {
-            return _tokenService.CreateTokenForAdmin(admin);
-        }
-
-        private string CreateTokenForUser(UserDto user)
-        {
-            return _tokenService.CreateTokenForUser(user);
-        }
+        private string CreateTokenForAdmin(Admin admin) => _tokenService.CreateTokenForAdmin(admin);
+        private string CreateTokenForUser(UserDto user) => _tokenService.CreateTokenForUser(user);
 
         // --------------------------
         // Admin Registration
@@ -52,12 +51,11 @@ namespace Danplanner.Application.Services
             var admin = new Admin
             {
                 AdminId = request.AdminId,
+                AdminPassword = _passwordHasher.HashPassword(null, request.AdminDtoPassword)
             };
-            admin.AdminPassword = _passwordHasher.HashPassword(admin, request.AdminDtoPassword);
 
             await _adminRepository.AddAsync(admin);
 
-            // Return DTO (without password)
             return new AdminDto
             {
                 AdminId = admin.AdminId,
@@ -66,27 +64,24 @@ namespace Danplanner.Application.Services
         }
 
         // --------------------------
-        // Login (Admin & User)
+        // Login (Admin & User OTP)
         // --------------------------
         public async Task<string?> LoginAsync(LoginDto request)
         {
-            // ----- Admin Login -----
+            // ----- Admin login -----
             if (request.AdminId.HasValue && !string.IsNullOrEmpty(request.Password))
             {
-                // Get admin by int ID directly
                 var admin = await _adminRepository.GetByIdAsync(request.AdminId.Value);
-                if (admin == null)
-                    return null; // Admin does not exist
+                if (admin == null) return null;
 
-                // Verify hashed password
                 var result = _passwordHasher.VerifyHashedPassword(admin, admin.AdminPassword, request.Password);
                 if (result == PasswordVerificationResult.Success)
-                    return CreateTokenForAdmin(admin); // Return JWT token
+                    return CreateTokenForAdmin(admin);
 
-                return null; // Wrong password
+                return null; // wrong password
             }
 
-            // ----- User Login via OTP -----
+            // ----- User OTP login -----
             if (!string.IsNullOrEmpty(request.Email))
             {
                 var user = await _userRepository.GetUserByEmailAsync(request.Email);
@@ -96,26 +91,48 @@ namespace Danplanner.Application.Services
                 if (string.IsNullOrEmpty(request.Code))
                 {
                     var code = new Random().Next(100000, 999999).ToString();
-                    _userOtps[request.Email] = code;
-                    Console.WriteLine($"OTP for {request.Email}: {code}");
+                    var otp = new UserOtp
+                    {
+                        Code = code,
+                        Expiration = DateTime.UtcNow.AddMinutes(5)
+                    };
+
+                    _userOtps[request.Email] = otp;
+
+                    // Send email
+                    await _emailService.SendEmailAsync(
+                        request.Email,
+                        "Your OTP Code",
+                        $"Your OTP code is <b>{code}</b>. It expires in 5 minutes."
+                    );
+
                     return "OTP_SENT";
                 }
 
                 // Step 2: Verify OTP
-                if (_userOtps.TryGetValue(request.Email, out var storedCode) && storedCode == request.Code)
+                if (_userOtps.TryGetValue(request.Email, out var storedOtp))
                 {
-                    _userOtps.TryRemove(request.Email, out _);
-                    return CreateTokenForUser(user);
+                    if (storedOtp.Expiration < DateTime.UtcNow)
+                    {
+                        _userOtps.TryRemove(request.Email, out _);
+                        return null; // OTP expired
+                    }
+
+                    if (storedOtp.Code == request.Code)
+                    {
+                        _userOtps.TryRemove(request.Email, out _);
+                        return CreateTokenForUser(user);
+                    }
                 }
 
-                return null; // Wrong OTP
+                return null; // wrong OTP
             }
 
-            return null; // Neither AdminId nor Email provided
+            return null; // no credentials provided
         }
 
         // --------------------------
-        // Optional: Request OTP separately
+        // Request OTP separately
         // --------------------------
         public async Task<bool> RequestUserLoginCodeAsync(string email)
         {
@@ -123,19 +140,40 @@ namespace Danplanner.Application.Services
             if (user == null) return false;
 
             var code = new Random().Next(100000, 999999).ToString();
-            _userOtps[email] = code;
+            var otp = new UserOtp
+            {
+                Code = code,
+                Expiration = DateTime.UtcNow.AddMinutes(5)
+            };
 
-            Console.WriteLine($"OTP for {email}: {code}");
+            _userOtps[email] = otp;
+
+            // Send email
+            await _emailService.SendEmailAsync(
+                email,
+                "Your OTP Code",
+                $"Your login OTP code is <b>{code}</b>. It expires in 5 minutes."
+            );
+
             return true;
         }
 
         // --------------------------
-        // Optional: Verify OTP separately
+        // Verify OTP separately
         // --------------------------
         public async Task<string?> VerifyUserLoginCodeAsync(string email, string code)
         {
-            if (!_userOtps.TryGetValue(email, out var storedCode) || storedCode != code)
+            if (!_userOtps.TryGetValue(email, out var storedOtp))
                 return null;
+
+            if (storedOtp.Expiration < DateTime.UtcNow)
+            {
+                _userOtps.TryRemove(email, out _);
+                return null; // expired
+            }
+
+            if (storedOtp.Code != code)
+                return null; // wrong code
 
             _userOtps.TryRemove(email, out _);
 
@@ -143,6 +181,15 @@ namespace Danplanner.Application.Services
             if (user == null) return null;
 
             return CreateTokenForUser(user);
+        }
+
+        // --------------------------
+        // Helper class for OTP
+        // --------------------------
+        private class UserOtp
+        {
+            public string Code { get; set; } = null!;
+            public DateTime Expiration { get; set; }
         }
     }
 }
