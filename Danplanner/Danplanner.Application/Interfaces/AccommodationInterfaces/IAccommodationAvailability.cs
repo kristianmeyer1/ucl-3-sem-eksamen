@@ -1,6 +1,6 @@
 ﻿namespace Danplanner.Application.Interfaces.AccommodationInterfaces
 {
-    public interface IAccommodationAvailabilityRepository
+    public interface IAccommodationAvailability
     {
         Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(
             CancellationToken cancellationToken = default);

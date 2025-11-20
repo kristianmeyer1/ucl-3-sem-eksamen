@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace Danplanner.Persistence.Repositories
 {
-    public class AccommodationRepository : IAccommodationRepository
+    public class AccommodationRepository : IAccommodationGetAll
     {
         private readonly string _dataFilePath;
 

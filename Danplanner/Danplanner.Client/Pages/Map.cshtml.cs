@@ -10,10 +10,10 @@ namespace Danplanner.Client.Pages
     public class MapModel : PageModel
     {
         private readonly IWebHostEnvironment _env;
-        private readonly IAccommodationAvailabilityRepository _availabilityRepo;
+        private readonly IAccommodationAvailability _availabilityRepo;
 
         public MapModel(IWebHostEnvironment env,
-                        IAccommodationAvailabilityRepository availabilityRepo)
+                        IAccommodationAvailability availabilityRepo)
         {
             _env = env;
             _availabilityRepo = availabilityRepo;
@@ -27,10 +27,11 @@ namespace Danplanner.Client.Pages
 
         public string FilteredMapJson { get; private set; } = "{}";
         public string? SelectedKey { get; private set; }
+        public string? SelectedCategory { get; set; }
 
         public async Task OnGetAsync()
         {
-            // 1) Indlæs map.json (samme som før)
+            // 1) Indlæs map.json
             var dataDir = Path.Combine(_env.WebRootPath ?? string.Empty, "data");
             var mapFile = Path.Combine(dataDir, "map.json");
             MapDefinition mapDef;
@@ -55,29 +56,42 @@ namespace Danplanner.Client.Pages
                 throw new FileNotFoundException("Map definition file not found.", mapFile);
             }
 
-            // 2) Forvalgt pin (din eksisterende logik)
+            // 2) Forvalgt pin
             SelectedKey = Request.Cookies["selectedItem"];
             var qSelected = Request.Query["selected"].FirstOrDefault();
             if (!string.IsNullOrEmpty(qSelected))
                 SelectedKey = qSelected;
 
-            // 3) Hent ledige AccommodationId'er fra databasen via EF
+            // 3) Kategori filter
+            SelectedCategory = Request.Cookies["selectedCategory"];
+            var qCategory = Request.Query["category"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(qCategory))
+                SelectedCategory = qCategory;
+            var categoryFilter = SelectedCategory?.Trim();
+            var hasCategoryFilter = !string.IsNullOrEmpty(categoryFilter);
+
+            // 4) Hent ledige AccommodationId'er fra databasen via EF
             var availableIds = await _availabilityRepo.GetAvailableIdsAsync();
             MapPoint[] filteredPoints;
 
             if (availableIds == null || availableIds.Count == 0)
             {
-                // sikkerhedsnet: vis alle pins hvis der ikke kommer noget
-                filteredPoints = mapDef.Points;
+                // sikkerhedsnet: vis alle pins, hvis der ikke kommer noget
+                filteredPoints = mapDef.Points
+                    .Where(p => !hasCategoryFilter ||
+                                string.Equals(p.Category?.Trim(), categoryFilter, StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+
             }
             else
             {
                 var idSet = new HashSet<int>(availableIds);
 
-                // 4) Filtrér punkterne i map.json på AccommodationId
+                // 5) Filtrér punkterne i map.json på AccommodationId
                 filteredPoints = mapDef.Points
-                    .Where(p => p.AccommodationId.HasValue &&
-                                idSet.Contains(p.AccommodationId.Value))
+                    .Where(p => p.AccommodationId.HasValue && 
+                                idSet.Contains(p.AccommodationId.Value) &&
+                                (!hasCategoryFilter || string.Equals(p.Category?.Trim(), categoryFilter, StringComparison.OrdinalIgnoreCase)))
                     .ToArray();
             }
 
@@ -89,25 +103,8 @@ namespace Danplanner.Client.Pages
                 Points = filteredPoints
             };
 
-            // 5) Send til JavaScript
+            // 6) Send til JavaScript
             FilteredMapJson = JsonSerializer.Serialize(filteredMap);
-        }
-
-        private static DateTime? ParseDate(string? raw)
-        {
-            if (string.IsNullOrWhiteSpace(raw)) return null;
-
-            if (DateTime.TryParseExact(
-                    raw,
-                    "yyyy-MM-dd",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out var dt))
-            {
-                return dt.Date;
-            }
-
-            return null;
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Danplanner.Application.Interfaces.AccommodationInterfaces
 {
-    public interface IAccommodationService
+    public interface IAccommodationTransfer
     {
         Task<IReadOnlyList<AccommodationDto>> GetAccommodationsAsync(
             DateTime? start,

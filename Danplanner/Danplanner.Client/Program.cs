@@ -51,9 +51,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Accommodation builders
-builder.Services.AddScoped<IAccommodationService, AccommodationService>();
-builder.Services.AddScoped<IAccommodationRepository, AccommodationRepository>();
-builder.Services.AddScoped<IAccommodationAvailabilityRepository, AccommodationAvailabilityRepository>();
+builder.Services.AddScoped<IAccommodationTransfer, AccommodationService>();
+builder.Services.AddScoped<IAccommodationGetAll, AccommodationRepository>();
+builder.Services.AddScoped<IAccommodationAvailability, AccommodationAvailabilityRepository>();
 
 // HttpClient 
 builder.Services.AddHttpClient();

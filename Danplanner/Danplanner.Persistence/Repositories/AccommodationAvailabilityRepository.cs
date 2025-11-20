@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Danplanner.Persistence.Repositories
 {
-    public class AccommodationAvailabilityRepository : IAccommodationAvailabilityRepository
+    public class AccommodationAvailabilityRepository : IAccommodationAvailability
     {
         private readonly DbManager _db;
 
