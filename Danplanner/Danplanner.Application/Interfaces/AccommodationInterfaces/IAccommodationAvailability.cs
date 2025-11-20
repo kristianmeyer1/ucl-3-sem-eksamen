@@ -4,5 +4,7 @@
     {
         Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(
             CancellationToken cancellationToken = default);
+        Task MarkUnavailableAsync(int accommodationId,
+            CancellationToken cancellationToken = default);
     }
 }

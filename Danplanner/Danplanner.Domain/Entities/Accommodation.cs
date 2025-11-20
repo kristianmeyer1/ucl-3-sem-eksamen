@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Danplanner.Domain.Entities
 {
@@ -14,7 +15,9 @@ namespace Danplanner.Domain.Entities
         public decimal? PricePerNight { get; set; }
         [Required]
         public int Availability { get; set; }
+        [NotMapped]
         public string? ImageUrl { get; set; }
+        [NotMapped]
         public string? Category { get; set; }
     }
 }
