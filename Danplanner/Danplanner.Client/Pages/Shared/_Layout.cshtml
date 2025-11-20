@@ -23,8 +23,8 @@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item"><a class="nav-link" asp-page="/Index">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-page="/Privacy">Privacy</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-page="/Index">Hjem</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-page="/Privacy">Privatliv</a></li>
 
                         <!-- Admin link visible only to admins -->
                         @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
@@ -38,9 +38,9 @@
                     <div class="d-flex align-items-center ms-3">
                         @if (!User.Identity.IsAuthenticated)
                         {
-                            <input type="text" id="loginIdentifier" class="form-control me-2" placeholder="Email or Admin ID" />
-                            <button class="btn btn-outline-secondary me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-                            <a class="btn btn-primary" asp-page="/Register">Register</a>
+                            <input type="text" id="loginIdentifier" class="form-control me-2" placeholder="Email" />
+                            <button id="loginBtn" class="btn btn-outline-secondary me-2">Login</button>
+                            <button id="registerBtn" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#registerModal">Registrer</button>
                         }
                         else
                         {
@@ -64,7 +64,7 @@
     <!-- Footer -->
     <footer class="border-top footer text-muted text-center py-3">
         <div class="container">
-            &copy; 2025 - Danplanner - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2025 - Danplanner - <a asp-area="" asp-page="/Privacy">Privatliv</a>
         </div>
     </footer>
 
@@ -74,7 +74,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Login</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Luk"></button>
                 </div>
                 <div class="modal-body">
                     <form id="loginForm">
@@ -84,7 +84,7 @@
                         </div>
                         <div class="mb-3" id="userOtpGroup" style="display:none;">
                             <label for="loginCode" class="form-label">OTP Code</label>
-                            <input type="text" class="form-control" id="loginCode" placeholder="Enter OTP">
+                            <input type="text" class="form-control" id="loginCode" placeholder="Indtast tilsendte kode">
                         </div>
                         <button type="submit" class="btn btn-primary">Login</button>
                     </form>
@@ -92,14 +92,47 @@
             </div>
         </div>
     </div>
+    <!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Register</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="registerUsername" class="form-label">Brugernavn</label>
+                        <input type="text" class="form-control" id="registerUsername" placeholder="Brugernavn" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="registerEmail" placeholder="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerMobile" class="form-label">Telefon</label>
+                        <input type="tel" class="form-control" id="registerMobile" placeholder="Telefon" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerAddress" class="form-label">Adresse</label>
+                        <input type="text" class="form-control" id="registerAddress" placeholder="Adresse" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+@*     <script src="~/js/site.js" asp-append-version="true"></script>
+ *@    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/da.js"></script>
     <script src="~/js/login.js"></script>
+    <script src="~/js/register.js"></script>
 
     <script>
         flatpickr(".flatpickr-input", { locale: "da", dateFormat: "d-m-Y", minDate: "today" });
