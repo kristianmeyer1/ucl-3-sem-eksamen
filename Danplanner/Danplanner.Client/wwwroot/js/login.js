@@ -1,100 +1,40 @@
-﻿$(document).ready(function () {
-    // Detect type and show relevant input
-    $("#loginIdentifier").on("input", function () {
-        var val = $(this).val() || "";
-        if (val.includes("@")) {
-            // User email
-            $("#userOtpGroup").hide(); // hide initially
-            $("#adminPasswordGroup").hide();
-        } else if (val.length > 0) {
-            // Admin ID
-            $("#adminPasswordGroup").show();
-            $("#userOtpGroup").hide();
-        } else {
-            // Empty
-            $("#adminPasswordGroup").hide();
-            $("#userOtpGroup").hide();
-        }
-    });
+﻿$(function () {
+    const loginModalEl = document.getElementById('loginModal');
+    const loginModal = new bootstrap.Modal(loginModalEl);
 
-    // Login form submit
-    $("#loginForm").submit(function (e) {
-        e.preventDefault();
-        var identifier = $("#loginIdentifier").val().trim();
+    $("#loginBtn").click(function (e) {
+        e.preventDefault(); // prevent form default if inside form
+
+        const identifier = $("#loginIdentifier").val().trim();
         if (!identifier) {
-            alert("Please enter Email or Admin ID.");
+            alert("Enter Email or Admin ID.");
             return;
         }
 
         if (identifier.includes("@")) {
-            // User login via OTP
-            var code = $("#loginCode").val().trim();
-
-            if (!code) {
-                // Step 1: Request OTP
-                $.ajax({
-                    type: "POST",
-                    url: "/api/auth/user/request-code",
-                    contentType: "application/json",
-                    data: JSON.stringify({ UserEmail: identifier }),
-                    success: function () {
-                        alert("OTP sent to your email!");
-                        $("#userOtpGroup").show();
-                        $("#loginCode").focus();
-                    },
-                    error: function () {
-                        alert("Failed to send OTP. Please try again.");
-                    }
-                });
-            } else {
-                // Step 2: Verify OTP
-                $.ajax({
-                    type: "POST",
-                    url: "/api/auth/user/verify-code",
-                    contentType: "application/json",
-                    data: JSON.stringify({ UserEmail: identifier, Code: code }),
-                    success: function () {
-                        alert("Logged in successfully!");
-                        $("#loginModal").modal("hide");
-                        location.reload();
-                    },
-                    error: function () {
-                        alert("Invalid OTP code. Please try again.");
-                    }
-                });
-            }
-        } else {
-            // Admin login
-            var password = $("#loginPassword").val().trim();
-            if (!password) {
-                alert("Please enter password.");
-                return;
-            }
-
+            // User login → request OTP
             $.ajax({
                 type: "POST",
-                url: "/api/auth/login",
+                url: "/api/auth/user/request-code",
                 contentType: "application/json",
-                data: JSON.stringify({ AdminId: parseInt(identifier), Password: password }),
+                data: JSON.stringify({ UserEmail: identifier }),
                 success: function () {
-                    alert("Logged in successfully!");
-                    $("#loginModal").modal("hide");
-                    location.reload();
+                    $("#userOtpGroup").show();
+                    $("#adminPasswordGroup").hide();
+                    $("#loginCode").val("").focus();
+                    loginModal.show(); // manually open modal
+                    alert("OTP sent to your email!");
                 },
-                error: function () {
-                    alert("Invalid credentials. Please try again.");
+                error: function (xhr) {
+                    console.error(xhr);
+                    alert("Failed to send OTP.");
                 }
             });
+        } else {
+            // Admin login → show password input
+            $("#adminPasswordGroup").show();
+            $("#userOtpGroup").hide();
+            loginModal.show(); // manually open modal
         }
-    });
-
-    // Logout
-    $("#logoutBtn").click(function () {
-        $.ajax({
-            type: "POST",
-            url: "/api/auth/logout",
-            success: function () { window.location.href = "/index"; },
-            error: function () { alert("Logout failed."); }
-        });
     });
 });
