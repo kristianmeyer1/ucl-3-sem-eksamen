@@ -47,7 +47,7 @@ namespace Danplanner.Application.Services
         {
             var claims = new List<Claim>
     {
-        new Claim(ClaimTypes.Name, user.UserId.ToString()),
+        new Claim(ClaimTypes.Name, user.UserName.ToString()),
         new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
     };
 
