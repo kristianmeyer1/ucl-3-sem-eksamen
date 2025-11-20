@@ -93,7 +93,7 @@
         $.ajax({
             type: "POST",
             url: "/api/auth/logout",
-            success: function () { location.reload(); },
+            success: function () { window.location.href = "/index"; },
             error: function () { alert("Logout failed."); }
         });
     });

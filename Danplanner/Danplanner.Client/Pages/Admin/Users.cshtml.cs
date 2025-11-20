@@ -1,10 +1,12 @@
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Danplanner.Client.Pages.Admin
 {
+    [Authorize(Roles = "Admin")]
     public class UsersModel : PageModel
     {
 
