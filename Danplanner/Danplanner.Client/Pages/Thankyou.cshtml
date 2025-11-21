@@ -22,8 +22,9 @@
         <!-- Højre kolonne: Kontakt info -->
         <aside class="contact-box">
             <h6><span class="badge bg-dark">i</span> Kontakt Information</h6>
-            <p>Tlf: 12 34 56 78<br>Email: info@camping.dk</p>
-            <p>Adresse: Strandvej 1, 0000 By</p>
+            <p><strong>Tlf:</strong> @Model.ContactInformation.ContactPhoneNumber</p>
+            <p><strong>Email:</strong> @Model.ContactInformation.ContactEmail</p>
+            <p><strong>Adresse:</strong> @Model.ContactInformation.ContactAdress</p>
         </aside>
     </div>
 </div>
