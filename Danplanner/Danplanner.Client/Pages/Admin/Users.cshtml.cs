@@ -12,11 +12,15 @@ namespace Danplanner.Client.Pages.Admin
 
         private readonly IUserGetAll _userGetAll;
         private readonly IUserGetById _userGetById;
+        private readonly IUserUpdate _userUpdate;
+        private readonly IUserDelete _userDelete;
 
-        public UsersModel(IUserGetAll userGetAll, IUserGetById userGetById)
+        public UsersModel(IUserGetAll userGetAll, IUserGetById userGetById, IUserUpdate userUpdate, IUserDelete userDelete)
         {
             _userGetAll = userGetAll;
             _userGetById = userGetById;
+            _userUpdate = userUpdate;
+            _userDelete = userDelete;
         }
 
         [BindProperty]
@@ -34,16 +38,23 @@ namespace Danplanner.Client.Pages.Admin
                 SelectedUser = await _userGetById.GetUserByIdAsync(id.Value);
             }
         }
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
-            // Gem opdaterede værdier fra SelectedUserDto
-            // Redirect eller return Page()
+            if (!ModelState.IsValid)
+            {
+                // If validation fails, reload the page with existing data
+                GridData = await _userGetAll.GetAllUsersAsync();
+                return Page();
+            }
+
+            await _userUpdate.UpdateUserAsync(SelectedUser);
+
             return RedirectToPage("/Admin/Users");
         }
 
-        public IActionResult OnPostDelete()
+        public async Task<IActionResult> OnPostDeleteAsync()
         {
-            // Slet brugeren
+            await _userDelete.DeleteUserAsync(SelectedUser.UserId);
             return RedirectToPage("/Admin/Users");
         }
 

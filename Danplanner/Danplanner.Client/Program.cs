@@ -8,6 +8,7 @@ using Danplanner.Domain.Interfaces;
 using Danplanner.Infrastructure.Services;
 using Danplanner.Persistence.DbMangagerDir;
 using Danplanner.Persistence.Repositories;
+using Danplanner.Persistence.Repositories.UserRepositories;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -44,7 +45,8 @@ builder.Services.AddHttpClient<UserService>();
 builder.Services.AddScoped<IUserGetAll, UserRepository>();
 builder.Services.AddScoped<IUserGetByEmail, UserRepository>();
 builder.Services.AddScoped<IUserGetById, UserRepository>();
-
+builder.Services.AddScoped<IUserUpdate, UserRepositoryPut>();
+builder.Services.AddScoped<IUserDelete, UserRepositoryDelete>();
 
 // Authentication builders
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();

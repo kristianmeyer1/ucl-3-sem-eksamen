@@ -46,26 +46,36 @@
     <div class="edit-panel p-3 rounded shadow-sm">
         <h4>Rediger bruger</h4>
         <form method="post">
+            <!-- Hidden field for UserId -->
+            <input asp-for="SelectedUser.UserId" type="hidden" />
+
             <div class="mb-3">
-                <label class="form-label">Navn</label>
-                <input type="text" class="form-control taller-input" name="UserName" value="@Model.SelectedUser.UserName" />
+                <label asp-for="SelectedUser.UserName" class="form-label"></label>
+                <input asp-for="SelectedUser.UserName" class="form-control taller-input" />
+                <span asp-validation-for="SelectedUser.UserName" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-control taller-input" name="UserEmail" value="@Model.SelectedUser.UserEmail" />
+                <label asp-for="SelectedUser.UserEmail" class="form-label"></label>
+                <input asp-for="SelectedUser.UserEmail" type="email" class="form-control taller-input" />
+                <span asp-validation-for="SelectedUser.UserEmail" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
-                <label class="form-label">Adresse</label>
-                <input type="text" class="form-control taller-input" name="UserAdress" value="@Model.SelectedUser.UserAdress" />
+                <label asp-for="SelectedUser.UserAdress" class="form-label"></label>
+                <input asp-for="SelectedUser.UserAdress" class="form-control taller-input" />
+                <span asp-validation-for="SelectedUser.UserAdress" class="text-danger"></span>
             </div>
+
             <div class="mb-3">
-                <label class="form-label">Mobil</label>
-                <input type="text" class="form-control taller-input" name="UserMobile" value="@Model.SelectedUser.UserMobile" />
+                <label asp-for="SelectedUser.UserMobile" class="form-label"></label>
+                <input asp-for="SelectedUser.UserMobile" class="form-control taller-input" />
+                <span asp-validation-for="SelectedUser.UserMobile" class="text-danger"></span>
             </div>
 
             <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Bekræft</button>
-                <button type="submit" name="action" value="delete" class="btn btn-danger">Slet</button>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Update">Bekræft</button>
+                <button type="submit" class="btn btn-danger" asp-page-handler="Delete">Slet</button>
             </div>
         </form>
     </div>
