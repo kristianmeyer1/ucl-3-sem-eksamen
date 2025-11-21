@@ -37,7 +37,9 @@
     <div id="map" aria-label="Kort over campingplads"></div>
     <div class="map-side" aria-hidden="false">
         <div class="map-legend"><strong>Pladser / Hytter</strong></div>
-        <ul id="points" class="points-list"></ul>
+        <select id="points" class="points-dropdown">
+    <option value="">Vælg plads...</option>
+</select>
     </div>
 </div>
 
@@ -79,6 +81,11 @@
     // marker group
     const markers = {};
     const listEl = document.getElementById('points');
+        listEl.addEventListener('change', () => {
+        if (listEl.value) {
+            selectPoint(listEl.value);
+        }
+    });
 
     // create icon for a custom image url
     function createIconFromUrl(url) {
@@ -91,14 +98,16 @@
     }
 
     function selectPoint(key) {
-        // highlight list and open popup
-        document.querySelectorAll('#points li').forEach(li => li.classList.toggle('selected', li.dataset.key === key));
         const m = markers[key];
-        if (m) {
-            m.openPopup();
-            // center map on marker with slight offset
-            map.panTo(m.getLatLng(), { animate: true });
-        }
+        if (!m) return;
+
+        // marker valgt option i dropdown
+        Array.from(listEl.options).forEach(o => {
+            o.selected = (o.value === key);
+        });
+
+        m.openPopup();
+        map.panTo(m.getLatLng(), { animate: true });
     }
 
     (function addPoints() {
@@ -158,12 +167,11 @@
             markers[point.Key] = marker;
 
             // add list item
-            const li = document.createElement('li');
-            li.textContent = point.Title;
-            li.dataset.key = point.Key;
-            li.addEventListener('click', () => selectPoint(point.Key));
-            listEl.appendChild(li);
-        });
+            const opt = document.createElement('option');
+            opt.value = point.Key;
+            opt.textContent = point.Title;
+            listEl.appendChild(opt);
+            });
 
         // preselect if requested
         if (preselected) {
