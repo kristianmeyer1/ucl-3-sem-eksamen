@@ -1,11 +1,10 @@
+using System.Globalization;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Globalization;
-using System.Threading.Tasks;
 
 namespace Danplanner.Client.Pages
 {
@@ -43,11 +42,11 @@ namespace Danplanner.Client.Pages
         // ---- til view ----
         public AccommodationDto? SelectedAccommodation { get; private set; }
         public List<AddonDto> Addons { get; private set; } = new();
-        public string StartDisplay { get; private set; } = "—";
-        public string EndDisplay { get; private set; } = "—";
+        public string StartDisplay { get; private set; } = "â€”";
+        public string EndDisplay { get; private set; } = "â€”";
         public int Days { get; private set; }
         public decimal? TotalPrice { get; private set; }
-        public string TotalPriceDisplay { get; private set; } = "—";
+        public string TotalPriceDisplay { get; private set; } = "â€”";
 
         public async Task OnGetAsync()
         {
@@ -55,7 +54,7 @@ namespace Danplanner.Client.Pages
             var filePath = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "contactinfo.txt");
             ContactInformation = ContactInfoReader.Load(filePath);
 
-            // Tilkøb
+            // TilkÃ¸b
             Addons = (await _addonRepo.GetAllAddonsAsync()).ToList();
 
             // Datoer
@@ -87,7 +86,7 @@ namespace Danplanner.Client.Pages
                     .FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
             }
 
-            // Beregn total (uden tilkøb og personer i første omgang)
+            // Beregn total (uden tilkÃ¸b og personer i fÃ¸rste omgang)
             if (SelectedAccommodation?.PricePerNight is decimal price && Days > 0)
             {
                 TotalPrice = price * Days;
@@ -107,7 +106,7 @@ namespace Danplanner.Client.Pages
 
         private static DateTime? ParseDate(string? raw, out string display)
         {
-            display = "—";
+            display = "â€”";
             if (string.IsNullOrEmpty(raw))
                 return null;
 

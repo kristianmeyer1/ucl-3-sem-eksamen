@@ -1,9 +1,9 @@
+using System.Globalization;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Globalization;
 
 namespace Danplanner.Client.Pages
 {

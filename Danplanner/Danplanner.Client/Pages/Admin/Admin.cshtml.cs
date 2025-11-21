@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Danplanner.Client.Pages.Admin
 {
-        [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminModel : PageModel
     {
         public void OnGet()

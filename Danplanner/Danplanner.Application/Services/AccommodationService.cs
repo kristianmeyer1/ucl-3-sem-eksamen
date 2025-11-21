@@ -13,7 +13,7 @@ namespace Danplanner.Application.Services
         }
         private static string? CategoryFromName(string name)
         {
-           var n = (name ?? string.Empty).ToLowerInvariant();
+            var n = (name ?? string.Empty).ToLowerInvariant();
 
             if (n.Contains("luksus")) return "luksushytte";
             if (n.Contains("hytte")) return "hytte";

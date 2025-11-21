@@ -1,11 +1,12 @@
 ﻿using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
+using Danplanner.Domain.Entities;
 using Danplanner.Persistence.DbMangagerDir;
 using Microsoft.EntityFrameworkCore;
 
 namespace Danplanner.Persistence.Repositories
 {
-    public class UserRepository : IUserGetAll, IUserGetById, IUserGetByEmail
+    public class UserRepository : IUserGetAll, IUserGetById, IUserGetByEmail, IAddUser
     {
         private readonly DbManager _dbManager;
 
@@ -58,5 +59,12 @@ namespace Danplanner.Persistence.Repositories
             };
         }
 
+        public async Task AddUserAsync(User user)
+        {
+            await _dbManager.User.AddAsync(user);
+            await _dbManager.SaveChangesAsync();
+        }
+
     }
+
 }

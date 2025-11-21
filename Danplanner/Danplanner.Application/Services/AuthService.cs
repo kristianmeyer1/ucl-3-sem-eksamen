@@ -1,11 +1,11 @@
-﻿using Danplanner.Application.Interfaces.AdminInterfaces;
+﻿using System.Collections.Concurrent;
+using Danplanner.Application.Interfaces.AdminInterfaces;
 using Danplanner.Application.Interfaces.AuthInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
 using Danplanner.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using System.Collections.Concurrent;
 
 namespace Danplanner.Application.Services
 {
@@ -16,6 +16,7 @@ namespace Danplanner.Application.Services
         private readonly PasswordHasher<Admin> _passwordHasher;
         private readonly IUserGetByEmail _userRepository;
         private readonly IEmailService _emailService;
+        private readonly IAddUser _addUserByEmail;
 
         // In-memory OTP store
         private static readonly ConcurrentDictionary<string, UserOtp> _userOtps = new();
@@ -24,13 +25,15 @@ namespace Danplanner.Application.Services
             IAdminRepository adminRepository,
             IUserGetByEmail userRepository,
             ITokenService tokenService,
-            IEmailService emailService)
+            IEmailService emailService,
+            IAddUser addUserByEmail)
         {
             _adminRepository = adminRepository;
             _userRepository = userRepository;
             _tokenService = tokenService;
             _emailService = emailService;
             _passwordHasher = new PasswordHasher<Admin>();
+            _addUserByEmail = addUserByEmail;
         }
 
         // --------------------------
@@ -64,6 +67,36 @@ namespace Danplanner.Application.Services
         }
 
         // --------------------------
+        // User Registration
+        // -------------------------- 
+        public async Task<UserDto?> RegisterUserAsync(UserDto request)
+        {
+            var existingUser = await _userRepository.GetUserByEmailAsync(request.UserEmail);
+            if (existingUser != null)
+                return null;
+
+            var user = new User
+            {
+                UserAdress = request.UserAdress,
+                UserMobile = request.UserMobile,
+                UserEmail = request.UserEmail,
+                UserName = request.UserName,
+            };
+
+            await _addUserByEmail.AddUserAsync(user);
+
+            return new UserDto
+            {
+                UserId = user.UserId,
+                UserAdress = user.UserAdress,
+                UserMobile = user.UserMobile,
+                UserEmail = user.UserEmail,
+                UserName = user.UserName
+            };
+        }
+
+
+        // --------------------------
         // Login (Admin & User OTP)
         // --------------------------
         public async Task<string?> LoginAsync(LoginDto request)
@@ -78,7 +111,7 @@ namespace Danplanner.Application.Services
                 if (result == PasswordVerificationResult.Success)
                     return CreateTokenForAdmin(admin);
 
-                return null; // wrong password
+                return null;
             }
 
             // ----- User OTP login -----
@@ -94,7 +127,7 @@ namespace Danplanner.Application.Services
                     var otp = new UserOtp
                     {
                         Code = code,
-                        Expiration = DateTime.UtcNow.AddMinutes(5)
+                        Expiration = DateTime.UtcNow.AddMinutes(1)
                     };
 
                     _userOtps[request.Email] = otp;
@@ -157,6 +190,32 @@ namespace Danplanner.Application.Services
 
             return true;
         }
+        public async Task<bool> RequestUserRegisterCodeAsync(string email)
+        {
+            // Vi sender OTP til registrering selvom email ikke findes endnu
+            var code = new Random().Next(100000, 999999).ToString();
+            _userOtps[email] = new UserOtp
+            {
+                Code = code,
+                Expiration = DateTime.UtcNow.AddMinutes(5)
+            };
+
+            try
+            {
+                await _emailService.SendEmailAsync(
+                    email,
+                    "Din registrerings-OTP",
+                    $"Din OTP kode er <b>{code}</b>. Den udløber om 5 minutter."
+                );
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
 
         // --------------------------
         // Verify OTP separately
@@ -182,6 +241,27 @@ namespace Danplanner.Application.Services
 
             return CreateTokenForUser(user);
         }
+
+        public bool VerifyUserRegisterCode(string email, string code)
+        {
+            if (!_userOtps.TryGetValue(email, out var storedOtp))
+                return false; // OTP findes ikke
+
+            if (storedOtp.Expiration < DateTime.UtcNow)
+            {
+                _userOtps.TryRemove(email, out _);
+                return false; // OTP udløbet
+            }
+
+            if (storedOtp.Code != code)
+                return false; // Forkert kode
+
+            _userOtps.TryRemove(email, out _);
+            return true; // OTP korrekt
+        }
+
+
+
 
         // --------------------------
         // Helper class for OTP
