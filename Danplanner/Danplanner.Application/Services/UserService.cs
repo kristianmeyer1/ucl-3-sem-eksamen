@@ -24,5 +24,12 @@ namespace Danplanner.Application.Services
         {
             return await _httpClient.GetFromJsonAsync<UserDto?>($"https://localhost:7026/api/user/{userId}");
         }
+
+        public async Task<UserDto> UpdateUser(UserDto userDto)
+        {
+            var response = await _httpClient.PutAsJsonAsync("https://localhost:7026/api/user", userDto);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<UserDto>();
+        }
     }
 }
