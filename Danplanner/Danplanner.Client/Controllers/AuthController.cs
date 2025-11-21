@@ -1,8 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Danplanner.Application.Interfaces.AuthInterfaces;
+using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
+using Danplanner.Application.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +16,14 @@ namespace Danplanner.Client.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IUserGetByEmail _userGetByEmail;
+        private readonly ITokenService _tokenService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IUserGetByEmail userGetByEmail, ITokenService tokenService)
         {
-            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+            _authService = authService;
+            _userGetByEmail = userGetByEmail;
+            _tokenService = tokenService;
         }
 
         // --------------------------
@@ -44,18 +50,18 @@ namespace Danplanner.Client.Controllers
                 return BadRequest("Invalid credentials or code.");
 
             if (token == "OTP_SENT")
-                return Ok("OTP sent to your email.");
+                return Ok(new { status = "OTP_SENT" });
 
-            // Sign in with cookies for Razor UI
+            // Sign in with cookie
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
             var claims = jwt.Claims.ToList();
-            var identity = new ClaimsIdentity(claims, "jwt");
+            var identity = new ClaimsIdentity(claims, "Cookies"); // Use cookie scheme
             var userPrincipal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync("Cookies", userPrincipal);
 
-            return Ok(token); // Return JWT for API usage
+            return Ok(new { status = "OK", token });
         }
 
         // --------------------------
@@ -106,17 +112,23 @@ namespace Danplanner.Client.Controllers
             if (!isValid)
                 return BadRequest("Forkert eller udløbet OTP.");
 
-            return Ok("OTP verificeret!");
+            // Auto-login after OTP verification
+            var user = await _userGetByEmail.GetUserByEmailAsync(request.UserEmail);
+            if (user == null)
+                return NotFound("User not found.");
+
+            var token = _tokenService.CreateTokenForUser(user); // Generate JWT token
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            var claims = jwt.Claims.ToList();
+            var identity = new ClaimsIdentity(claims, "Cookies"); // cookie scheme
+            var userPrincipal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync("Cookies", userPrincipal);
+
+            return Ok(new { status = "OK", token });
         }
 
-        [HttpPost("user/register-user")]
-        public async Task<IActionResult> RegisterUser([FromBody] UserDto request)
-        {
-            var user = await _authService.RegisterUserAsync(request);
-            if (user == null)
-                return BadRequest("Email er allerede i brug.");
-            return Ok(user);
-        }
 
         // --------------------------
         // Logout

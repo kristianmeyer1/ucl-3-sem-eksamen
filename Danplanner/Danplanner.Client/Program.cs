@@ -67,9 +67,15 @@ builder.Services.AddHttpClient();
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.LoginPath = "/Login";
     });
+
+
 builder.Services.AddAuthorization();
+
 
 // Build app
 var app = builder.Build();

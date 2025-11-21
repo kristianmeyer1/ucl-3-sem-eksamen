@@ -3,7 +3,7 @@
     const loginModal = new bootstrap.Modal(loginModalEl);
 
     // -------------------------------
-    // OPEN MODAL ON LOGIN BUTTON CLICK
+    // OPEN LOGIN MODAL
     // -------------------------------
     $("#loginBtn").click(function (e) {
         e.preventDefault();
@@ -15,11 +15,12 @@
         }
 
         if (identifier.includes("@")) {
-            // USER → REQUEST OTP
+            // USER → Request OTP
             $.ajax({
                 type: "POST",
                 url: "/api/auth/user/request-code",
                 contentType: "application/json",
+                xhrFields: { withCredentials: true },
                 data: JSON.stringify({ UserEmail: identifier }),
                 success: function () {
                     $("#userOtpGroup").show();
@@ -33,7 +34,7 @@
                 }
             });
         } else {
-            // ADMIN → SHOW PASSWORD FIELD
+            // ADMIN → Show password
             $("#adminPasswordGroup").show();
             $("#userOtpGroup").hide();
             $("#loginPassword").val("").focus();
@@ -52,28 +53,27 @@
         const otp = $("#loginCode").val().trim();
 
         if (identifier.includes("@")) {
-            // USER LOGIN → VERIFY OTP
+            // USER LOGIN → Verify OTP
             if (!otp) {
                 alert("Enter the OTP code sent to your email.");
                 return;
             }
 
             $.ajax({
-                type: "POST",
-                url: "/api/auth/user/verify-code",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    UserEmail: identifier,
-                    Code: otp
-                }),
-                success: function () {
-                    loginModal.hide();
-                    location.reload(); // logged in → refresh UI
-                },
-                error: function () {
-                    alert("Incorrect OTP.");
-                }
-            });
+    type: "POST",
+    url: "/api/auth/user/verify-code",
+    contentType: "application/json",
+    xhrFields: { withCredentials: true },
+    data: JSON.stringify({ UserEmail: identifier, Code: otp }),
+    success: function (token) {
+        loginModal.hide();
+        location.reload();
+    },
+    error: function () {
+        alert("Incorrect OTP or OTP expired.");
+    }
+});
+
         } else {
             // ADMIN LOGIN → ID & PASSWORD
             const adminId = parseInt(identifier, 10);
@@ -86,17 +86,18 @@
                 type: "POST",
                 url: "/api/auth/login",
                 contentType: "application/json",
-                data: JSON.stringify({
-                    AdminId: adminId,
-                    Password: password
-                }),
-                success: function () {
-                    loginModal.hide();
-                    location.reload(); // logged in → refresh UI
+                xhrFields: { withCredentials: true },
+                data: JSON.stringify({ AdminId: adminId, Password: password }),
+                success: function (res) {
+                    if (res.status === "OK") {
+                        loginModal.hide();
+                        location.reload();
+                    } else {
+                        alert("Admin login failed.");
+                    }
                 },
-                error: function (xhr) {
-                    console.error(xhr);
-                    alert("Admin login failed.");
+                error: function () {
+                    alert("Admin login failed. Check your ID and password.");
                 }
             });
         }
@@ -109,8 +110,9 @@
         $.ajax({
             type: "POST",
             url: "/api/auth/logout",
+            xhrFields: { withCredentials: true },
             success: function () {
-                location.href = "/"; // go to homepage after logout
+                location.href = "/";
             },
             error: function () {
                 alert("Logout failed.");
