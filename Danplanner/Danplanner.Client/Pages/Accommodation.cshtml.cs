@@ -1,5 +1,6 @@
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Models;
+using Danplanner.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Globalization;
@@ -9,10 +10,13 @@ namespace Danplanner.Client.Pages
     public class AccommodationModel : PageModel
     {
         private readonly IAccommodationTransfer _accommodationService;
+        private readonly IWebHostEnvironment _env;
+        public ContactInformation ContactInformation { get; set; }
 
-        public AccommodationModel(IAccommodationTransfer accommodationService)
+        public AccommodationModel(IAccommodationTransfer accommodationService, IWebHostEnvironment env)
         {
             _accommodationService = accommodationService;
+            _env = env;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -32,6 +36,10 @@ namespace Danplanner.Client.Pages
 
         public async Task OnGetAsync()
         {
+            // Kontaktinfo boks
+            var filePath = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "contactinfo.txt");
+            ContactInformation = ContactInfoReader.Load(filePath); 
+            
             DateTime? startDt = ParseDate(Start, out var startDisp);
             DateTime? endDt = ParseDate(End, out var endDisp);
 

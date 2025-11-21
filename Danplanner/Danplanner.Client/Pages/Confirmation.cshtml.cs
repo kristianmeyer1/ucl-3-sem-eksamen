@@ -1,6 +1,7 @@
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Models;
+using Danplanner.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Globalization;
@@ -13,12 +14,16 @@ namespace Danplanner.Client.Pages
         private readonly IAddonGetAll _addonRepo;
         private readonly IAccommodationTransfer _accommodationService;
         private readonly IAccommodationAvailability _availabilityService;
+        private readonly IWebHostEnvironment _env;
+        public ContactInformation ContactInformation { get; set; }
 
-        public ConfirmationModel(IAddonGetAll addonRepo,IAccommodationTransfer accommodationService,IAccommodationAvailability availabilityService)
+
+        public ConfirmationModel(IAddonGetAll addonRepo,IAccommodationTransfer accommodationService,IAccommodationAvailability availabilityService, IWebHostEnvironment env)
         {
             _addonRepo = addonRepo;
             _accommodationService = accommodationService;
             _availabilityService = availabilityService;
+            _env = env;
         }
         [BindProperty(SupportsGet = true)]
         public int? UnitId { get; set; }
@@ -46,6 +51,10 @@ namespace Danplanner.Client.Pages
 
         public async Task OnGetAsync()
         {
+            // Kontaktinfo boks
+            var filePath = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "contactinfo.txt");
+            ContactInformation = ContactInfoReader.Load(filePath);
+
             // Tilkøb
             Addons = (await _addonRepo.GetAllAddonsAsync()).ToList();
 
