@@ -44,6 +44,7 @@ builder.Services.AddHttpClient<UserService>();
 builder.Services.AddScoped<IUserGetAll, UserRepository>();
 builder.Services.AddScoped<IUserGetByEmail, UserRepository>();
 builder.Services.AddScoped<IUserGetById, UserRepository>();
+builder.Services.AddScoped<IAddUser, UserRepository>();
 
 
 // Authentication builders

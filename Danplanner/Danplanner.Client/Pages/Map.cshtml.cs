@@ -1,9 +1,8 @@
+using System.Text.Json;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Globalization;
-using System.Text.Json;
 
 namespace Danplanner.Client.Pages
 {
@@ -89,7 +88,7 @@ namespace Danplanner.Client.Pages
 
                 // 5) Filtrér punkterne i map.json på AccommodationId
                 filteredPoints = mapDef.Points
-                    .Where(p => p.AccommodationId.HasValue && 
+                    .Where(p => p.AccommodationId.HasValue &&
                                 idSet.Contains(p.AccommodationId.Value) &&
                                 (!hasCategoryFilter || string.Equals(p.Category?.Trim(), categoryFilter, StringComparison.OrdinalIgnoreCase)))
                     .ToArray();

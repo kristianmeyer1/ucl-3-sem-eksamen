@@ -1,11 +1,11 @@
-﻿using Danplanner.Application.Interfaces.AuthInterfaces;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Danplanner.Application.Interfaces.AuthInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace Danplanner.Client.Controllers
 {
@@ -20,7 +20,9 @@ namespace Danplanner.Client.Controllers
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
 
+        // --------------------------
         // Admin registration
+        // --------------------------
         [HttpPost("register")]
         public async Task<ActionResult<AdminDto>> Register([FromBody] AdminDto request)
         {
@@ -30,7 +32,9 @@ namespace Danplanner.Client.Controllers
             return Ok(admin);
         }
 
+        // --------------------------
         // Admin or User login
+        // --------------------------
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
@@ -42,7 +46,7 @@ namespace Danplanner.Client.Controllers
             if (token == "OTP_SENT")
                 return Ok("OTP sent to your email.");
 
-            // Optionally sign in the user/admin for Razor UI (cookies)
+            // Sign in with cookies for Razor UI
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
             var claims = jwt.Claims.ToList();
@@ -54,7 +58,9 @@ namespace Danplanner.Client.Controllers
             return Ok(token); // Return JWT for API usage
         }
 
-        // User requests OTP login code
+        // --------------------------
+        // User login OTP
+        // --------------------------
         [HttpPost("user/request-code")]
         public async Task<IActionResult> RequestUserCode([FromBody] RequestCodeDto request)
         {
@@ -64,7 +70,6 @@ namespace Danplanner.Client.Controllers
             return Ok("Login code sent to your email.");
         }
 
-        // User verifies OTP login code
         [HttpPost("user/verify-code")]
         public async Task<ActionResult<string>> VerifyUserCode([FromBody] VerifyCodeDto request)
         {
@@ -72,7 +77,6 @@ namespace Danplanner.Client.Controllers
             if (token == null)
                 return BadRequest("Invalid code.");
 
-            // Optionally sign in for Razor UI
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
             var claims = jwt.Claims.ToList();
@@ -80,19 +84,54 @@ namespace Danplanner.Client.Controllers
             var userPrincipal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync("Cookies", userPrincipal);
 
-            return Ok(token); // Return JWT for API usage
+            return Ok(token);
         }
 
+        // --------------------------
+        // User registration OTP
+        // --------------------------
+        [HttpPost("user/request-register-code")]
+        public async Task<IActionResult> RequestUserRegisterCode([FromBody] RequestCodeDto request)
+        {
+            var success = await _authService.RequestUserRegisterCodeAsync(request.UserEmail);
+            if (!success)
+                return BadRequest("Kunne ikke sende OTP.");
+            return Ok("OTP sendt til din email.");
+        }
+
+        [HttpPost("user/verify-register-code")]
+        public async Task<IActionResult> VerifyUserRegisterCode([FromBody] VerifyCodeDto request)
+        {
+            var isValid = _authService.VerifyUserRegisterCode(request.UserEmail, request.Code);
+            if (!isValid)
+                return BadRequest("Forkert eller udløbet OTP.");
+
+            return Ok("OTP verificeret!");
+        }
+
+        [HttpPost("user/register-user")]
+        public async Task<IActionResult> RegisterUser([FromBody] UserDto request)
+        {
+            var user = await _authService.RegisterUserAsync(request);
+            if (user == null)
+                return BadRequest("Email er allerede i brug.");
+            return Ok(user);
+        }
+
+        // --------------------------
         // Logout
+        // --------------------------
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(); // signs out the user
-            return RedirectToPage("/Index");  // redirect to home after logout
+            await HttpContext.SignOutAsync();
+            return RedirectToPage("/Index");
         }
 
-        // Example endpoint requiring authentication
+        // --------------------------
+        // Authenticated only
+        // --------------------------
         [Authorize]
         [HttpGet("authenticated-only")]
         public IActionResult AuthenticatedOnly()

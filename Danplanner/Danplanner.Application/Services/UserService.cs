@@ -1,6 +1,6 @@
-﻿using Danplanner.Application.Interfaces.UserInterfaces;
+﻿using System.Net.Http.Json;
+using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
-using System.Net.Http.Json;
 
 namespace Danplanner.Application.Services
 {

@@ -1,10 +1,9 @@
+using System.Globalization;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Globalization;
-using System.Threading.Tasks;
 
 namespace Danplanner.Client.Pages
 {
@@ -14,7 +13,7 @@ namespace Danplanner.Client.Pages
         private readonly IAccommodationTransfer _accommodationService;
         private readonly IAccommodationAvailability _availabilityService;
 
-        public ConfirmationModel(IAddonGetAll addonRepo,IAccommodationTransfer accommodationService,IAccommodationAvailability availabilityService)
+        public ConfirmationModel(IAddonGetAll addonRepo, IAccommodationTransfer accommodationService, IAccommodationAvailability availabilityService)
         {
             _addonRepo = addonRepo;
             _accommodationService = accommodationService;
