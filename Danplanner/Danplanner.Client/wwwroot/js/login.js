@@ -1,14 +1,18 @@
 ﻿$(function () {
+    console.log("LOGIN.JS LOADED");
+
     const loginModalEl = document.getElementById('loginModal');
     const loginModal = new bootstrap.Modal(loginModalEl);
 
     // -------------------------------
     // OPEN MODAL ON LOGIN BUTTON CLICK
     // -------------------------------
-    $("#loginBtn").click(function (e) {
+    $("#loginBtn").on("click", function (e) {
         e.preventDefault();
 
         const identifier = $("#loginIdentifier").val().trim();
+        console.log("LOGIN BTN CLICKED, identifier =", identifier);
+
         if (!identifier) {
             alert("Enter Email or Admin ID.");
             return;
@@ -16,24 +20,32 @@
 
         if (identifier.includes("@")) {
             // USER → REQUEST OTP
+            console.log("USER FLOW: request-code");
             $.ajax({
                 type: "POST",
                 url: "/api/auth/user/request-code",
                 contentType: "application/json",
                 data: JSON.stringify({ UserEmail: identifier }),
                 success: function () {
+                    console.log("REQUEST-CODE SUCCESS");
                     $("#userOtpGroup").show();
                     $("#adminPasswordGroup").hide();
                     $("#loginCode").val("").focus();
                     loginModal.show();
-                    alert("OTP has been sent to your email.");
+                    alert("OTP er sendt til din email.");
                 },
-                error: function () {
-                    alert("Failed to send OTP.");
+                error: function (xhr) {
+                    console.error("REQUEST-CODE ERROR", xhr);
+                    if (xhr.status === 404) {
+                        alert("Denne email er ikke registreret. Brug 'Registrer'-knappen først.");
+                    } else {
+                        alert("Kunne ikke sende OTP. Prøv igen senere.");
+                    }
                 }
             });
         } else {
             // ADMIN → SHOW PASSWORD FIELD
+            console.log("ADMIN FLOW: show password");
             $("#adminPasswordGroup").show();
             $("#userOtpGroup").hide();
             $("#loginPassword").val("").focus();
@@ -42,22 +54,31 @@
     });
 
     // -------------------------------
-    // LOGIN FORM SUBMIT
+    // LOGIN BUTTON I MODAL (EVENT DELEGATION)
     // -------------------------------
-    $("#loginForm").submit(function (e) {
+    $(document).on("click", "#loginSubmitBtn", function (e) {
         e.preventDefault();
+        console.log("LOGIN SUBMIT BTN CLICKED");
 
         const identifier = $("#loginIdentifier").val().trim();
         const password = $("#loginPassword").val().trim();
         const otp = $("#loginCode").val().trim();
 
+        console.log("identifier =", identifier, "password =", password, "otp =", otp);
+
+        if (!identifier) {
+            alert("Enter Email or Admin ID.");
+            return;
+        }
+
+        // USER LOGIN → VERIFY OTP
         if (identifier.includes("@")) {
-            // USER LOGIN → VERIFY OTP
             if (!otp) {
                 alert("Enter the OTP code sent to your email.");
                 return;
             }
 
+            console.log("USER FLOW: verify-code");
             $.ajax({
                 type: "POST",
                 url: "/api/auth/user/verify-code",
@@ -67,20 +88,25 @@
                     Code: otp
                 }),
                 success: function () {
+                    console.log("VERIFY-CODE SUCCESS");
                     loginModal.hide();
-                    location.reload(); // logged in → refresh UI
+                    location.reload();
                 },
-                error: function () {
-                    alert("Incorrect OTP.");
+                error: function (xhr) {
+                    console.error("VERIFY-CODE ERROR", xhr);
+                    alert(xhr.responseText || "Incorrect OTP.");
                 }
             });
-        } else {
-            // ADMIN LOGIN → ID & PASSWORD
+        }
+        // ADMIN LOGIN → ID & PASSWORD
+        else {
             const adminId = parseInt(identifier, 10);
             if (isNaN(adminId) || !password) {
                 alert("Enter Admin ID and password.");
                 return;
             }
+
+            console.log("ADMIN FLOW: login, adminId =", adminId);
 
             $.ajax({
                 type: "POST",
@@ -90,13 +116,14 @@
                     AdminId: adminId,
                     Password: password
                 }),
-                success: function () {
+                success: function (resp) {
+                    console.log("ADMIN LOGIN SUCCESS", resp);
                     loginModal.hide();
-                    location.reload(); // logged in → refresh UI
+                    location.reload();
                 },
                 error: function (xhr) {
-                    console.error(xhr);
-                    alert("Admin login failed.");
+                    console.error("ADMIN LOGIN ERROR", xhr);
+                    alert(xhr.responseText || "Admin login failed.");
                 }
             });
         }
@@ -105,12 +132,12 @@
     // -------------------------------
     // LOGOUT
     // -------------------------------
-    $("#logoutBtn").click(function () {
+    $(document).on("click", "#logoutBtn", function () {
         $.ajax({
             type: "POST",
             url: "/api/auth/logout",
             success: function () {
-                location.href = "/"; // go to homepage after logout
+                location.href = "/";
             },
             error: function () {
                 alert("Logout failed.");

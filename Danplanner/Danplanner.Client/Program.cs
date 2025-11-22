@@ -69,7 +69,11 @@ builder.Services.AddAuthentication("Cookies")
     {
         options.LoginPath = "/Login";
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
 
 // Build app
 var app = builder.Build();
