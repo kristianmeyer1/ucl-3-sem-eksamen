@@ -1,6 +1,4 @@
 ﻿$(function () {
-    console.log("LOGIN.JS LOADED");
-
     const loginModalEl = document.getElementById('loginModal');
     const loginModal = new bootstrap.Modal(loginModalEl);
 
@@ -11,7 +9,6 @@
         e.preventDefault();
 
         const identifier = $("#loginIdentifier").val().trim();
-        console.log("LOGIN BTN CLICKED, identifier =", identifier);
 
         if (!identifier) {
             alert("Enter Email or Admin ID.");
@@ -20,14 +17,12 @@
 
         if (identifier.includes("@")) {
             // USER → REQUEST OTP
-            console.log("USER FLOW: request-code");
             $.ajax({
                 type: "POST",
                 url: "/api/auth/user/request-code",
                 contentType: "application/json",
                 data: JSON.stringify({ UserEmail: identifier }),
                 success: function () {
-                    console.log("REQUEST-CODE SUCCESS");
                     $("#userOtpGroup").show();
                     $("#adminPasswordGroup").hide();
                     $("#loginCode").val("").focus();
@@ -35,7 +30,6 @@
                     alert("OTP er sendt til din email.");
                 },
                 error: function (xhr) {
-                    console.error("REQUEST-CODE ERROR", xhr);
                     if (xhr.status === 404) {
                         alert("Denne email er ikke registreret. Brug 'Registrer'-knappen først.");
                     } else {
@@ -45,7 +39,6 @@
             });
         } else {
             // ADMIN → SHOW PASSWORD FIELD
-            console.log("ADMIN FLOW: show password");
             $("#adminPasswordGroup").show();
             $("#userOtpGroup").hide();
             $("#loginPassword").val("").focus();
@@ -58,13 +51,11 @@
     // -------------------------------
     $(document).on("click", "#loginSubmitBtn", function (e) {
         e.preventDefault();
-        console.log("LOGIN SUBMIT BTN CLICKED");
 
         const identifier = $("#loginIdentifier").val().trim();
         const password = $("#loginPassword").val().trim();
         const otp = $("#loginCode").val().trim();
 
-        console.log("identifier =", identifier, "password =", password, "otp =", otp);
 
         if (!identifier) {
             alert("Enter Email or Admin ID.");
@@ -78,7 +69,6 @@
                 return;
             }
 
-            console.log("USER FLOW: verify-code");
             $.ajax({
                 type: "POST",
                 url: "/api/auth/user/verify-code",
@@ -88,12 +78,10 @@
                     Code: otp
                 }),
                 success: function () {
-                    console.log("VERIFY-CODE SUCCESS");
                     loginModal.hide();
                     location.reload();
                 },
                 error: function (xhr) {
-                    console.error("VERIFY-CODE ERROR", xhr);
                     alert(xhr.responseText || "Incorrect OTP.");
                 }
             });
@@ -106,7 +94,6 @@
                 return;
             }
 
-            console.log("ADMIN FLOW: login, adminId =", adminId);
 
             $.ajax({
                 type: "POST",
@@ -117,12 +104,10 @@
                     Password: password
                 }),
                 success: function (resp) {
-                    console.log("ADMIN LOGIN SUCCESS", resp);
                     loginModal.hide();
                     location.reload();
                 },
                 error: function (xhr) {
-                    console.error("ADMIN LOGIN ERROR", xhr);
                     alert(xhr.responseText || "Admin login failed.");
                 }
             });
