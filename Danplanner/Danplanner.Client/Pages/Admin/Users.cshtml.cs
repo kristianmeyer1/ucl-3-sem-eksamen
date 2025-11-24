@@ -1,5 +1,5 @@
 using Danplanner.Application.Interfaces.UserInterfaces;
-using Danplanner.Application.Models;
+using Danplanner.Application.Models.ModelsDto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

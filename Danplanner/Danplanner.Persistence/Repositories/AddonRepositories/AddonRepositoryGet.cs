@@ -1,15 +1,21 @@
 ﻿using Danplanner.Application.Interfaces.AddonInterfaces;
-using Danplanner.Application.Models;
+using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Persistence.DbMangagerDir;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace Danplanner.Persistence.Repositories
+namespace Danplanner.Persistence.Repositories.AddonRepositories
 {
-    public class AddonRepository : IAddonGetAll
+    public class AddonRepositoryGet : IAddonGetAll
     {
         private readonly DbManager _dbManager;
 
-        public AddonRepository(DbManager dbManager)
+        public AddonRepositoryGet(DbManager dbManager)
         {
             _dbManager = dbManager;
         }

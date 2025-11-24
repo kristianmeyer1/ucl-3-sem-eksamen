@@ -2,6 +2,7 @@ using System.Globalization;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Models;
+using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,16 +11,16 @@ namespace Danplanner.Client.Pages
 {
     public class ConfirmationModel : PageModel
     {
-        private readonly IAddonGetAll _addonRepo;
+        private readonly IAddonGetAll _addonGetAll;
         private readonly IAccommodationTransfer _accommodationService;
-        private readonly IAccommodationAvailability _availabilityService;
+        private readonly IAccommodationUpdate _availabilityService;
         private readonly IWebHostEnvironment _env;
         public ContactInformation ContactInformation { get; set; }
 
 
-        public ConfirmationModel(IAddonGetAll addonRepo,IAccommodationTransfer accommodationService,IAccommodationAvailability availabilityService, IWebHostEnvironment env)
+        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env)
         {
-            _addonRepo = addonRepo;
+            _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
             _availabilityService = availabilityService;
             _env = env;
@@ -55,7 +56,7 @@ namespace Danplanner.Client.Pages
             ContactInformation = ContactInfoReader.Load(filePath);
 
             // Tilkøb
-            Addons = (await _addonRepo.GetAllAddonsAsync()).ToList();
+            Addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
 
             // Datoer
             DateTime? startDt = ParseDate(Start, out var startDisp);

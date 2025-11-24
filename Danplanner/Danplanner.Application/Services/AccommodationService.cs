@@ -1,5 +1,5 @@
 ﻿using Danplanner.Application.Interfaces.AccommodationInterfaces;
-using Danplanner.Application.Models;
+using Danplanner.Application.Models.ModelsDto;
 
 namespace Danplanner.Application.Services
 {

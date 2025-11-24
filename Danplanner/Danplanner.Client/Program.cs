@@ -9,6 +9,9 @@ using Danplanner.Infrastructure.Services;
 using Danplanner.Persistence.DbMangagerDir;
 using Danplanner.Persistence.Repositories;
 using Danplanner.Persistence.Repositories.UserRepositories;
+using Danplanner.Persistence.Repositories.AccommodationRepositories;
+using Danplanner.Persistence.Repositories.AddonRepositories;
+using Danplanner.Persistence.Repositories.AdminRepositories;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -35,20 +38,21 @@ builder.Services.AddScoped<ContentTranslationHandler>();
 
 // Addon builders
 builder.Services.AddHttpClient<AddonService>();
-builder.Services.AddScoped<IAddonGetAll, AddonRepository>();
+builder.Services.AddScoped<IAddonGetAll, AddonRepositoryGet>();
 
 // Admin builders
-builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminAdd, AdminRepositoryPost>();
+builder.Services.AddScoped<IAdminGetById, AdminRepositoryGet>();
+builder.Services.AddScoped<IAdminGetAll, AdminRepositoryGet>();
 
 // User builders
 builder.Services.AddHttpClient<UserService>();
-builder.Services.AddScoped<IUserGetAll, UserRepository>();
-builder.Services.AddScoped<IUserGetByEmail, UserRepository>();
-builder.Services.AddScoped<IUserGetById, UserRepository>();
-builder.Services.AddScoped<IAddUser, UserRepository>();
-
-builder.Services.AddScoped<IUserUpdate, UserRepositoryPut>();
+builder.Services.AddScoped<IUserAdd, UserRepositoryPost>();
 builder.Services.AddScoped<IUserDelete, UserRepositoryDelete>();
+builder.Services.AddScoped<IUserGetAll, UserRepositoryGet>();
+builder.Services.AddScoped<IUserGetByEmail, UserRepositoryGet>();
+builder.Services.AddScoped<IUserGetById, UserRepositoryGet>();
+builder.Services.AddScoped<IUserUpdate, UserRepositoryPut>();
 
 // Authentication builders
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
@@ -57,8 +61,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Accommodation builders
 builder.Services.AddScoped<IAccommodationTransfer, AccommodationService>();
-builder.Services.AddScoped<IAccommodationGetAll, AccommodationRepository>();
-builder.Services.AddScoped<IAccommodationAvailability, AccommodationAvailabilityRepository>();
+builder.Services.AddScoped<IAccommodationGetAll, AccommodationRepositoryGet>();
+builder.Services.AddScoped<IAccommodationGetById, AccommodationRepositoryGet>();
+builder.Services.AddScoped<IAccommodationUpdate, AccommodationRepositoryPut>();
 
 // HttpClient 
 builder.Services.AddHttpClient();

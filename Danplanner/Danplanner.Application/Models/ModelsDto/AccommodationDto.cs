@@ -1,4 +1,4 @@
-﻿namespace Danplanner.Application.Models
+﻿namespace Danplanner.Application.Models.ModelsDto
 {
     public class AccommodationDto
     {

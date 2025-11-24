@@ -9,13 +9,14 @@ namespace Danplanner.Client.Pages
     public class MapModel : PageModel
     {
         private readonly IWebHostEnvironment _env;
-        private readonly IAccommodationAvailability _availabilityRepo;
+        private readonly IAccommodationGetAll _accommodationGetAll;
+        private readonly IAccommodationGetById _accommodationGetById;
 
-        public MapModel(IWebHostEnvironment env,
-                        IAccommodationAvailability availabilityRepo)
+        public MapModel(IWebHostEnvironment env, IAccommodationGetAll accommodationGetAll, IAccommodationGetById accommodationGetById)
         {
             _env = env;
-            _availabilityRepo = availabilityRepo;
+            _accommodationGetAll = accommodationGetAll;
+            _accommodationGetById = accommodationGetById;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -70,7 +71,7 @@ namespace Danplanner.Client.Pages
             var hasCategoryFilter = !string.IsNullOrEmpty(categoryFilter);
 
             // 4) Hent ledige AccommodationId'er fra databasen via EF
-            var availableIds = await _availabilityRepo.GetAvailableIdsAsync();
+            var availableIds = await _accommodationGetById.GetAvailableIdsAsync();
             MapPoint[] filteredPoints;
 
             if (availableIds == null || availableIds.Count == 0)

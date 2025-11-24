@@ -1,5 +1,5 @@
-﻿using Danplanner.Application.Models;
-using Danplanner.Application.Models.LoginDto;
+﻿using Danplanner.Application.Models.LoginDto;
+using Danplanner.Application.Models.ModelsDto;
 
 namespace Danplanner.Application.Interfaces.AuthInterfaces
 {
