@@ -1,18 +1,26 @@
 ﻿using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Domain.Entities;
 using Microsoft.AspNetCore.Hosting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Danplanner.Persistence.DbMangagerDir;
+using Microsoft.EntityFrameworkCore;
 
-namespace Danplanner.Persistence.Repositories
+namespace Danplanner.Persistence.Repositories.AccommodationRepositories
 {
-    public class AccommodationRepository : IAccommodationGetAll
+    public class AccommodationRepositoryGet : IAccommodationGetAll, IAccommodationGetById
     {
         private readonly string _dataFilePath;
+        private readonly DbManager _db;
 
-        public AccommodationRepository(IWebHostEnvironment env)
+        public AccommodationRepositoryGet(IWebHostEnvironment env, DbManager dbManger)
         {
             _dataFilePath = Path.Combine(env.WebRootPath ?? string.Empty, "data", "accommodations.txt");
+            _db = dbManger;
         }
-
         public async Task<IReadOnlyList<Accommodation>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             if (!File.Exists(_dataFilePath))
@@ -43,6 +51,15 @@ namespace Danplanner.Persistence.Repositories
                 result.Add(entity);
             }
             return result;
+        }
+
+        public async Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(CancellationToken cancellationToken = default)
+        {
+            return await _db.Accommodation
+                .AsNoTracking()
+                .Where(a => a.Availability == 1)
+                .Select(a => a.AccommodationId)
+                .ToListAsync(cancellationToken);
         }
     }
 }

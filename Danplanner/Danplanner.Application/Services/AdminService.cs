@@ -5,16 +5,16 @@ namespace Danplanner.Application.Services
 {
     public class AdminService
     {
-        private readonly IAdminRepository _adminRepository;
+        private readonly IAdminGetAll _adminGetAll;
 
-        public AdminService(IAdminRepository adminRepository)
+        public AdminService(IAdminGetAll adminGetAll)
         {
-            _adminRepository = adminRepository;
+            _adminGetAll = adminGetAll;
         }
 
         public async Task<List<Admin>> GetAllAdminsAsync()
         {
-            var admins = await _adminRepository.LoadAdminListAsync();
+            var admins = await _adminGetAll.LoadAdminListAsync();
             return admins.Select(a => new Admin { AdminId = a.AdminId }).ToList();
         }
     }

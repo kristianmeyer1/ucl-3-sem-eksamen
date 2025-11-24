@@ -1,11 +1,15 @@
 ﻿using Danplanner.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Danplanner.Application.Interfaces.AdminInterfaces
 {
-    public interface IAdminRepository
+    public interface IAdminGetAll
     {
         Task<List<Admin>> LoadAdminListAsync();
-        Task AddAsync(Admin admin);
-        Task<Admin?> GetByIdAsync(int adminId);
+
     }
 }

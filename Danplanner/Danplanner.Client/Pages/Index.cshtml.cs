@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 public class IndexModel : PageModel
 {
-    private readonly IAdminRepository _adminRepository;
+    private readonly IAdminGetAll _adminGetAll;
 
     public List<Admin> Admins { get; private set; } = new List<Admin>();
 
-    public IndexModel(IAdminRepository adminRepository)
+    public IndexModel(IAdminGetAll adminGetAll)
     {
-        _adminRepository = adminRepository;
+        _adminGetAll = adminGetAll;
     }
 
     public async Task OnGetAsync()
     {
-        Admins = await _adminRepository.LoadAdminListAsync();
+        Admins = await _adminGetAll.LoadAdminListAsync();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Danplanner.Application.Interfaces.UserInterfaces;
-using Danplanner.Application.Models;
 using Danplanner.Persistence.DbMangagerDir;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Danplanner.Application.Models.ModelsDto;
 
 namespace Danplanner.Persistence.Repositories.UserRepositories
 {

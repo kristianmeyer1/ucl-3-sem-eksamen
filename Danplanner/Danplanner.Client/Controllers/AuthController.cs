@@ -1,8 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Danplanner.Application.Interfaces.AuthInterfaces;
-using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
+using Danplanner.Application.Models.ModelsDto;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

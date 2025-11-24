@@ -2,8 +2,8 @@
 using Danplanner.Application.Interfaces.AdminInterfaces;
 using Danplanner.Application.Interfaces.AuthInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
-using Danplanner.Application.Models;
 using Danplanner.Application.Models.LoginDto;
+using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,24 +11,27 @@ namespace Danplanner.Application.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IAdminRepository _adminRepository;
+        private readonly IAdminGetById _adminGetById;
+        private readonly IAdminAdd _adminAdd;
         private readonly ITokenService _tokenService;
         private readonly PasswordHasher<Admin> _passwordHasher;
         private readonly IUserGetByEmail _userRepository;
         private readonly IEmailService _emailService;
-        private readonly IAddUser _addUserByEmail;
+        private readonly IUserAdd _addUserByEmail;
 
         // In-memory OTP store
         private static readonly ConcurrentDictionary<string, UserOtp> _userOtps = new();
 
         public AuthService(
-            IAdminRepository adminRepository,
+            IAdminGetById adminGetById,
+            IAdminAdd adminAdd,
             IUserGetByEmail userRepository,
             ITokenService tokenService,
             IEmailService emailService,
-            IAddUser addUserByEmail)
+            IUserAdd addUserByEmail)
         {
-            _adminRepository = adminRepository;
+            _adminGetById = adminGetById;
+            _adminAdd = adminAdd;
             _userRepository = userRepository;
             _tokenService = tokenService;
             _emailService = emailService;
@@ -47,7 +50,7 @@ namespace Danplanner.Application.Services
         // --------------------------
         public async Task<AdminDto> RegisterAsync(AdminDto request)
         {
-            var existingAdmin = await _adminRepository.GetByIdAsync(request.AdminId);
+            var existingAdmin = await _adminGetById.GetAdminByIdAsync(request.AdminId);
             if (existingAdmin != null)
                 return null;
 
@@ -57,7 +60,7 @@ namespace Danplanner.Application.Services
                 AdminPassword = _passwordHasher.HashPassword(null, request.AdminDtoPassword)
             };
 
-            await _adminRepository.AddAsync(admin);
+            await _adminAdd.AddAdminAsync(admin);
 
             return new AdminDto
             {
@@ -104,7 +107,7 @@ namespace Danplanner.Application.Services
             // ----- Admin login -----
             if (request.AdminId.HasValue && !string.IsNullOrEmpty(request.Password))
             {
-                var admin = await _adminRepository.GetByIdAsync(request.AdminId.Value);
+                var admin = await _adminGetById.GetAdminByIdAsync(request.AdminId.Value);
                 if (admin == null) return null;
 
                 var result = _passwordHasher.VerifyHashedPassword(admin, admin.AdminPassword, request.Password);

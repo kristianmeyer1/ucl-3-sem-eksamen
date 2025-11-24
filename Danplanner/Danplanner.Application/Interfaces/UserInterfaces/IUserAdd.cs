@@ -2,7 +2,7 @@
 
 namespace Danplanner.Application.Interfaces.UserInterfaces
 {
-    public interface IAddUser
+    public interface IUserAdd
     {
         Task AddUserAsync(User user);
     }

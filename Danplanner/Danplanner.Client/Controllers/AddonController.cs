@@ -1,5 +1,5 @@
 ﻿using Danplanner.Application.Interfaces.AddonInterfaces;
-using Danplanner.Application.Models;
+using Danplanner.Application.Models.ModelsDto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Danplanner.Client.Controllers
@@ -8,17 +8,17 @@ namespace Danplanner.Client.Controllers
     [Route("api/addon/[controller]")]
     public class AddonController : ControllerBase
     {
-        private readonly IAddonGetAll _repo;
+        private readonly IAddonGetAll _addonGetAll;
 
-        public AddonController(IAddonGetAll repo)
+        public AddonController(IAddonGetAll addonGetAll)
         {
-            _repo = repo;
+            _addonGetAll = addonGetAll;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<AddonDto>>> GetAddons()
         {
-            var addons = await _repo.GetAllAddonsAsync();
+            var addons = await _addonGetAll.GetAllAddonsAsync();
             return Ok(addons);
         }
     }

@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Danplanner.Application.Interfaces.AuthInterfaces;
-using Danplanner.Application.Models;
+using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
