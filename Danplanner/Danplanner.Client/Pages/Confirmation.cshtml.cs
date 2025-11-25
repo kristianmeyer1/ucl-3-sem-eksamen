@@ -143,7 +143,7 @@ namespace Danplanner.Client.Pages
                 BookingPrice = (double)TotalPrice.Value,
                 CheckInDate = checkIn.Value,
                 CheckOutDate = checkOut.Value,
-                UserId = 1, // Replace with actual user
+                UserId = 2, // Replace with actual user
                 AccommodationId = SelectedAccommodation.AccommodationId
             };
 
