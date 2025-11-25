@@ -20,3 +20,18 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.btn-back {
+    background: #ffffff !important; /* Helt hvid */
+    border: 1px solid #000000 !important; /* Tynd sort kant */
+    color: #000000 !important;
+    padding: 6px 14px !important; /* Matcher højden i boksen */
+    font-size: 1rem !important; /* Samme størrelse som datoboks */
+    line-height: 1.2 !important;
+    border-radius: 6px !important; /* Samme radius som datoboks */
+    box-shadow: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: auto !important;
+}

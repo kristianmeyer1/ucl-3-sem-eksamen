@@ -4,7 +4,7 @@
     ViewData["Title"] = "Confirmation";
 }
 
-<div class="container">
+<div class="confirm-grid">
 
     <div class="form-box">
         <h5>Dine oplysninger</h5>
@@ -103,7 +103,7 @@
 
 
 <style>
-    .container {
+    .confirm-grid {
         display: grid;
         grid-template-columns: 1fr 320px;
         grid-template-areas:
@@ -111,6 +111,9 @@
             "accom aside";
         gap: 24px;
         align-items: start;
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 12px;
     }
 
     /* Tildel grid-områder */
@@ -131,12 +134,12 @@
 
 .sticky-wrapper {
     position: relative;
-    max-height: calc(100vh - 20px); /* 20px top-margin */
+    max-height: calc(100vh - 20px);
 }
 
 .contact-box {
     position: sticky;
-    top: 0; /* starter i toppen af wrapper */
+    top: 0;
     border: 1px solid #333;
     background: #f7f7f7;
     padding: 12px;
@@ -228,7 +231,7 @@
     .small-btn {
         padding: 2px 8px;
         font-size: 0.8rem;
-        height: 28px; /* lavere knap */
+        height: 28px;
     }
 
 
