@@ -6,6 +6,7 @@ using Danplanner.Application.Models.ModelsDto;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Danplanner.Application.Interfaces.AdminInterfaces;
 
 namespace Danplanner.Client.Controllers
 {
@@ -14,10 +15,12 @@ namespace Danplanner.Client.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IAdminGetById _adminService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IAdminGetById adminService)
         {
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+            _adminService = adminService;
         }
 
         // --------------------------
@@ -30,6 +33,22 @@ namespace Danplanner.Client.Controllers
             if (admin == null)
                 return BadRequest("Admin already exists.");
             return Ok(admin);
+        }
+
+        [HttpPost("admin/check-id")]
+        public async Task<IActionResult> CheckAdminId([FromBody] AdminIdDto request)
+        {
+            var admin = await _adminService.GetAdminByIdAsync(request.AdminId);
+
+            if (admin == null)
+                return NotFound("Admin ID does not exist.");
+
+            return Ok();
+        }
+
+        public class AdminIdDto
+        {
+            public int AdminId { get; set; }
         }
 
         // --------------------------

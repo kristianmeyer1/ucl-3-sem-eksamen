@@ -38,12 +38,36 @@
                 }
             });
         } else {
-            // ADMIN → SHOW PASSWORD FIELD
-            $("#adminPasswordGroup").show();
-            $("#userOtpGroup").hide();
-            $("#loginPassword").val("").focus();
-            loginModal.show();
+            // ADMIN → VALIDATE ADMIN ID BEFORE SHOWING MODAL
+            const adminId = parseInt(identifier, 10);
+
+            if (isNaN(adminId)) {
+                alert("Ugyldigt Admin ID.");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/api/auth/admin/check-id",
+                contentType: "application/json",
+                data: JSON.stringify({ AdminId: adminId }),
+                success: function () {
+                    // VALID ADMIN → show admin password input
+                    $("#adminPasswordGroup").show();
+                    $("#userOtpGroup").hide();
+                    $("#loginPassword").val("").focus();
+                    loginModal.show();
+                },
+                error: function (xhr) {
+                    if (xhr.status === 404) {
+                        alert("Indtast venligst en gyldig email.");
+                    } else {
+                        alert("Kunne ikke verificere Admin ID. Prøv igen.");
+                    }
+                }
+            });
         }
+
     });
 
     // -------------------------------
@@ -86,7 +110,7 @@
                 }
             });
         }
-        // ADMIN LOGIN → ID & PASSWORD
+            // ADMIN LOGIN → ID & PASSWORD
         else {
             const adminId = parseInt(identifier, 10);
             if (isNaN(adminId) || !password) {
