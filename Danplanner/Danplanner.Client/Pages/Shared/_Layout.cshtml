@@ -12,6 +12,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 </head>
 <body>
+    @{
+        var page = ViewContext.RouteData.Values["page"]?.ToString();
+        bool hideBackButton =
+        string.Equals(page, "/Index", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(page, "/ThankYou", StringComparison.OrdinalIgnoreCase);
+
+        ViewBag.HideBackButton = hideBackButton;
+    }
     <!-- Header / Navbar -->
     <header>
         <header>
