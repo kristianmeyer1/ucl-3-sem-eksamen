@@ -2,16 +2,14 @@
     const loginModalEl = document.getElementById('loginModal');
     const loginModal = new bootstrap.Modal(loginModalEl);
 
-    // -------------------------------
     // OPEN MODAL ON LOGIN BUTTON CLICK
-    // -------------------------------
     $("#loginBtn").on("click", function (e) {
         e.preventDefault();
 
         const identifier = $("#loginIdentifier").val().trim();
 
         if (!identifier) {
-            alert("Enter Email or Admin ID.");
+            alert("Enter Email");
             return;
         }
 
@@ -38,11 +36,11 @@
                 }
             });
         } else {
-            // ADMIN → VALIDATE ADMIN ID BEFORE SHOWING MODAL
+            //VALIDATE ADMIN ID BEFORE SHOWING MODAL
             const adminId = parseInt(identifier, 10);
 
             if (isNaN(adminId)) {
-                alert("Ugyldigt Admin ID.");
+                alert("Ugyldigt ID.");
                 return;
             }
 
@@ -70,9 +68,7 @@
 
     });
 
-    // -------------------------------
     // LOGIN BUTTON I MODAL (EVENT DELEGATION)
-    // -------------------------------
     $(document).on("click", "#loginSubmitBtn", function (e) {
         e.preventDefault();
 
@@ -138,9 +134,7 @@
         }
     });
 
-    // -------------------------------
     // LOGOUT
-    // -------------------------------
     $(document).on("click", "#logoutBtn", function () {
         $.ajax({
             type: "POST",
