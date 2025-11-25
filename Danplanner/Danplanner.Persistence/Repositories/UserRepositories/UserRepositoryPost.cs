@@ -23,5 +23,6 @@ namespace Danplanner.Persistence.Repositories.UserRepositories
             await _dbManager.User.AddAsync(user);
             await _dbManager.SaveChangesAsync();
         }
+
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using Danplanner.Application.Interfaces.AdminInterfaces;
 using Danplanner.Application.Interfaces.AuthInterfaces;
+using Danplanner.Application.Interfaces.AuthInterfaces.ITokenService;
+using Danplanner.Application.Interfaces.AuthInterfaces.IUserLogin;
+using Danplanner.Application.Interfaces.AuthInterfaces.IUserRegister;
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models.LoginDto;
 using Danplanner.Application.Models.ModelsDto;
@@ -9,12 +12,16 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Danplanner.Application.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService : IAdminRegister, IUserRegister, ILogin, IUserRequestLoginCode, IUserVerifyLoginCode, IUserRequestRegisterCode, IUserVerifyRegisterCode
     {
         private readonly IAdminGetById _adminGetById;
         private readonly IAdminAdd _adminAdd;
-        private readonly ITokenService _tokenService;
+
+        private readonly IUserCreateToken _userToken;
+        private readonly IAdminCreateToken _adminToken;
+
         private readonly PasswordHasher<Admin> _passwordHasher;
+
         private readonly IUserGetByEmail _userRepository;
         private readonly IEmailService _emailService;
         private readonly IUserAdd _addUserByEmail;
@@ -26,14 +33,16 @@ namespace Danplanner.Application.Services
             IAdminGetById adminGetById,
             IAdminAdd adminAdd,
             IUserGetByEmail userRepository,
-            ITokenService tokenService,
             IEmailService emailService,
-            IUserAdd addUserByEmail)
+            IUserAdd addUserByEmail,
+            IUserCreateToken userToken,
+            IAdminCreateToken adminToken)
         {
             _adminGetById = adminGetById;
             _adminAdd = adminAdd;
             _userRepository = userRepository;
-            _tokenService = tokenService;
+            _userToken = userToken;
+            _adminToken = adminToken;
             _emailService = emailService;
             _passwordHasher = new PasswordHasher<Admin>();
             _addUserByEmail = addUserByEmail;
@@ -42,13 +51,13 @@ namespace Danplanner.Application.Services
         // --------------------------
         // Token creation
         // --------------------------
-        private string CreateTokenForAdmin(Admin admin) => _tokenService.CreateTokenForAdmin(admin);
-        private string CreateTokenForUser(UserDto user) => _tokenService.CreateTokenForUser(user);
+        private string CreateTokenForAdmin(Admin admin) => _adminToken.CreateTokenForAdmin(admin);
+        private string CreateTokenForUser(UserDto user) => _userToken.CreateTokenForUser(user);
 
         // --------------------------
         // Admin Registration
         // --------------------------
-        public async Task<AdminDto> RegisterAsync(AdminDto request)
+        public async Task<AdminDto> RegisterAdminAsync(AdminDto request)
         {
             var existingAdmin = await _adminGetById.GetAdminByIdAsync(request.AdminId);
             if (existingAdmin != null)
@@ -72,7 +81,7 @@ namespace Danplanner.Application.Services
         // --------------------------
         // User Registration
         // -------------------------- 
-        public async Task<UserDto?> RegisterUserAsync(UserDto request)
+        public async Task<UserDto> RegisterUserAsync(UserDto request)
         {
             var existingUser = await _userRepository.GetUserByEmailAsync(request.UserEmail);
             if (existingUser != null)

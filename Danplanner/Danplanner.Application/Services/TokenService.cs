@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Danplanner.Application.Interfaces.AuthInterfaces;
+using Danplanner.Application.Interfaces.AuthInterfaces.ITokenService;
 using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Domain.Entities;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Danplanner.Application.Services
 {
-    public class TokenService : ITokenService
+    public class TokenService : IAdminCreateToken, IUserCreateToken
     {
         private readonly IConfiguration _configuration;
 

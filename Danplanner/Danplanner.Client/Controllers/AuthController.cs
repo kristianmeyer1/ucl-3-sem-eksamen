@@ -1,12 +1,14 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Danplanner.Application.Interfaces.AuthInterfaces;
 using Danplanner.Application.Models.LoginDto;
 using Danplanner.Application.Models.ModelsDto;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Danplanner.Application.Interfaces.AdminInterfaces;
+using Danplanner.Application.Interfaces.AuthInterfaces.IUserRegister;
+using Danplanner.Application.Interfaces.AuthInterfaces.IUserLogin;
+using Danplanner.Application.Interfaces.AuthInterfaces;
 
 namespace Danplanner.Client.Controllers
 {
@@ -14,22 +16,41 @@ namespace Danplanner.Client.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
-        private readonly IAdminGetById _adminService;
+        private readonly IAdminGetById _adminGetById;
+        private readonly IAdminRegister _adminRegisterService;
+        private readonly ILogin _loginService;
+        private readonly IUserRegister _userRegisterService;
+        private readonly IUserRequestLoginCode _userRequestLoginCode;
+        private readonly IUserVerifyLoginCode _userVerifyLoginCode;
+        private readonly IUserRequestRegisterCode _userRequestRegisterCode;
+        private readonly IUserVerifyRegisterCode _userVerifyRegisterCode;
 
-        public AuthController(IAuthService authService, IAdminGetById adminService)
+        public AuthController( 
+            IAdminGetById adminIdService, 
+            IAdminRegister adminRegisterService, 
+            ILogin loginService, 
+            IUserRegister userRegisterService, 
+            IUserRequestLoginCode userRequestLoginCode, 
+            IUserVerifyLoginCode userVerifyLoginCode,
+            IUserRequestRegisterCode userRequestRegisterCode,
+            IUserVerifyRegisterCode userVerifyRegisterCode
+            )
         {
-            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
-            _adminService = adminService;
+            _adminGetById = adminIdService;
+            _adminRegisterService = adminRegisterService;
+            _loginService = loginService;
+            _userRegisterService = userRegisterService;
+            _userRequestLoginCode = userRequestLoginCode;
+            _userVerifyLoginCode = userVerifyLoginCode;
+            _userRequestRegisterCode = userRequestRegisterCode;
+            _userVerifyRegisterCode = userVerifyRegisterCode;
         }
 
-        // --------------------------
         // Admin registration
-        // --------------------------
         [HttpPost("register")]
-        public async Task<ActionResult<AdminDto>> Register([FromBody] AdminDto request)
+        public async Task<ActionResult<AdminDto>> RegisterAdmin([FromBody] AdminDto request)
         {
-            var admin = await _authService.RegisterAsync(request);
+            var admin = await _adminRegisterService.RegisterAdminAsync(request);
             if (admin == null)
                 return BadRequest("Admin already exists.");
             return Ok(admin);
@@ -38,7 +59,7 @@ namespace Danplanner.Client.Controllers
         [HttpPost("admin/check-id")]
         public async Task<IActionResult> CheckAdminId([FromBody] AdminIdDto request)
         {
-            var admin = await _adminService.GetAdminByIdAsync(request.AdminId);
+            var admin = await _adminGetById.GetAdminByIdAsync(request.AdminId);
 
             if (admin == null)
                 return NotFound("Admin ID does not exist.");
@@ -51,13 +72,11 @@ namespace Danplanner.Client.Controllers
             public int AdminId { get; set; }
         }
 
-        // --------------------------
         // Admin or User login
-        // --------------------------
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
-            var token = await _authService.LoginAsync(request);
+            var token = await _loginService.LoginAsync(request);
 
             if (token == null)
                 return BadRequest("Invalid credentials or code.");
@@ -77,13 +96,11 @@ namespace Danplanner.Client.Controllers
             return Ok(token); // Return JWT for API usage
         }
 
-        // --------------------------
         // User login OTP
-        // --------------------------
         [HttpPost("user/request-code")]
         public async Task<IActionResult> RequestUserCode([FromBody] RequestCodeDto request)
         {
-            var success = await _authService.RequestUserLoginCodeAsync(request.UserEmail);
+            var success = await _userRequestLoginCode.RequestUserLoginCodeAsync(request.UserEmail);
             if (!success)
                 return NotFound("User not found.");
             return Ok("Login code sent to your email.");
@@ -92,7 +109,7 @@ namespace Danplanner.Client.Controllers
         [HttpPost("user/verify-code")]
         public async Task<ActionResult<string>> VerifyUserCode([FromBody] VerifyCodeDto request)
         {
-            var token = await _authService.VerifyUserLoginCodeAsync(request.UserEmail, request.Code);
+            var token = await _userVerifyLoginCode.VerifyUserLoginCodeAsync(request.UserEmail, request.Code);
             if (token == null)
                 return BadRequest("Invalid code.");
 
@@ -106,13 +123,11 @@ namespace Danplanner.Client.Controllers
             return Ok(token);
         }
 
-        // --------------------------
         // User registration OTP
-        // --------------------------
         [HttpPost("user/request-register-code")]
         public async Task<IActionResult> RequestUserRegisterCode([FromBody] RequestCodeDto request)
         {
-            var success = await _authService.RequestUserRegisterCodeAsync(request.UserEmail);
+            var success = await _userRequestRegisterCode.RequestUserRegisterCodeAsync(request.UserEmail);
             if (!success)
                 return BadRequest("Kunne ikke sende OTP.");
             return Ok("OTP sendt til din email.");
@@ -121,7 +136,7 @@ namespace Danplanner.Client.Controllers
         [HttpPost("user/verify-register-code")]
         public async Task<IActionResult> VerifyUserRegisterCode([FromBody] VerifyCodeDto request)
         {
-            var isValid = _authService.VerifyUserRegisterCode(request.UserEmail, request.Code);
+            var isValid = _userVerifyRegisterCode.VerifyUserRegisterCode(request.UserEmail, request.Code);
             if (!isValid)
                 return BadRequest("Forkert eller udløbet OTP.");
 
@@ -131,15 +146,13 @@ namespace Danplanner.Client.Controllers
         [HttpPost("user/register-user")]
         public async Task<IActionResult> RegisterUser([FromBody] UserDto request)
         {
-            var user = await _authService.RegisterUserAsync(request);
+            var user = await _userRegisterService.RegisterUserAsync(request);
             if (user == null)
                 return BadRequest("Email er allerede i brug.");
             return Ok(user);
         }
 
-        // --------------------------
         // Logout
-        // --------------------------
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
@@ -148,9 +161,7 @@ namespace Danplanner.Client.Controllers
             return RedirectToPage("/Index");
         }
 
-        // --------------------------
         // Authenticated only
-        // --------------------------
         [Authorize]
         [HttpGet("authenticated-only")]
         public IActionResult AuthenticatedOnly()

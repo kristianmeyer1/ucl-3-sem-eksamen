@@ -13,6 +13,9 @@ using Danplanner.Persistence.Repositories.AccommodationRepositories;
 using Danplanner.Persistence.Repositories.AddonRepositories;
 using Danplanner.Persistence.Repositories.AdminRepositories;
 using Microsoft.EntityFrameworkCore;
+using Danplanner.Application.Interfaces.AuthInterfaces.ITokenService;
+using Danplanner.Application.Interfaces.AuthInterfaces.IUserRegister;
+using Danplanner.Application.Interfaces.AuthInterfaces.IUserLogin;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +47,7 @@ builder.Services.AddScoped<IAddonGetAll, AddonRepositoryGet>();
 builder.Services.AddScoped<IAdminAdd, AdminRepositoryPost>();
 builder.Services.AddScoped<IAdminGetById, AdminRepositoryGet>();
 builder.Services.AddScoped<IAdminGetAll, AdminRepositoryGet>();
+builder.Services.AddScoped<IAdminRegister, AuthService>();
 
 // User builders
 builder.Services.AddHttpClient<UserService>();
@@ -53,11 +57,18 @@ builder.Services.AddScoped<IUserGetAll, UserRepositoryGet>();
 builder.Services.AddScoped<IUserGetByEmail, UserRepositoryGet>();
 builder.Services.AddScoped<IUserGetById, UserRepositoryGet>();
 builder.Services.AddScoped<IUserUpdate, UserRepositoryPut>();
+builder.Services.AddScoped<IUserRegister, AuthService>();
 
 // Authentication builders
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAdminCreateToken, TokenService>();
+builder.Services.AddScoped<IUserCreateToken, TokenService>();
+builder.Services.AddScoped<ILogin, AuthService>();
+builder.Services.AddScoped<IUserRequestLoginCode, AuthService>();
+builder.Services.AddScoped<IUserVerifyLoginCode, AuthService>();
+builder.Services.AddScoped<IUserRequestRegisterCode, AuthService>();
+builder.Services.AddScoped<IUserVerifyRegisterCode, AuthService>();
+
 
 // Accommodation builders
 builder.Services.AddScoped<IAccommodationTransfer, AccommodationService>();
