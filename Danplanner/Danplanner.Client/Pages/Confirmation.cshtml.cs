@@ -1,6 +1,7 @@
 using System.Globalization;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
+using Danplanner.Application.Interfaces.BookingInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Application.Services;
@@ -15,16 +16,19 @@ namespace Danplanner.Client.Pages
         private readonly IAccommodationTransfer _accommodationService;
         private readonly IAccommodationUpdate _availabilityService;
         private readonly IWebHostEnvironment _env;
+        private readonly IBookingAdd _bookingAdd;
         public ContactInformation ContactInformation { get; set; }
 
 
-        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env)
+        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env, IBookingAdd bookingAdd)
         {
             _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
             _availabilityService = availabilityService;
             _env = env;
+            _bookingAdd = bookingAdd;
         }
+
         [BindProperty(SupportsGet = true)]
         public int? UnitId { get; set; }
 
@@ -39,6 +43,10 @@ namespace Danplanner.Client.Pages
 
         [BindProperty(SupportsGet = true)]
         public string? End { get; set; }
+
+        [BindProperty]
+        public int BookingResidents { get; set; } = 1;
+
 
         // ---- til view ----
         public AccommodationDto? SelectedAccommodation { get; private set; }
@@ -97,13 +105,62 @@ namespace Danplanner.Client.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Marker den valgte accommodation som optaget
-            if (UnitId.HasValue)
+            // Vi skipper fuldstændig over alt med betaling
+
+            DateTime? checkIn = ParseDate(Start, out _);
+            DateTime? checkOut = ParseDate(End, out _);
+
+            if (!checkIn.HasValue || !checkOut.HasValue || checkIn >= checkOut)
+            {
+                ModelState.AddModelError("", "Der skete en fejl med datoerne.");
+                return Page();
+            }
+
+            var accommodations = await _accommodationService.GetAccommodationsAsync(checkIn, checkOut, null);
+            SelectedAccommodation = accommodations.FirstOrDefault(a => a.AccommodationId == AccommodationId);
+            
+            if (!UnitId.HasValue || SelectedAccommodation == null)
+            {
+                ModelState.AddModelError("", "Der skete en fejl med .");
+                return Page();
+            }
+
+            Days = Math.Max(0, (checkOut.Value.Date - checkIn.Value.Date).Days);
+            if (SelectedAccommodation.PricePerNight is decimal price)
+            {
+                TotalPrice = price * Days;
+                TotalPriceDisplay = $"{TotalPrice.Value:N0} kr.";
+            }
+            else
+            {
+                ModelState.AddModelError("", "Der skete en fejl med prisen");
+                return Page();
+            }
+
+            var bookingDto = new BookingDto()
+            {
+                BookingResidents = BookingResidents,
+                BookingPrice = (double)TotalPrice.Value,
+                CheckInDate = checkIn.Value,
+                CheckOutDate = checkOut.Value,
+                UserId = 1, // Replace with actual user
+                AccommodationId = SelectedAccommodation.AccommodationId
+            };
+
+            try
             {
                 await _availabilityService.MarkUnavailableAsync(UnitId.Value);
+                await _bookingAdd.AddBookingAsync(bookingDto);
             }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Der skete en fejl.");
+                return Page();
+            }
+
             return RedirectToPage("/ThankYou");
         }
+
 
         private static DateTime? ParseDate(string? raw, out string display)
         {

@@ -48,7 +48,6 @@ namespace Danplanner.Client.Pages.Admin
             }
 
             await _userUpdate.UpdateUserAsync(SelectedUser);
-
             return RedirectToPage("/Admin/Users");
         }
 

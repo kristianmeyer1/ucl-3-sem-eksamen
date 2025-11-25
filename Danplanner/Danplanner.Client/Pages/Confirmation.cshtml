@@ -38,21 +38,17 @@
 
         <div class="guest-item">
             <span class="guest-label">Voksne</span>
-            <div class="guest-controls">
-                <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('adult', -1)">-</button>
-                <span id="adult-count" class="guest-count">0</span>
-                <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('adult', 1)">+</button>
-            </div>
+            <input asp-for="BookingResidents" type="number" min="1" value="1" class="form-control" />
         </div>
 
-        <div class="guest-item">
+        @* <div class="guest-item">
             <span class="guest-label">Børn</span>
             <div class="guest-controls">
                 <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('child', -1)">-</button>
                 <span id="child-count" class="guest-count">0</span>
                 <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('child', 1)">+</button>
             </div>
-        </div>
+        </div> *@
 
 
         <div class="addons">
@@ -81,8 +77,12 @@
             <div>@Model.TotalPriceDisplay</div>
         </div>
 
-        <form method="post" asp-page-handler="Pay">
+        <form method="post">
             <input type="hidden" asp-for="UnitId" />
+            <input type="hidden" asp-for="Start" />
+            <input type="hidden" asp-for="End" />
+            <input type="hidden" asp-for="AccommodationId" />
+
             <button type="submit" class="btn btn-primary pay-btn">Betal</button>
         </form>
 
@@ -92,9 +92,10 @@
         <div class="sticky-wrapper">
             <div class="contact-box">
                 <h6><span class="badge bg-dark">i</span> Kontakt Information</h6>
-                <p><strong>Tlf:</strong> @Model.ContactInformation.ContactPhoneNumber</p>
-                <p><strong>Email:</strong> @Model.ContactInformation.ContactEmail</p>
-                <p><strong>Adresse:</strong> @Model.ContactInformation.ContactAdress</p>
+                <p><strong>Tlf:</strong> @Model.ContactInformation?.ContactPhoneNumber</p>
+                <p><strong>Email:</strong> @Model.ContactInformation?.ContactEmail</p>
+                <p><strong>Adresse:</strong> @Model.ContactInformation?.ContactAdress</p>
+
             </div>
         </div>
     </aside>
