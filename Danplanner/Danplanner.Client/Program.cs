@@ -1,6 +1,7 @@
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Interfaces.AdminInterfaces;
+using Danplanner.Application.Interfaces.BookingInterfaces;
 using Danplanner.Application.Interfaces.AuthInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Services;
@@ -12,6 +13,7 @@ using Danplanner.Persistence.Repositories.UserRepositories;
 using Danplanner.Persistence.Repositories.AccommodationRepositories;
 using Danplanner.Persistence.Repositories.AddonRepositories;
 using Danplanner.Persistence.Repositories.AdminRepositories;
+using Danplanner.Persistence.Repositories.BookingRepositories;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -44,6 +46,9 @@ builder.Services.AddScoped<IAddonGetAll, AddonRepositoryGet>();
 builder.Services.AddScoped<IAdminAdd, AdminRepositoryPost>();
 builder.Services.AddScoped<IAdminGetById, AdminRepositoryGet>();
 builder.Services.AddScoped<IAdminGetAll, AdminRepositoryGet>();
+
+// Booking builders
+builder.Services.AddScoped<IBookingAdd, BookingRepositoryPost>();
 
 // User builders
 builder.Services.AddHttpClient<UserService>();
