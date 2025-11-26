@@ -4,8 +4,6 @@ namespace Danplanner.Application.Interfaces.AccommodationInterfaces
 {
     public interface IAccommodationTransfer
     {
-        Task<IReadOnlyList<AccommodationDto>> GetAccommodationsAsync(
-            DateTime? start,
-            DateTime? end);
+        Task<IReadOnlyList<AccommodationDto>> GetAccommodationsAsync(DateTime? start, DateTime? end);
     }
 }

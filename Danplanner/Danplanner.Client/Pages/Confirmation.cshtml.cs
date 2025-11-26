@@ -17,18 +17,16 @@ namespace Danplanner.Client.Pages
     {
         private readonly IAddonGetAll _addonGetAll;
         private readonly IAccommodationTransfer _accommodationService;
-        private readonly IAccommodationUpdate _availabilityService;
         private readonly IWebHostEnvironment _env;
         private readonly IBookingAdd _bookingAdd;
         private readonly IUserAdd _userAdd;
         private readonly IUserGetByEmail _userGetByEmail;
         public ContactInformation ContactInformation { get; set; }
 
-        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env, IBookingAdd bookingAdd, IUserAdd userAdd, IUserGetByEmail userGetByEmail)
+        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService, IWebHostEnvironment env, IBookingAdd bookingAdd, IUserAdd userAdd, IUserGetByEmail userGetByEmail)
         {
             _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
-            _availabilityService = availabilityService;
             _env = env;
             _bookingAdd = bookingAdd;
             _userAdd = userAdd;

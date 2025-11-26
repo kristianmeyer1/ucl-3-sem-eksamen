@@ -79,7 +79,6 @@ builder.Services.AddScoped<IUserVerifyRegisterCode, AuthService>();
 builder.Services.AddScoped<IAccommodationTransfer, AccommodationService>();
 builder.Services.AddScoped<IAccommodationGetAll, AccommodationRepositoryGet>();
 builder.Services.AddScoped<IAccommodationGetById, AccommodationRepositoryGet>();
-builder.Services.AddScoped<IAccommodationUpdate, AccommodationRepositoryPut>();
 
 // HttpClient 
 builder.Services.AddHttpClient();
