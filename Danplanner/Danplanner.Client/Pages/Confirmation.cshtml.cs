@@ -117,7 +117,7 @@ namespace Danplanner.Client.Pages
             }
 
             // Hent alle accommodations og find den valgte
-            var list = await _accommodationService.GetAccommodationsAsync(startDt, endDt, null);
+            var list = await _accommodationService.GetAccommodationsAsync(startDt, endDt);
 
             if (!string.IsNullOrWhiteSpace(Category))
             {
@@ -157,7 +157,7 @@ namespace Danplanner.Client.Pages
                 return Page();
             }
 
-            var accommodations = await _accommodationService.GetAccommodationsAsync(checkIn, checkOut, null);
+            var accommodations = await _accommodationService.GetAccommodationsAsync(checkIn, checkOut);
 
             if (!string.IsNullOrWhiteSpace(Category))
             {
@@ -256,14 +256,14 @@ namespace Danplanner.Client.Pages
                 Days = Math.Max(0, (checkOut.Value.Date - checkIn.Value.Date).Days);
 
             // Vi genindlæser den valgte hytte/plads
-            var accommodations = await _accommodationService.GetAccommodationsAsync(checkIn, checkOut, null);
-            SelectedAccommodation = accommodations.FirstOrDefault(a => a.AccommodationId == AccommodationId);
+            var list = await _accommodationService.GetAccommodationsAsync(checkIn, checkOut);
+            SelectedAccommodation = list.FirstOrDefault(a => a.AccommodationId == AccommodationId);
 
             // Standard pris for valgt hytte/plads
             if (SelectedAccommodation?.PricePerNight is decimal price)
                 TotalPrice = price * Days;
             else
-                TotalPrice = 10;
+                TotalPrice = 0;
 
             // Addon price
             AddonsTotal = Addons

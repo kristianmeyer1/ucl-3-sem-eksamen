@@ -2,4 +2,4 @@
 # imageUrl skal være web-sti (fx /images/hytte-a.jpg)
 Hytte|Mindre hytte, perfekt til par eller enkeltpersoner. God udsigt.|899|/images/hytte-a.png
 Luksushytte|Hyggelig hytte med plads til 4 personer. Inklusiv køkkenniche og terrasse.|1350|/images/hytte-b.png
-Plads|Stor telt-/vognplads tæt på servicebygninger og legplads.|350|/images/plads.png
+1|Plads|Stor telt-/vognplads tæt på servicebygninger og legplads.|350|/images/plads.png

@@ -2,6 +2,6 @@
 {
     public interface IAccommodationUpdate
     {
-        Task MarkUnavailableAsync(int accommodationId, CancellationToken cancellationToken = default);
+        Task MarkUnavailableAsync(int accommodationId);
     }
 }

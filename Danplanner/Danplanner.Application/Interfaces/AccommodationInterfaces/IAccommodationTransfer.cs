@@ -6,8 +6,6 @@ namespace Danplanner.Application.Interfaces.AccommodationInterfaces
     {
         Task<IReadOnlyList<AccommodationDto>> GetAccommodationsAsync(
             DateTime? start,
-            DateTime? end,
-            int? daysOverride,
-            CancellationToken cancellationToken = default);
+            DateTime? end);
     }
 }

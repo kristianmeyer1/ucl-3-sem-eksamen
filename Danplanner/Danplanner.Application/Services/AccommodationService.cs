@@ -22,11 +22,9 @@ namespace Danplanner.Application.Services
         }
         public async Task<IReadOnlyList<AccommodationDto>> GetAccommodationsAsync(
             DateTime? start,
-            DateTime? end,
-            int? daysOverride,
-            CancellationToken cancellationToken = default)
+            DateTime? end)
         {
-            var entities = await _repository.GetAllAsync(cancellationToken);
+            var entities = await _repository.GetAllAsync();
 
             return entities.Select(a => new AccommodationDto
             {

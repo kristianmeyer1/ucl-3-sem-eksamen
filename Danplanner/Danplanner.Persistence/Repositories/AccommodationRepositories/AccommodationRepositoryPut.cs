@@ -13,16 +13,16 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
             _db = db;
         }
 
-        public async Task MarkUnavailableAsync(int accommodationId, CancellationToken ct = default)
+        public async Task MarkUnavailableAsync(int accommodationId)
         {
             var entity = await _db.Accommodation
-                .FirstOrDefaultAsync(a => a.AccommodationId == accommodationId, ct);
+                .FirstOrDefaultAsync(a => a.AccommodationId == accommodationId);
 
             if (entity == null)
                 return;
 
             entity.Availability = 0;
-            await _db.SaveChangesAsync(ct);
+            await _db.SaveChangesAsync();
         }
     }
 }

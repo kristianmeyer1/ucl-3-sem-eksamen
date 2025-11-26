@@ -10,7 +10,6 @@ namespace Danplanner.Application.Interfaces.AccommodationInterfaces
     {
         Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(
             DateTime? start,
-            DateTime? end,
-            CancellationToken cancellationToken = default);
+            DateTime? end);
     }
 }
