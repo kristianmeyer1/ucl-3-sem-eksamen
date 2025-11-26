@@ -209,7 +209,7 @@ namespace Danplanner.Client.Pages
                 CheckInDate = checkIn.Value,
                 CheckOutDate = checkOut.Value,
                 UserId = userId, 
-                AccommodationId = SelectedAccommodation.AccommodationId
+                AccommodationId = AccommodationId.Value
             };
 
             try
@@ -263,7 +263,7 @@ namespace Danplanner.Client.Pages
             if (SelectedAccommodation?.PricePerNight is decimal price)
                 TotalPrice = price * Days;
             else
-                TotalPrice = 0;
+                TotalPrice = 10;
 
             // Addon price
             AddonsTotal = Addons

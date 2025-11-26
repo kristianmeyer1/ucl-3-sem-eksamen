@@ -166,7 +166,7 @@
                             const category = point.Category || "";         // hytte/plads/luksushytte
                             const placeKey = point.Key;   // fx "Plads 5"
 
-                            const url = `/Confirmation?Start=${encodeURIComponent(startQuery)}&End=${encodeURIComponent(endQuery)}&unitId=${encodeURIComponent(accommodationId)}&category=${encodeURIComponent(category)}&placeKey=${encodeURIComponent(placeKey)}`;
+                            const url = `/Confirmation?Start=${encodeURIComponent(startQuery)}&End=${encodeURIComponent(endQuery)}&accommodationId=${encodeURIComponent(accommodationId)}&category=${encodeURIComponent(category)}&placeKey=${encodeURIComponent(placeKey)}`;
                             window.location.href = url;
                         });
                     }

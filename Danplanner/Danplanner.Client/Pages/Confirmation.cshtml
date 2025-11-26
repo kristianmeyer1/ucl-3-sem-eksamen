@@ -3,55 +3,59 @@
 @{
     ViewData["Title"] = "Confirmation";
 }
-        <form method="post">
 
 <div class="confirm-grid">
 
-    <div class="form-box">
-        <h5>Dine oplysninger</h5>
+    <!-- VENSTRE KOLONNE = selve formularen -->
+    <form method="post" class="w-100">
 
-        <div class="form-fields">
-            <input class="form-control" asp-for="NewUserName" placeholder="Navn" />
-            <span asp-validation-for="NewUserName" class="text-danger"></span>
-            <input class="form-control" asp-for="NewUserEmail" placeholder="Email" />
-            <span asp-validation-for="NewUserEmail" class="text-danger"></span>
-            <input class="form-control" asp-for="NewUserAdress" placeholder="Adresse" />
-            <span asp-validation-for="NewUserAdress" class="text-danger"></span>
-        </div>
-    </div>
+        <div class="form-box">
+            <h5>Dine oplysninger</h5>
 
-    <div class="accom-box">
+            <div class="form-fields">
+                <input class="form-control" asp-for="NewUserName" placeholder="Navn" />
+                <span asp-validation-for="NewUserName" class="text-danger"></span>
 
-        <div class="accom-header">
-            <div class="accom-info">
-                <h4>@Model.SelectedAccommodation?.AccommodationName</h4>
-                <p class="accom-desc">@Model.SelectedAccommodation?.AccommodationDescription</p>
-            </div>
+                <input class="form-control" asp-for="NewUserEmail" placeholder="Email" />
+                <span asp-validation-for="NewUserEmail" class="text-danger"></span>
 
-            <div class="date-box">
-                <div><strong>Ankomst:</strong> @Model.StartDisplay</div>
-                <div><strong>Afrejse:</strong> @Model.EndDisplay</div>
-                <div><strong>Dage:</strong> @Model.Days</div>
+                <input class="form-control" asp-for="NewUserAdress" placeholder="Adresse" />
+                <span asp-validation-for="NewUserAdress" class="text-danger"></span>
             </div>
         </div>
 
-        <div class="price-box-confirm">
-            <div><strong>Pris pr. nat:</strong></div>
-            <div>@Model.SelectedAccommodation?.PricePerNight</div>
-        </div>
+        <div class="accom-box">
 
+            <div class="accom-header">
+                <div class="accom-info">
+                    <h4>@Model.SelectedAccommodation?.AccommodationName</h4>
+                    <p class="accom-desc">@Model.SelectedAccommodation?.AccommodationDescription</p>
+                </div>
 
-        <div class="total-box">
-            <div>Total pris:</div>
-            <div>@Model.TotalPriceDisplay</div>
-        </div>
+                <div class="date-box">
+                    <div><strong>Ankomst:</strong> @Model.StartDisplay</div>
+                    <div><strong>Afrejse:</strong> @Model.EndDisplay</div>
+                    <div><strong>Dage:</strong> @Model.Days</div>
+                </div>
+            </div>
 
+            <div class="price-box-confirm">
+                <div><strong>Pris pr. nat:</strong></div>
+                <div>@Model.SelectedAccommodation?.PricePerNight</div>
+            </div>
+
+            <div class="total-box">
+                <div>Total pris:</div>
+                <div>@Model.TotalPriceDisplay</div>
+            </div>
 
             <div asp-validation-summary="All" class="text-danger"></div>
-            <input type="hidden" asp-for="UnitId" />
+
+            <!-- VIGTIGT: skjulte felter der skal med i POST -->
+            <input type="hidden" asp-for="AccommodationId" />
             <input type="hidden" asp-for="Start" />
             <input type="hidden" asp-for="End" />
-            <input type="hidden" asp-for="AccommodationId" />
+            <input type="hidden" asp-for="Category" />
 
             @foreach (var addon in Model.Addons)
             {
@@ -72,11 +76,11 @@
             </div>
 
             <button type="submit" class="btn btn-primary pay-btn">Betal</button>
-        </form>
+        </div>
 
+    </form>
 
-    </div>
-
+    <!-- HØJRE KOLONNE = kontaktinfo (uden for form) -->
     <aside class="accom-aside">
         <div class="sticky-wrapper">
             <div class="contact-box">
@@ -84,15 +88,16 @@
                 <p><strong>Tlf:</strong> @Model.ContactInformation?.ContactPhoneNumber</p>
                 <p><strong>Email:</strong> @Model.ContactInformation?.ContactEmail</p>
                 <p><strong>Adresse:</strong> @Model.ContactInformation?.ContactAdress</p>
-
             </div>
         </div>
     </aside>
 
 </div>
+
 @section Scripts {
-        <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
 }
+
 
 
 <style>
