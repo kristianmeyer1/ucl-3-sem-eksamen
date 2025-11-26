@@ -87,7 +87,7 @@ namespace Danplanner.Application.Services
             if (existingUser != null)
                 return null;
 
-            var user = new User
+            var user = new UserDto
             {
                 UserAdress = request.UserAdress,
                 UserMobile = request.UserMobile,
@@ -97,14 +97,7 @@ namespace Danplanner.Application.Services
 
             await _addUserByEmail.AddUserAsync(user);
 
-            return new UserDto
-            {
-                UserId = user.UserId,
-                UserAdress = user.UserAdress,
-                UserMobile = user.UserMobile,
-                UserEmail = user.UserEmail,
-                UserName = user.UserName
-            };
+            return user;
         }
 
 

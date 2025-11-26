@@ -1,4 +1,6 @@
-﻿using Danplanner.Application.Interfaces.UserInterfaces;
+﻿using Azure.Core;
+using Danplanner.Application.Interfaces.UserInterfaces;
+using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Domain.Entities;
 using Danplanner.Persistence.DbMangagerDir;
 using System;
@@ -18,8 +20,15 @@ namespace Danplanner.Persistence.Repositories.UserRepositories
             _dbManager = dbManager;
         }
 
-        public async Task AddUserAsync(User user)
+        public async Task AddUserAsync(UserDto userDto)
         {
+            var user = new User
+            {
+                UserAdress = userDto.UserAdress,
+                UserMobile = userDto.UserMobile,
+                UserEmail = userDto.UserEmail,
+                UserName = userDto.UserName,
+            };
             await _dbManager.User.AddAsync(user);
             await _dbManager.SaveChangesAsync();
         }

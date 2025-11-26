@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Confirmation";
 }
+        <form method="post">
 
 <div class="confirm-grid">
 
@@ -10,9 +11,12 @@
         <h5>Dine oplysninger</h5>
 
         <div class="form-fields">
-            <input class="form-control" placeholder="Navn" />
-            <input class="form-control" placeholder="Email" />
-            <input class="form-control" placeholder="Adresse" />
+            <input class="form-control" asp-for="NewUserName" placeholder="Navn" />
+            <span asp-validation-for="NewUserName" class="text-danger"></span>
+            <input class="form-control" asp-for="NewUserEmail" placeholder="Email" />
+            <span asp-validation-for="NewUserEmail" class="text-danger"></span>
+            <input class="form-control" asp-for="NewUserAdress" placeholder="Adresse" />
+            <span asp-validation-for="NewUserAdress" class="text-danger"></span>
         </div>
     </div>
 
@@ -36,55 +40,40 @@
             <div>@Model.SelectedAccommodation?.PricePerNight</div>
         </div>
 
-        <div class="guest-item">
-            <span class="guest-label">Voksne</span>
-            <input asp-for="BookingResidents" type="number" min="1" value="1" class="form-control" />
-        </div>
-
-        @* <div class="guest-item">
-            <span class="guest-label">Børn</span>
-            <div class="guest-controls">
-                <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('child', -1)">-</button>
-                <span id="child-count" class="guest-count">0</span>
-                <button type="button" class="btn btn-secondary small-btn" onclick="changeGuestCount('child', 1)">+</button>
-            </div>
-        </div> *@
-
-
-        <div class="addons">
-            <h5 class="section-title">Tilkøb</h5>
-
-            @foreach (var addon in Model.Addons)
-            {
-                <div class="addon-item">
-                    <div class="addon-text">
-                        <strong>@addon.AddonName</strong>
-                        <small>@addon.AddonDescription</small>
-                        <small>@addon.AddonPrice kr.</small>
-                    </div>
-
-                    <div class="addon-controls">
-                        <button type="button" class="btn btn-secondary small-btn">-</button>
-                        <span>0</span>
-                        <button type="button" class="btn btn-secondary small-btn">+</button>
-                    </div>
-                </div>
-            }
-        </div>
 
         <div class="total-box">
             <div>Total pris:</div>
             <div>@Model.TotalPriceDisplay</div>
         </div>
 
-        <form method="post">
+
+            <div asp-validation-summary="All" class="text-danger"></div>
             <input type="hidden" asp-for="UnitId" />
             <input type="hidden" asp-for="Start" />
             <input type="hidden" asp-for="End" />
             <input type="hidden" asp-for="AccommodationId" />
 
+            @foreach (var addon in Model.Addons)
+            {
+                <label>
+                    <input type="checkbox" name="SelectedAddonIds" value="@addon.AddonId" />
+                    @addon.AddonName (@addon.AddonPrice kr.)
+                </label>
+            }
+
+            <div class="guest-item">
+                <span class="guest-label">Voksne</span>
+                <input asp-for="BookingResidents" type="number" min="1" value="1" class="form-control" />
+            </div>
+
+            <div class="total-box">
+                <div>Total pris:</div>
+                <div>@Model.TotalPriceDisplay</div>
+            </div>
+
             <button type="submit" class="btn btn-primary pay-btn">Betal</button>
         </form>
+
 
     </div>
 
@@ -101,6 +90,9 @@
     </aside>
 
 </div>
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}
 
 
 <style>
