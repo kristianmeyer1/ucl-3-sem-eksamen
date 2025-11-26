@@ -49,6 +49,8 @@ namespace Danplanner.Client.Pages
 
         [BindProperty(SupportsGet = true)]
         public string? End { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string? Category { get; set; }
 
         [BindProperty]
         public int BookingResidents { get; set; } = 1;
@@ -116,10 +118,17 @@ namespace Danplanner.Client.Pages
 
             // Hent alle accommodations og find den valgte
             var list = await _accommodationService.GetAccommodationsAsync(startDt, endDt, null);
-            if (AccommodationId.HasValue)
+
+            if (!string.IsNullOrWhiteSpace(Category))
             {
                 SelectedAccommodation = list
-                    .FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
+                    .FirstOrDefault(a =>
+                        string.Equals(a.Category, Category, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                // fallback: første element, hvis der ingen kategori er
+                SelectedAccommodation = list.FirstOrDefault();
             }
 
             // Beregn total (uden tilkøb og personer i første omgang)
@@ -148,6 +157,23 @@ namespace Danplanner.Client.Pages
                 return Page();
             }
 
+            var accommodations = await _accommodationService.GetAccommodationsAsync(checkIn, checkOut, null);
+
+            if (!string.IsNullOrWhiteSpace(Category))
+            {
+                SelectedAccommodation = accommodations.FirstOrDefault(a =>
+                    string.Equals(a.Category, Category, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                SelectedAccommodation = accommodations.FirstOrDefault();
+            }
+
+            if (SelectedAccommodation == null || !AccommodationId.HasValue)
+            {
+                ModelState.AddModelError("", "Der skete en fejl med den valgte enhed.");
+                return Page();
+            }
             int userId;
 
             // Tjekker om en bruger er logget ind eller ej
@@ -188,7 +214,6 @@ namespace Danplanner.Client.Pages
 
             try
             {
-                await _availabilityService.MarkUnavailableAsync(UnitId.Value);
                 await _bookingAdd.AddBookingAsync(bookingDto);
             }
             catch (Exception ex)

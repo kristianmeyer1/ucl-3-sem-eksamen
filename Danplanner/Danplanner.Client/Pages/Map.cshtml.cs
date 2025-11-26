@@ -1,21 +1,20 @@
-using System.Text.Json;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Globalization;
+using System.Text.Json;
 
 namespace Danplanner.Client.Pages
 {
     public class MapModel : PageModel
     {
         private readonly IWebHostEnvironment _env;
-        private readonly IAccommodationGetAll _accommodationGetAll;
         private readonly IAccommodationGetById _accommodationGetById;
 
-        public MapModel(IWebHostEnvironment env, IAccommodationGetAll accommodationGetAll, IAccommodationGetById accommodationGetById)
+        public MapModel(IWebHostEnvironment env, IAccommodationGetById accommodationGetById)
         {
             _env = env;
-            _accommodationGetAll = accommodationGetAll;
             _accommodationGetById = accommodationGetById;
         }
 
@@ -31,6 +30,8 @@ namespace Danplanner.Client.Pages
 
         public async Task OnGetAsync()
         {
+            var startDt = ParseDate(Start);
+            var endDt = ParseDate(End);
             // 1) Indlæs map.json
             var dataDir = Path.Combine(_env.WebRootPath ?? string.Empty, "data");
             var mapFile = Path.Combine(dataDir, "map.json");
@@ -67,33 +68,22 @@ namespace Danplanner.Client.Pages
             var qCategory = Request.Query["category"].FirstOrDefault();
             if (!string.IsNullOrEmpty(qCategory))
                 SelectedCategory = qCategory;
-            var categoryFilter = SelectedCategory?.Trim();
+            // filtrér mapDef.Points på availability (+ kategori hvis du har det)
+            var categoryFilter = SelectedCategory?.Trim().ToLowerInvariant();
             var hasCategoryFilter = !string.IsNullOrEmpty(categoryFilter);
 
             // 4) Hent ledige AccommodationId'er fra databasen via EF
-            var availableIds = await _accommodationGetById.GetAvailableIdsAsync();
-            MapPoint[] filteredPoints;
+            var availableIds = await _accommodationGetById.GetAvailableIdsAsync(startDt, endDt);
+            var idSet = new HashSet<int>(availableIds);
 
-            if (availableIds == null || availableIds.Count == 0)
-            {
-                // sikkerhedsnet: vis alle pins, hvis der ikke kommer noget
-                filteredPoints = mapDef.Points
-                    .Where(p => !hasCategoryFilter ||
-                                string.Equals(p.Category?.Trim(), categoryFilter, StringComparison.OrdinalIgnoreCase))
-                    .ToArray();
-
-            }
-            else
-            {
-                var idSet = new HashSet<int>(availableIds);
-
-                // 5) Filtrér punkterne i map.json på AccommodationId
-                filteredPoints = mapDef.Points
-                    .Where(p => p.AccommodationId.HasValue &&
-                                idSet.Contains(p.AccommodationId.Value) &&
-                                (!hasCategoryFilter || string.Equals(p.Category?.Trim(), categoryFilter, StringComparison.OrdinalIgnoreCase)))
-                    .ToArray();
-            }
+            // 5) Filtrér punkterne på availability
+            var filteredPoints = mapDef.Points
+                .Where(p =>
+                    p.AccommodationId.HasValue &&
+                    idSet.Contains(p.AccommodationId.Value) &&
+                    (!hasCategoryFilter ||
+                     string.Equals(p.Category?.Trim(), categoryFilter, StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
 
             var filteredMap = new MapDefinition
             {
@@ -103,8 +93,16 @@ namespace Danplanner.Client.Pages
                 Points = filteredPoints
             };
 
-            // 6) Send til JavaScript
             FilteredMapJson = JsonSerializer.Serialize(filteredMap);
+        }
+
+        private static DateTime? ParseDate(string? raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw)) return null;
+            return DateTime.TryParseExact(raw, "yyyy-MM-dd",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt)
+                ? dt.Date
+                : (DateTime?)null;
         }
     }
 }
