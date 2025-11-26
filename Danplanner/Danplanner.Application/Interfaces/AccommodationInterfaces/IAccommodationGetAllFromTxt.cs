@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Danplanner.Domain.Entities;
 
 namespace Danplanner.Application.Interfaces.AccommodationInterfaces
 {
-    public interface IAccommodationGetById
+    public interface IAccommodationGetAllFromTxt
     {
-        Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(
-            DateTime? start,
-            DateTime? end);
+        Task<IReadOnlyList<Accommodation>> GetAccommodationsFromTxtAsync();
     }
 }

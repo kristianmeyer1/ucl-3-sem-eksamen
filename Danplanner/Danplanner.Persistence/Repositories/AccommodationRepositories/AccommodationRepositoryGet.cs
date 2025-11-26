@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Danplanner.Persistence.Repositories.AccommodationRepositories
 {
-    public class AccommodationRepositoryGet : IAccommodationGetAll, IAccommodationGetById
+    public class AccommodationRepositoryGet : IAccommodationGetAll, IAccommodationGetAllFromTxt, IAccommodationGetById
     {
         private readonly string _dataFilePath;
         private readonly DbManager _db;
@@ -21,12 +21,18 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
             _dataFilePath = Path.Combine(env.WebRootPath ?? string.Empty, "data", "accommodations.txt");
             _db = dbManger;
         }
-        public async Task<IReadOnlyList<Accommodation>> GetAllAsync(CancellationToken cancellationToken = default)
+
+        public async Task<List<Accommodation>> GetAllAccommodationsAsync()
+        {
+            return await _db.Accommodation.ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Accommodation>> GetAccommodationsFromTxtAsync()
         {
             if (!File.Exists(_dataFilePath))
                 throw new FileNotFoundException("Accommodation data file not found", _dataFilePath);
 
-            var lines = await File.ReadAllLinesAsync(_dataFilePath, cancellationToken);
+            var lines = await File.ReadAllLinesAsync(_dataFilePath);
             var result = new List<Accommodation>();
 
             foreach (var raw in lines)
@@ -61,7 +67,7 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
             return result;
         }
 
-        public async Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(DateTime? start,DateTime? end,CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(DateTime? start,DateTime? end)
         {
             // Start med alle accommodations
             var query = _db.Accommodation.AsQueryable();
@@ -71,21 +77,21 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
             {
                 return await query
                     .Select(a => a.AccommodationId)
-                    .ToListAsync(cancellationToken);
+                    .ToListAsync();
             }
 
             var s = start.Value.Date;
             var e = end.Value.Date;
 
-            // Find accommodationId'er med OVERLAPPENDE booking i perioden
+            // Find accommodationId'er med overlappende booking i perioden
             // Overlap: CheckIn < slut && CheckOut > start
             var bookedIds = await _db.Booking
                 .Where(b => b.CheckInDate < e && b.CheckOutDate > s)
                 .Select(b => b.AccommodationId)
                 .Distinct()
-                .ToListAsync(cancellationToken);
+                .ToListAsync();
 
-            // Fjern dem der er booket i perioden
+            // Fjerner dem der er booket i perioden
             if (bookedIds.Count > 0)
             {
                 query = query.Where(a => !bookedIds.Contains(a.AccommodationId));
@@ -93,7 +99,7 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
 
             return await query
                 .Select(a => a.AccommodationId)
-                .ToListAsync(cancellationToken);
+                .ToListAsync();
         }
     }
 }

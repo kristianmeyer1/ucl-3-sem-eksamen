@@ -1,16 +1,18 @@
 ﻿using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Models.ModelsDto;
+using Danplanner.Domain.Entities;
 
 namespace Danplanner.Application.Services
 {
-    public class AccommodationService : IAccommodationTransfer
+    public class AccommodationService : IAccommodationTransfer, IAccommodationConverter
     {
-        private readonly IAccommodationGetAll _repository;
+        private readonly IAccommodationGetAllFromTxt _repository;
 
-        public AccommodationService(IAccommodationGetAll repository)
+        public AccommodationService(IAccommodationGetAllFromTxt repository)
         {
             _repository = repository;
         }
+
         private static string? CategoryFromName(string name)
         {
             var n = (name ?? string.Empty).ToLowerInvariant();
@@ -20,13 +22,12 @@ namespace Danplanner.Application.Services
             if (n.Contains("plads")) return "plads";
             return null;
         }
+
         public async Task<IReadOnlyList<AccommodationDto>> GetAccommodationsAsync(
             DateTime? start,
-            DateTime? end,
-            int? daysOverride,
-            CancellationToken cancellationToken = default)
+            DateTime? end)
         {
-            var entities = await _repository.GetAllAsync(cancellationToken);
+            var entities = await _repository.GetAccommodationsFromTxtAsync();
 
             return entities.Select(a => new AccommodationDto
             {
@@ -40,6 +41,26 @@ namespace Danplanner.Application.Services
                     ? a.Category.ToLowerInvariant()
                     : CategoryFromName(a.AccommodationName)
             }).ToList();
+        }
+
+        public async Task<List<AccommodationDto>> AccommodationDtoConverter(List<Accommodation> accommodations)
+        {
+            List<AccommodationDto> list = new List<AccommodationDto>();
+
+            foreach (var accommodation in accommodations)
+            {
+                AccommodationDto newAccommodationDto = new AccommodationDto
+                {
+                    AccommodationId = accommodation.AccommodationId,
+                    AccommodationName = accommodation.AccommodationName,
+                    AccommodationDescription = accommodation.AccommodationDescription,
+                    PricePerNight = accommodation.PricePerNight,
+                    Availability = accommodation.Availability,
+                };
+
+                list.Add(newAccommodationDto);
+            }
+            return list;
         }
     }
 }

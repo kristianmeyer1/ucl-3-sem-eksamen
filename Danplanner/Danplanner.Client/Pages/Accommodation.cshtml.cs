@@ -58,7 +58,7 @@ namespace Danplanner.Client.Pages
             }
 
             Items = (await _accommodationService
-                .GetAccommodationsAsync(startDt, endDt, DaysQuery))
+                .GetAccommodationsAsync(startDt, endDt))
                 .ToList();
         }
 
