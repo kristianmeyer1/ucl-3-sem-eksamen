@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Danplanner.Persistence.Repositories.AccommodationRepositories
 {
-    public class AccommodationRepositoryGet : IAccommodationGetAll, IAccommodationGetById
+    public class AccommodationRepositoryGet : IAccommodationGetAll, IAccommodationGetAllFromTxt, IAccommodationGetById
     {
         private readonly string _dataFilePath;
         private readonly DbManager _db;
@@ -21,7 +21,13 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
             _dataFilePath = Path.Combine(env.WebRootPath ?? string.Empty, "data", "accommodations.txt");
             _db = dbManger;
         }
-        public async Task<IReadOnlyList<Accommodation>> GetAllAsync()
+
+        public async Task<List<Accommodation>> GetAllAccommodationsAsync()
+        {
+            return await _db.Accommodation.ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Accommodation>> GetAccommodationsFromTxtAsync()
         {
             if (!File.Exists(_dataFilePath))
                 throw new FileNotFoundException("Accommodation data file not found", _dataFilePath);

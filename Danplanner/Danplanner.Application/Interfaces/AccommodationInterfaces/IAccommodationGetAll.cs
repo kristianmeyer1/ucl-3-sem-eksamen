@@ -4,6 +4,6 @@ namespace Danplanner.Application.Interfaces.AccommodationInterfaces
 {
     public interface IAccommodationGetAll
     {
-        Task<IReadOnlyList<Accommodation>> GetAllAsync();
+        Task<List<Accommodation>> GetAllAccommodationsAsync();
     }
 }

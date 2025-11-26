@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Danplanner.Application.Interfaces.AuthInterfaces.ITokenService;
 using Danplanner.Application.Interfaces.AuthInterfaces.IUserRegister;
 using Danplanner.Application.Interfaces.AuthInterfaces.IUserLogin;
+using Danplanner.Domain.Entities;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,9 +77,11 @@ builder.Services.AddScoped<IUserVerifyRegisterCode, AuthService>();
 
 
 // Accommodation builders
-builder.Services.AddScoped<IAccommodationTransfer, AccommodationService>();
+builder.Services.AddScoped<IAccommodationConverter, AccommodationService>();
 builder.Services.AddScoped<IAccommodationGetAll, AccommodationRepositoryGet>();
+builder.Services.AddScoped<IAccommodationGetAllFromTxt, AccommodationRepositoryGet>();
 builder.Services.AddScoped<IAccommodationGetById, AccommodationRepositoryGet>();
+builder.Services.AddScoped<IAccommodationTransfer, AccommodationService>();
 builder.Services.AddScoped<IAccommodationUpdate, AccommodationRepositoryPut>();
 
 // HttpClient 

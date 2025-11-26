@@ -22,9 +22,11 @@ namespace Danplanner.Client.Pages
         private readonly IBookingAdd _bookingAdd;
         private readonly IUserAdd _userAdd;
         private readonly IUserGetByEmail _userGetByEmail;
+        private readonly IAccommodationGetAll _accommodationGetAll;
+        private readonly IAccommodationConverter _accommodationConverter;
         public ContactInformation ContactInformation { get; set; }
 
-        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env, IBookingAdd bookingAdd, IUserAdd userAdd, IUserGetByEmail userGetByEmail)
+        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env, IBookingAdd bookingAdd, IUserAdd userAdd, IUserGetByEmail userGetByEmail, IAccommodationGetAll accommodationGetAll, IAccommodationConverter accommodationConverter)
         {
             _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
@@ -33,6 +35,8 @@ namespace Danplanner.Client.Pages
             _bookingAdd = bookingAdd;
             _userAdd = userAdd;
             _userGetByEmail = userGetByEmail;
+            _accommodationGetAll = accommodationGetAll;
+            _accommodationConverter = accommodationConverter;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -157,23 +161,18 @@ namespace Danplanner.Client.Pages
                 return Page();
             }
 
-            var accommodations = await _accommodationService.GetAccommodationsAsync(checkIn, checkOut);
+            var accommodations = await _accommodationGetAll.GetAllAccommodationsAsync();
+            var accommodationsDto = await _accommodationConverter.AccommodationDtoConverter(accommodations);
 
-            if (!string.IsNullOrWhiteSpace(Category))
-            {
-                SelectedAccommodation = accommodations.FirstOrDefault(a =>
-                    string.Equals(a.Category, Category, StringComparison.OrdinalIgnoreCase));
-            }
-            else
-            {
-                SelectedAccommodation = accommodations.FirstOrDefault();
-            }
+            SelectedAccommodation = accommodationsDto
+                .FirstOrDefault(a => a.AccommodationId == AccommodationId);
 
             if (SelectedAccommodation == null || !AccommodationId.HasValue)
             {
                 ModelState.AddModelError("", "Der skete en fejl med den valgte enhed.");
                 return Page();
             }
+
             int userId;
 
             // Tjekker om en bruger er logget ind eller ej
@@ -253,17 +252,24 @@ namespace Danplanner.Client.Pages
 
             // Vi beregner hvor mange dage
             if (checkIn.HasValue && checkOut.HasValue)
+            {
                 Days = Math.Max(0, (checkOut.Value.Date - checkIn.Value.Date).Days);
+            }
 
             // Vi genindlæser den valgte hytte/plads
-            var list = await _accommodationService.GetAccommodationsAsync(checkIn, checkOut);
-            SelectedAccommodation = list.FirstOrDefault(a => a.AccommodationId == AccommodationId);
+            var accommodations = await _accommodationGetAll.GetAllAccommodationsAsync();
+            var accommodationsDto = await _accommodationConverter.AccommodationDtoConverter(accommodations);
+            SelectedAccommodation = accommodationsDto.FirstOrDefault(a => a.AccommodationId == AccommodationId);
 
             // Standard pris for valgt hytte/plads
             if (SelectedAccommodation?.PricePerNight is decimal price)
+            {
                 TotalPrice = price * Days;
+            }
             else
+            {
                 TotalPrice = 0;
+            }
 
             // Addon price
             AddonsTotal = Addons
