@@ -8,6 +8,7 @@
 <style>
     .page-top { background:#222; padding:16px; color:#fff; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; }
     .top-left { font-weight:700; }
+    .accom-dates {background: #fff;color: #000;padding: 10px 14px;border-radius: 4px;display: flex;gap: 20px;}
     .map-wrapper { display:flex; gap:20px; align-items:flex-start; }
     #map { width: 100%; max-width: 1100px; height: 600px; border: 1px solid #ddd; background:#eee; }
     .map-side { width: 320px; }
@@ -24,12 +25,19 @@
 </style>
 
 <div class="page-top">
-    <div class="top-left">Vælg plads:</div>
-    <div class="top-right">
+    <div class="top-left">
         <div class="accom-dates" style="background:#fff;color:#000;padding:8px 12px;border-radius:6px;">
             <span><strong>Ankomst:</strong> @Model.Start</span>
             <span style="margin-left:12px;"><strong>Afrejse:</strong> @Model.End</span>
         </div>
+    </div>
+    <div class="top-right">
+        @if (!(ViewBag.hideBackButton as bool? ?? false))
+        {
+            <button class="btn-back" onclick="window.history.back();">
+                Tilbage
+            </button>
+        }
     </div>
 </div>
 
@@ -154,10 +162,11 @@
                     const btn = document.querySelector('.choose-btn[data-key="' + point.Key + '"]');
                     if (btn) {
                         btn.addEventListener('click', () => {
-                            const unitId = point.AccommodationId;   // den KONKRETE plads/hytte
-                            const placeKey = point.Key;            // fx "Plads 5"
+                            const accommodationId = point.AccommodationId; // ID fra map.json / DB
+                            const category = point.Category || "";         // hytte/plads/luksushytte
+                            const placeKey = point.Key;   // fx "Plads 5"
 
-                            const url = `/Confirmation?Start=${encodeURIComponent(startQuery)}&End=${encodeURIComponent(endQuery)}&unitId=${encodeURIComponent(unitId)}&placeKey=${encodeURIComponent(placeKey)}`;
+                            const url = `/Confirmation?Start=${encodeURIComponent(startQuery)}&End=${encodeURIComponent(endQuery)}&unitId=${encodeURIComponent(accommodationId)}&category=${encodeURIComponent(category)}&placeKey=${encodeURIComponent(placeKey)}`;
                             window.location.href = url;
                         });
                     }

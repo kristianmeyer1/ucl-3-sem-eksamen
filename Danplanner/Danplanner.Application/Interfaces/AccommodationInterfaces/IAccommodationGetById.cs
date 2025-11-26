@@ -8,7 +8,9 @@ namespace Danplanner.Application.Interfaces.AccommodationInterfaces
 {
     public interface IAccommodationGetById
     {
-        Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(CancellationToken cancellationToken = default);
-
+        Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(
+            DateTime? start,
+            DateTime? end,
+            CancellationToken cancellationToken = default);
     }
 }

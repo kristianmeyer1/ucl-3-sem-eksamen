@@ -24,9 +24,7 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
         public async Task<IReadOnlyList<Accommodation>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             if (!File.Exists(_dataFilePath))
-            {
                 throw new FileNotFoundException("Accommodation data file not found", _dataFilePath);
-            }
 
             var lines = await File.ReadAllLinesAsync(_dataFilePath, cancellationToken);
             var result = new List<Accommodation>();
@@ -38,26 +36,62 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
                 if (line.StartsWith("#")) continue;
 
                 var parts = line.Split('|');
-                if (parts.Length < 5) continue;
+                if (parts.Length < 4) continue; // <- NU 4, ikke 5
 
                 var entity = new Accommodation
                 {
-                    AccommodationId = int.TryParse(parts[0].Trim(), out var id) ? id : 0,
-                    AccommodationName = parts[1].Trim(),
-                    AccommodationDescription = parts[2].Trim(),
-                    PricePerNight = decimal.TryParse(parts[3].Trim(), out var price) ? price : null,
-                    ImageUrl = parts[4].Trim(),
+                    // 0: navn, 1: beskrivelse, 2: pris, 3: billede
+                    AccommodationName = parts[0].Trim(),
+                    AccommodationDescription = parts[1].Trim(),
+                    PricePerNight = decimal.TryParse(parts[2].Trim(), out var price) ? price : null,
+                    ImageUrl = parts[3].Trim(),
                 };
+
+                var nameLower = entity.AccommodationName.ToLowerInvariant();
+                if (nameLower.Contains("luksus"))
+                    entity.Category = "luksushytte";
+                else if (nameLower.Contains("hytte"))
+                    entity.Category = "hytte";
+                else if (nameLower.Contains("plads"))
+                    entity.Category = "plads";
+
                 result.Add(entity);
             }
+
             return result;
         }
 
-        public async Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(DateTime? start,DateTime? end,CancellationToken cancellationToken = default)
         {
-            return await _db.Accommodation
-                .AsNoTracking()
-                .Where(a => a.Availability == 1)
+            // Start med alle accommodations
+            var query = _db.Accommodation.AsQueryable();
+
+            // Hvis der ikke er valgt datoer, returnér alle
+            if (!start.HasValue || !end.HasValue)
+            {
+                return await query
+                    .Select(a => a.AccommodationId)
+                    .ToListAsync(cancellationToken);
+            }
+
+            var s = start.Value.Date;
+            var e = end.Value.Date;
+
+            // Find accommodationId'er med OVERLAPPENDE booking i perioden
+            // Overlap: CheckIn < slut && CheckOut > start
+            var bookedIds = await _db.Booking
+                .Where(b => b.CheckInDate < e && b.CheckOutDate > s)
+                .Select(b => b.AccommodationId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            // Fjern dem der er booket i perioden
+            if (bookedIds.Count > 0)
+            {
+                query = query.Where(a => !bookedIds.Contains(a.AccommodationId));
+            }
+
+            return await query
                 .Select(a => a.AccommodationId)
                 .ToListAsync(cancellationToken);
         }
