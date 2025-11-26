@@ -36,7 +36,7 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
                 if (line.StartsWith("#")) continue;
 
                 var parts = line.Split('|');
-                if (parts.Length < 4) continue; // <- NU 4, ikke 5
+                if (parts.Length < 4) continue;
 
                 var entity = new Accommodation
                 {
