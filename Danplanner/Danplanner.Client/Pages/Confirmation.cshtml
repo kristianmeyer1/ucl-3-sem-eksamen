@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Confirmation";
 }
+        <form method="post">
 
 <div class="confirm-grid">
 
@@ -11,8 +12,11 @@
 
         <div class="form-fields">
             <input class="form-control" asp-for="NewUserName" placeholder="Navn" />
+            <span asp-validation-for="NewUserName" class="text-danger"></span>
             <input class="form-control" asp-for="NewUserEmail" placeholder="Email" />
+            <span asp-validation-for="NewUserEmail" class="text-danger"></span>
             <input class="form-control" asp-for="NewUserAdress" placeholder="Adresse" />
+            <span asp-validation-for="NewUserAdress" class="text-danger"></span>
         </div>
     </div>
 
@@ -42,7 +46,8 @@
             <div>@Model.TotalPriceDisplay</div>
         </div>
 
-        <form method="post">
+
+            <div asp-validation-summary="All" class="text-danger"></div>
             <input type="hidden" asp-for="UnitId" />
             <input type="hidden" asp-for="Start" />
             <input type="hidden" asp-for="End" />
@@ -85,6 +90,9 @@
     </aside>
 
 </div>
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}
 
 
 <style>

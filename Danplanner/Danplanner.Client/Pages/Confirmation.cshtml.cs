@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
@@ -59,13 +60,18 @@ namespace Danplanner.Client.Pages
         public List<int> SelectedAddonIds { get; set; } = new();
 
         [BindProperty]
-        public string NewUserName { get; set; }
+        [Required(ErrorMessage = "Navn skal udfyldes")]
+        public string NewUserName { get; set; } = string.Empty;
 
         [BindProperty]
-        public string NewUserEmail { get; set; }
+        [Required(ErrorMessage = "Email skal udfyldes")]
+        [EmailAddress(ErrorMessage = "Indtast en gyldig email")]
+        public string NewUserEmail { get; set; } = string.Empty;
 
         [BindProperty]
-        public string NewUserAdress { get; set; }
+        [Required(ErrorMessage = "Adresse skal udfyldes")]
+        public string NewUserAdress { get; set; } = string.Empty;
+
 
         public decimal AddonsTotal { get; set; }
 
@@ -128,11 +134,13 @@ namespace Danplanner.Client.Pages
         {
             // Vi skipper fuldstændig over alt med betaling
 
-            DateTime? checkIn = ParseDate(Start, out _);
-            DateTime? checkOut = ParseDate(End, out _);
+            DateTime? checkIn = ParseDate(Start, out var startDisp);
+            DateTime? checkOut = ParseDate(End, out var endDisp);
+            StartDisplay = startDisp;
+            EndDisplay = endDisp;
 
             await CalculateTotalPriceAsync(checkIn, checkOut);
-
+            
             // Tjekker om vi har det dato info vi skal bruge
             if (!checkIn.HasValue || !checkOut.HasValue || checkIn >= checkOut)
             {
@@ -149,12 +157,9 @@ namespace Danplanner.Client.Pages
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(NewUserName) ||
-                    string.IsNullOrWhiteSpace(NewUserEmail) ||
-                    string.IsNullOrWhiteSpace(NewUserAdress))
+                if (!ModelState.IsValid)
                 {
-                    ModelState.AddModelError("", "Venligst udfyld alle informations bokse.");
-                    return Page();
+                    return Page(); // sender brugeren tilbage med fejl
                 }
 
                 // Vi opretter nu den nye bruger
