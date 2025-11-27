@@ -42,6 +42,9 @@ builder.Services.AddSingleton<ITranslationService>(sp =>
     new GoogleTranslationService(builder.Configuration["GoogleCloud:danplanner"]));
 builder.Services.AddScoped<ContentTranslationHandler>();
 
+// Address services
+builder.Services.AddScoped<IAddressService, DawaAddressService>();
+
 // Addon builders
 builder.Services.AddHttpClient<AddonService>();
 builder.Services.AddScoped<IAddonGetAll, AddonRepositoryGet>();
