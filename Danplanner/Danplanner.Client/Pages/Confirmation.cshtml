@@ -44,11 +44,6 @@
                 <div>@Model.SelectedAccommodation?.PricePerNight</div>
             </div>
 
-            <div class="total-box">
-                <div>Total pris:</div>
-                <div>@Model.TotalPriceDisplay</div>
-            </div>
-
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <!-- VIGTIGT: skjulte felter der skal med i POST -->
@@ -66,7 +61,7 @@
             }
 
             <div class="guest-item">
-                <span class="guest-label">Voksne</span>
+                <span class="guest-label">Antal : </span>
                 <input asp-for="BookingResidents" type="number" min="1" value="1" class="form-control" />
             </div>
 

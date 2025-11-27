@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Runtime.InteropServices;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Interfaces.BookingInterfaces;
@@ -9,9 +6,13 @@ using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Application.Services;
+using Danplanner.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace Danplanner.Client.Pages
 {
@@ -24,13 +25,27 @@ namespace Danplanner.Client.Pages
         private readonly IBookingAdd _bookingAdd;
         private readonly IUserAdd _userAdd;
         private readonly IUserGetByEmail _userGetByEmail;
+        private readonly IUserGetById _userGetById;
         private readonly IAccommodationGetAll _accommodationGetAll;
         private readonly IAccommodationConverter _accommodationConverter;
         private readonly ICalculateTotalPrice _priceCalculator;
         private readonly IParseDate _parseDate;
         public ContactInformation ContactInformation { get; set; }
 
-        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env, IBookingAdd bookingAdd, IUserAdd userAdd, IUserGetByEmail userGetByEmail, IAccommodationGetAll accommodationGetAll, IAccommodationConverter accommodationConverter, ICalculateTotalPrice calculateTotalPrice, IParseDate parseDate)
+        public ConfirmationModel
+        (
+            IAddonGetAll addonGetAll,
+            IAccommodationTransfer accommodationService,
+            IAccommodationUpdate availabilityService, 
+            IWebHostEnvironment env, 
+            IBookingAdd bookingAdd, 
+            IUserAdd userAdd, 
+            IUserGetByEmail userGetByEmail, 
+            IUserGetById userGetById,
+            IAccommodationGetAll accommodationGetAll, 
+            IAccommodationConverter accommodationConverter, 
+            ICalculateTotalPrice calculateTotalPrice, 
+            IParseDate parseDate)
         {
             _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
@@ -39,6 +54,7 @@ namespace Danplanner.Client.Pages
             _bookingAdd = bookingAdd;
             _userAdd = userAdd;
             _userGetByEmail = userGetByEmail;
+            _userGetById = userGetById;
             _accommodationGetAll = accommodationGetAll;
             _accommodationConverter = accommodationConverter;
             _priceCalculator = calculateTotalPrice;
@@ -147,6 +163,13 @@ namespace Danplanner.Client.Pages
                 TotalPrice = price * Days;
                 TotalPriceDisplay = $"{TotalPrice.Value:N0} kr.";
             }
+
+            // Hvis user er logget ind skal input felter fyles ud
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                int userId = GetLoggedInUserId();
+                await UserInputFiller(userId);
+            }
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -157,6 +180,7 @@ namespace Danplanner.Client.Pages
             DateTime? checkOut = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
             EndDisplay = endDisp;
+            int userId;
 
             var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, checkIn, checkOut);
 
@@ -177,12 +201,10 @@ namespace Danplanner.Client.Pages
                 return Page();
             }
 
-            int userId;
-
             // Tjekker om en bruger er logget ind eller ej
-            if (CurrentUserId.HasValue)
+            if (User.Identity?.IsAuthenticated == true)
             {
-                userId = CurrentUserId.Value;
+                userId = GetLoggedInUserId();
             }
             else
             {
@@ -191,18 +213,7 @@ namespace Danplanner.Client.Pages
                     return Page(); // sender brugeren tilbage med fejl
                 }
 
-                // Vi opretter nu den nye bruger
-                var newUser = new UserDto()
-                {
-                    UserName = NewUserName,
-                    UserEmail = NewUserEmail,
-                    UserAdress = NewUserAdress,
-                };
-
-                // Sender den nye bruger til oprettelse
-                await _userAdd.AddUserAsync(newUser);
-                var createdUser = await _userGetByEmail.GetUserByEmailAsync(NewUserEmail);
-                userId = createdUser.UserId;
+                userId = await NewUserHandler(NewUserEmail, NewUserAdress, NewUserName);
             }
 
             var bookingDto = new BookingDto()
@@ -226,6 +237,44 @@ namespace Danplanner.Client.Pages
             }
 
             return RedirectToPage("/ThankYou");
+        }
+
+        //public async UserHandler(int? userEmail)
+        //{
+
+        //}
+
+        public async Task UserInputFiller(int userId)
+        {
+            UserDto user = await _userGetById.GetUserByIdAsync(userId);
+            NewUserName = user.UserName;
+            NewUserEmail = user.UserEmail;
+            NewUserAdress = user.UserAdress;
+        }
+
+        public int GetLoggedInUserId()
+        {
+            var idClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (idClaim != null && int.TryParse(idClaim.Value, out var userId))
+            {
+                return userId;
+            }
+            return 0;
+        }
+
+        public async Task<int> NewUserHandler(string userEmail, string userAdress, string userName)
+        {
+            var newUser = new UserDto()
+            {
+                UserName = NewUserName,
+                UserEmail = NewUserEmail,
+                UserAdress = NewUserAdress,
+            };
+
+            // Sender den nye bruger til oprettelse
+            await _userAdd.AddUserAsync(newUser);
+            var createdUser = await _userGetByEmail.GetUserByEmailAsync(NewUserEmail);
+            return createdUser.UserId;
         }
 
         
