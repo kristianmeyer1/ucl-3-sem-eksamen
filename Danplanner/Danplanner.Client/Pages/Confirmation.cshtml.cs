@@ -226,8 +226,6 @@ namespace Danplanner.Client.Pages
                 }
             }
 
-            
-
             var bookingDto = new BookingDto()
             {
                 BookingResidents = BookingResidents,
@@ -314,7 +312,7 @@ namespace Danplanner.Client.Pages
                 SelectedAccommodation = list.FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
             }
 
-            // Beregn total (uden tilkøb og personer i første omgang)
+            // Beregn total 
             if (!string.IsNullOrWhiteSpace(Category))
             {
                 SelectedAccommodation = list
