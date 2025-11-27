@@ -158,11 +158,8 @@ namespace Danplanner.Client.Pages
             StartDisplay = startDisp;
             EndDisplay = endDisp;
 
-            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, BookingResidents, checkIn, checkOut);
+            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, checkIn, checkOut);
 
-            Days = result.Days;
-            Addons = result.Addons;
-            AddonsTotal = result.AddonsTotal;
             SelectedAccommodation = result.SelectedAccommodation;
             TotalPrice = result.TotalPrice;
             TotalPriceDisplay = result.TotalPriceDisplay;

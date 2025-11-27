@@ -11,7 +11,8 @@ namespace Danplanner.Application.Services
         private readonly IAccommodationGetAll _accommodationGetAll;
         private readonly IAccommodationConverter _accommodationConverter;
 
-        public CalculateTotalPriceService(
+        public CalculateTotalPriceService
+        (
             IAddonGetAll addonGetAll,
             IAccommodationGetAll accommodationGetAll,
             IAccommodationConverter accommodationConverter)
@@ -21,10 +22,10 @@ namespace Danplanner.Application.Services
             _accommodationConverter = accommodationConverter;
         }
 
-        public async Task<TotalPriceDto> CalculateAsync(
+        public async Task<TotalPriceDto> CalculateAsync
+        (
             int accommodationId,
             List<int> selectedAddonIds,
-            int bookingResidents,
             DateTime? checkIn,
             DateTime? checkOut)
         {
@@ -51,11 +52,6 @@ namespace Danplanner.Application.Services
                 .Sum(a => (decimal)a.AddonPrice);
 
             total += addonsTotal;
-
-            if (bookingResidents > 1)
-            {
-                total += (bookingResidents - 1) * 350;
-            }
 
             return new TotalPriceDto
             {

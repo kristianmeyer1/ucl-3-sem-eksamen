@@ -12,7 +12,6 @@ namespace Danplanner.Application.Interfaces.ConfirmationInterfaces
         Task<TotalPriceDto> CalculateAsync(
     int accommodationId,
     List<int> selectedAddonIds,
-    int bookingResidents,
     DateTime? checkIn,
     DateTime? checkOut);
     }
