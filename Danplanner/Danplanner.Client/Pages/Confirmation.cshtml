@@ -65,26 +65,28 @@
                 <input asp-for="BookingResidents" type="number" min="1" value="1" class="form-control" />
             </div>
 
-            <div class="total-box">
-                <div>Total pris:</div>
-                <div>@Model.TotalPriceDisplay</div>
-            </div>
+
             @if (User.IsInRole("Admin"))
             {
-                    <div class="admin-discount-box">
-            <h5>Admin rabat</h5>
+            <div class="admin-discount-box">
+                <h5>Admin rabat</h5>
 
-            <div class="d-flex gap-2 mb-2">
-                <input type="number" id="manualDiscount" class="form-control" placeholder="Indtast rabat %" />
-                    <button type="button" class="btn btn-success" id="applyDiscount">Anvend rabat</button>
-                    <button type="button" class="btn btn-success" id="btn20Percent">20% rabat</button>
-            </div>
+                <div class="d-flex gap-2 mb-2">
+                    <input type="number" asp-for="ManualDiscountPercent" class="form-control" placeholder="Indtast rabat %" />
 
-            <div>
-                <strong>Opdateret pris:</strong>
-                <span id="discountedPrice">@Model.TotalPriceDisplay</span>
+                    <button type="submit" name="discountType" value="manual" class="btn btn-success">Anvend rabat</button>
+
+                    <button type="submit" name="discountType" value="20percent" class="btn btn-success">20% rabat</button>
+                </div>
+
+                <div class="total-box">
+                    <div>Total Pris:</div>
+                    <div>@Model.TotalPriceDisplay</div>
+                    <div>Rabat Pris:</div>
+                    <div>@Model.DiscountedPriceDisplay</div>
+                </div>
             </div>
-        </div>
+            }
 
             }
             <button type="submit" class="btn btn-primary pay-btn">Betal</button>

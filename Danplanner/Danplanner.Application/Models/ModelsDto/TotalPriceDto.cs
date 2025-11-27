@@ -10,6 +10,7 @@ namespace Danplanner.Application.Models.ModelsDto
     {
         public int Days { get; init; }
         public decimal TotalPrice { get; init; }
+        public decimal TotalDiscountPrice { get; init; }
         public decimal AddonsTotal { get; init; }
         public string TotalPriceDisplay { get; init; } = string.Empty;
         public AccommodationDto? SelectedAccommodation { get; init; }

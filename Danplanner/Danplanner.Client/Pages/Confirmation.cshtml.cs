@@ -107,6 +107,16 @@ namespace Danplanner.Client.Pages
 
         public decimal AddonsTotal { get; set; }
 
+        [BindProperty]
+        public decimal ManualDiscountPercent { get; set; } = 0;
+
+        [BindProperty]
+        public decimal DiscountedPrice { get; set; } = 0;
+
+        public string DiscountedPriceDisplay => DiscountedPrice > 0
+            ? $"{DiscountedPrice:N0} kr."
+            : TotalPriceDisplay;
+
         // ---- til view ----
         public AccommodationDto? SelectedAccommodation { get; private set; }
         public List<AddonDto> Addons { get; private set; } = new();
@@ -180,7 +190,7 @@ namespace Danplanner.Client.Pages
             }
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string discountType)
         {
             // Vi skipper fuldstændig over alt med betaling
 
@@ -195,6 +205,26 @@ namespace Danplanner.Client.Pages
             SelectedAccommodation = result.SelectedAccommodation;
             TotalPrice = result.TotalPrice;
             TotalPriceDisplay = result.TotalPriceDisplay;
+
+            if (User.IsInRole("Admin"))
+            {
+                decimal discountPercent = 0;
+
+                if (discountType == "manual")
+                {
+                    discountPercent = ManualDiscountPercent;
+                }
+                else if (discountType == "20percent")
+                {
+                    discountPercent = 20;
+                }
+
+                DiscountedPrice = TotalPrice.Value * (1 - discountPercent / 100);
+            }
+            else
+            {
+                DiscountedPrice = TotalPrice.Value;
+            }
 
             // Tjekker om vi har det dato info vi skal bruge
             if (!checkIn.HasValue || !checkOut.HasValue || checkIn >= checkOut)
