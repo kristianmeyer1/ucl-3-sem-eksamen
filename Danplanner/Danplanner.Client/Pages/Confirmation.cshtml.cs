@@ -185,7 +185,17 @@ namespace Danplanner.Client.Pages
 
                 if (role == "User" && userId.HasValue)
                 {
-                    await UserInputFiller(userId.Value); // fill form for normal user
+                    userId = userId.Value;
+                }
+                else if (role == "Admin")
+                {
+                    // Admin bookings: you can either set a default userId, or require them to select a user
+                    userId = 0; // or null if nullable
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Ugyldig bruger.");
+                    return Page();
                 }
             }
         }
@@ -248,9 +258,14 @@ namespace Danplanner.Client.Pages
                 {
                     userId = loggedUserId.Value;
                 }
+                else if (role == "Admin")
+                {
+                    // Admin booking: you can set userId = 0 or allow optional
+                    userId = 0;
+                }
                 else
                 {
-                    ModelState.AddModelError("", "Admins cannot create bookings.");
+                    ModelState.AddModelError("", "Ugyldig bruger.");
                     return Page();
                 }
             }
