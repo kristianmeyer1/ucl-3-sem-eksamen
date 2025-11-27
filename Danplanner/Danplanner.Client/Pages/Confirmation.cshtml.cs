@@ -28,7 +28,7 @@ namespace Danplanner.Client.Pages
         private readonly IUserGetById _userGetById;
         private readonly IAccommodationGetAll _accommodationGetAll;
         private readonly IAccommodationConverter _accommodationConverter;
-        private readonly ICalculateTotalPrice _priceCalculator;
+        private readonly IPriceCalculator _priceCalculator;
         private readonly IParseDate _parseDate;
         public ContactInformation ContactInformation { get; set; }
 
@@ -44,7 +44,7 @@ namespace Danplanner.Client.Pages
             IUserGetById userGetById,
             IAccommodationGetAll accommodationGetAll, 
             IAccommodationConverter accommodationConverter, 
-            ICalculateTotalPrice calculateTotalPrice, 
+            IPriceCalculator totalPriceCalculator, 
             IParseDate parseDate)
         {
             _addonGetAll = addonGetAll;
@@ -57,7 +57,7 @@ namespace Danplanner.Client.Pages
             _userGetById = userGetById;
             _accommodationGetAll = accommodationGetAll;
             _accommodationConverter = accommodationConverter;
-            _priceCalculator = calculateTotalPrice;
+            _priceCalculator = totalPriceCalculator;
             _parseDate = parseDate;
         }
 
@@ -112,6 +112,9 @@ namespace Danplanner.Client.Pages
         public decimal? TotalPrice { get; private set; }
         public string TotalPriceDisplay { get; private set; } = "—";
 
+        DateTime checkIn = _parseDate.ParseDate(Start, out var startDisp);
+        DateTime checkOut = _parseDate.ParseDate(End, out var endDisp);
+
         public async Task OnGetAsync()
         {
             // Kontaktinfo boks
@@ -122,8 +125,8 @@ namespace Danplanner.Client.Pages
             Addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
 
             // Datoer
-            DateTime? startDt = _parseDate.ParseDate(Start, out var startDisp);
-            DateTime? endDt = _parseDate.ParseDate(End, out var endDisp);
+            DateTime? checkIn = _parseDate.ParseDate(Start, out var startDisp);
+            DateTime? checkOut = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
             EndDisplay = endDisp;
 
@@ -172,12 +175,16 @@ namespace Danplanner.Client.Pages
             }
         }
 
+        public async Task<IActionResult> OnPostPrice()
+        {
+            decimal totalPrice = await _priceCalculator.CalculateAsync(AccommodationId.Value, SelectedAddonIds, checkIn, checkOut);
+            TotalPriceDisplay = totalPrice.ToString();
+            return Page();
+        }
         public async Task<IActionResult> OnPostAsync()
         {
             // Vi skipper fuldstændig over alt med betaling
 
-            DateTime? checkIn = _parseDate.ParseDate(Start, out var startDisp);
-            DateTime? checkOut = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
             EndDisplay = endDisp;
             int userId;
@@ -238,11 +245,6 @@ namespace Danplanner.Client.Pages
 
             return RedirectToPage("/ThankYou");
         }
-
-        //public async UserHandler(int? userEmail)
-        //{
-
-        //}
 
         public async Task UserInputFiller(int userId)
         {

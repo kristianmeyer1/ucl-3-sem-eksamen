@@ -55,10 +55,16 @@
             @foreach (var addon in Model.Addons)
             {
                 <label>
-                    <input type="checkbox" name="SelectedAddonIds" value="@addon.AddonId" />
+                    <input type="checkbox"
+                           name="SelectedAddonIds"
+                           value="@addon.AddonId"
+                           onchange="window.location.href='?handler=Price&selectedAddonId=@addon.AddonId';"
+                           @(Model.SelectedAddonIds.Contains(addon.AddonId) ? "checked" : "") />
                     @addon.AddonName (@addon.AddonPrice kr.)
                 </label>
+
             }
+
 
             <div class="guest-item">
                 <span class="guest-label">Antal : </span>
