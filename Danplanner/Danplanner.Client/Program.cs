@@ -19,6 +19,7 @@ using Danplanner.Application.Interfaces.AuthInterfaces.ITokenService;
 using Danplanner.Application.Interfaces.AuthInterfaces.IUserRegister;
 using Danplanner.Application.Interfaces.AuthInterfaces.IUserLogin;
 using Danplanner.Domain.Entities;
+using Danplanner.Application.Interfaces.ConfirmationInterfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -83,6 +84,9 @@ builder.Services.AddScoped<IAccommodationGetAllFromTxt, AccommodationRepositoryG
 builder.Services.AddScoped<IAccommodationGetById, AccommodationRepositoryGet>();
 builder.Services.AddScoped<IAccommodationTransfer, AccommodationService>();
 builder.Services.AddScoped<IAccommodationUpdate, AccommodationRepositoryPut>();
+
+// Confirmation builders
+builder.Services.AddScoped<ICalculateTotalPrice, CalculateTotalPriceService>();
 
 // HttpClient 
 builder.Services.AddHttpClient();
