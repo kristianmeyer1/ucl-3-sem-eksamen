@@ -21,6 +21,7 @@
 
                 <input id="address-input" class="form-control" asp-for="NewUserAdress" placeholder="Adresse" autocomplete="off" />
                 <ul id="suggestions" class="list-group"></ul>
+                <input type="hidden" asp-for="NewUserAdress" id="address-confirmed" />
             </div>
         </div>
 
@@ -95,6 +96,9 @@
     <script>
 		const input = document.getElementById('address-input');
 		const list = document.getElementById('suggestions');
+		const confirmedInput = document.getElementById('address-confirmed');
+
+        confirmedInput.value = "false";
 
 		input.addEventListener('input', async () => {
 			if (input.value.length < 2) { list.innerHTML = ''; return; }
@@ -107,6 +111,7 @@
         list.querySelectorAll("li").forEach(li => li.onclick = () => {
             input.value = li.textContent;
             list.innerHTML = "";
+			confirmedInput.value = "true";
             });
 		});
     </script>
