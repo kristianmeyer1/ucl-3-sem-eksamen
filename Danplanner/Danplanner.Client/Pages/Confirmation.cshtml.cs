@@ -103,7 +103,8 @@ namespace Danplanner.Client.Pages
         [BindProperty]
         [Required(ErrorMessage = "Adresse skal udfyldes")]
         public string NewUserAdress { get; set; } = string.Empty;
-
+        [BindProperty]
+        public bool AddressConfirmed { get; set; }
 
         public decimal AddonsTotal { get; set; }
 
@@ -118,23 +119,13 @@ namespace Danplanner.Client.Pages
 
         public async Task OnGetAsync()
         {
-            // Kontaktinfo boks
-            var filePath = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "contactinfo.txt");
-            ContactInformation = ContactInfoReader.Load(filePath);
-
-            // Tilkøb
-            Addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
-
             // Datoer
             DateTime? startDt = _parseDate.ParseDate(Start, out var startDisp);
             DateTime? endDt = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
             EndDisplay = endDisp;
 
-            if (startDt.HasValue && endDt.HasValue)
-            {
-                Days = Math.Max(0, (endDt.Value.Date - startDt.Value.Date).Days);
-            }
+            await LoadPageDataAsync(startDt, endDt);
 
             // Hvis vi ikke fik id via querystring, brug cookie som fallback
             if (!AccommodationId.HasValue)
@@ -144,28 +135,6 @@ namespace Danplanner.Client.Pages
                 {
                     AccommodationId = idFromCookie;
                 }
-            }
-
-            // Hent alle accommodations og find den valgte
-            var list = await _accommodationService.GetAccommodationsAsync(startDt, endDt);
-
-            if (!string.IsNullOrWhiteSpace(Category))
-            {
-                SelectedAccommodation = list
-                    .FirstOrDefault(a =>
-                        string.Equals(a.Category, Category, StringComparison.OrdinalIgnoreCase));
-            }
-            else
-            {
-                // fallback: første element, hvis der ingen kategori er
-                SelectedAccommodation = list.FirstOrDefault();
-            }
-
-            // Beregn total (uden tilkøb og personer i første omgang)
-            if (SelectedAccommodation?.PricePerNight is decimal price && Days > 0)
-            {
-                TotalPrice = price * Days;
-                TotalPriceDisplay = $"{TotalPrice.Value:N0} kr.";
             }
 
             // Hvis user er logget ind skal input felter fyles ud
@@ -189,6 +158,8 @@ namespace Danplanner.Client.Pages
             StartDisplay = startDisp;
             EndDisplay = endDisp;
             int userId;
+
+            await LoadPageDataAsync(checkIn, checkOut);
 
             var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, checkIn, checkOut);
 
@@ -227,10 +198,24 @@ namespace Danplanner.Client.Pages
             else
             {
                 if (!ModelState.IsValid)
-                    return Page();
-
+                {
+                    return Page(); // sender brugeren tilbage med fejl
+                }
                 userId = await NewUserHandler(NewUserEmail, NewUserAdress, NewUserName);
             }
+            if (User.Identity?.IsAuthenticated != true)
+            {
+                if (!AddressConfirmed)
+                {
+                    ModelState.AddModelError(nameof(NewUserAdress), "Vælg en adresse fra listen.");
+                }
+                if (!ModelState.IsValid)
+                {
+                    return Page(); // sender brugeren tilbage med fejl
+                }
+            }
+
+            
 
             var bookingDto = new BookingDto()
             {
@@ -297,7 +282,42 @@ namespace Danplanner.Client.Pages
             var createdUser = await _userGetByEmail.GetUserByEmailAsync(NewUserEmail);
             return createdUser.UserId;
         }
-        public async Task<JsonResult> OnGetAddressSuggestionsAsync(string query)
+
+        private async Task LoadPageDataAsync(DateTime? startDt, DateTime? endDt)
+        {
+            // Kontaktinfo boks
+            var filePath = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "contactinfo.txt");
+            ContactInformation = ContactInfoReader.Load(filePath);
+
+            // Tilkøb
+            Addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
+
+            // Days
+            if (startDt.HasValue && endDt.HasValue)
+                Days = Math.Max(0, (endDt.Value.Date - startDt.Value.Date).Days);
+
+            // Hent alle accommodations og find den valgte
+            var list = await _accommodationService.GetAccommodationsAsync(startDt, endDt);
+            if (AccommodationId.HasValue)
+            {
+                SelectedAccommodation = list.FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
+            }
+
+            // Beregn total (uden tilkøb og personer i første omgang)
+            if (!string.IsNullOrWhiteSpace(Category))
+            {
+                SelectedAccommodation = list
+                    .FirstOrDefault(a =>
+                        string.Equals(a.Category, Category, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                // fallback: første element, hvis der ingen kategori er
+                SelectedAccommodation = list.FirstOrDefault();
+            }
+        }
+
+        public async Task<JsonResult> AddressSuggestionsHandler(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
