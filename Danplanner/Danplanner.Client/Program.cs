@@ -87,6 +87,7 @@ builder.Services.AddScoped<IAccommodationUpdate, AccommodationRepositoryPut>();
 
 // Confirmation builders
 builder.Services.AddScoped<ICalculateTotalPrice, CalculateTotalPriceService>();
+builder.Services.AddScoped<IParseDate, ParseDateService>();
 
 // HttpClient 
 builder.Services.AddHttpClient();
