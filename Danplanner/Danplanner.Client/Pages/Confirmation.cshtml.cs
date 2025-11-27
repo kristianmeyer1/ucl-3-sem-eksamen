@@ -191,7 +191,7 @@ namespace Danplanner.Client.Pages
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Admins cannot create bookings.");
+                    ModelState.AddModelError("", "Admins cannot create bookings."); // jo de kan??
                     return Page();
                 }
             }
@@ -201,7 +201,18 @@ namespace Danplanner.Client.Pages
                 {
                     return Page(); // sender brugeren tilbage med fejl
                 }
-                userId = await NewUserHandler(NewUserEmail, NewUserAdress, NewUserName);
+                
+                // Før vi opretter ny bruger, tjekker vi om den findes i forvejen
+                var userExists = await _userGetByEmail.GetUserByEmailAsync(NewUserEmail);
+                if (userExists == null)
+                {
+                    userId = await NewUserHandler(NewUserEmail, NewUserAdress, NewUserName);
+                }
+                else
+                {
+                    ModelState.AddModelError("", "En bruger med denne mail adresse findes allerede.");
+                    return Page();
+                }
             }
             if (User.Identity?.IsAuthenticated != true)
             {
