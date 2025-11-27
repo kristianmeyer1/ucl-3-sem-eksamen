@@ -140,8 +140,12 @@ namespace Danplanner.Client.Pages
             // Hvis user er logget ind skal input felter fyles ud
             if (User.Identity?.IsAuthenticated == true)
             {
-                int userId = GetLoggedInUserId();
-                await UserInputFiller(userId);
+                var (userId, adminId, role) = GetLoggedInUser();
+
+                if (role == "User" && userId.HasValue)
+                {
+                    await UserInputFiller(userId.Value); // fill form for normal user
+                }
             }
         }
 
@@ -176,10 +180,20 @@ namespace Danplanner.Client.Pages
                 return Page();
             }
 
-            // Tjekker om en bruger er logget ind eller ej
+            // Tjekker om en bruger er logget ind eller ej;
             if (User.Identity?.IsAuthenticated == true)
             {
-                userId = GetLoggedInUserId();
+                var (loggedUserId, adminId, role) = GetLoggedInUser();
+
+                if (role == "User" && loggedUserId.HasValue)
+                {
+                    userId = loggedUserId.Value;
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Admins cannot create bookings.");
+                    return Page();
+                }
             }
             else
             {
@@ -226,11 +240,6 @@ namespace Danplanner.Client.Pages
             return RedirectToPage("/ThankYou");
         }
 
-        //public async UserHandler(int? userEmail)
-        //{
-
-        //}
-
         public async Task UserInputFiller(int userId)
         {
             UserDto user = await _userGetById.GetUserByIdAsync(userId);
@@ -239,14 +248,24 @@ namespace Danplanner.Client.Pages
             NewUserAdress = user.UserAdress;
         }
 
-        public int GetLoggedInUserId()
+        public (int? UserId, int? AdminId, string? Role) GetLoggedInUser()
         {
+            if (User?.Identity?.IsAuthenticated != true)
+                return (null, null, null);
+
             var idClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
-            if (idClaim != null && int.TryParse(idClaim.Value, out var userId))
-            {
-                return userId;
-            }
-            return 0;
+            var roleClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role);
+
+            if (idClaim == null)
+                return (null, null, null);
+
+            if (roleClaim?.Value == "Admin" && int.TryParse(idClaim.Value, out var adminId))
+                return (null, adminId, "Admin");
+
+            if ((roleClaim == null || roleClaim.Value != "Admin") && int.TryParse(idClaim.Value, out var userId))
+                return (userId, null, "User");
+
+            return (null, null, null);
         }
 
         public async Task<int> NewUserHandler(string userEmail, string userAdress, string userName)
