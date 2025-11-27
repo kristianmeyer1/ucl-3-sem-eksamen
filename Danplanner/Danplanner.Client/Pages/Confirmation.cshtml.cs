@@ -27,9 +27,10 @@ namespace Danplanner.Client.Pages
         private readonly IAccommodationGetAll _accommodationGetAll;
         private readonly IAccommodationConverter _accommodationConverter;
         private readonly ICalculateTotalPrice _priceCalculator;
+        private readonly IParseDate _parseDate;
         public ContactInformation ContactInformation { get; set; }
 
-        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env, IBookingAdd bookingAdd, IUserAdd userAdd, IUserGetByEmail userGetByEmail, IAccommodationGetAll accommodationGetAll, IAccommodationConverter accommodationConverter, ICalculateTotalPrice calculateTotalPrice)
+        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env, IBookingAdd bookingAdd, IUserAdd userAdd, IUserGetByEmail userGetByEmail, IAccommodationGetAll accommodationGetAll, IAccommodationConverter accommodationConverter, ICalculateTotalPrice calculateTotalPrice, IParseDate parseDate)
         {
             _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
@@ -41,6 +42,7 @@ namespace Danplanner.Client.Pages
             _accommodationGetAll = accommodationGetAll;
             _accommodationConverter = accommodationConverter;
             _priceCalculator = calculateTotalPrice;
+            _parseDate = parseDate;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -104,8 +106,8 @@ namespace Danplanner.Client.Pages
             Addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
 
             // Datoer
-            DateTime? startDt = ParseDate(Start, out var startDisp);
-            DateTime? endDt = ParseDate(End, out var endDisp);
+            DateTime? startDt = _parseDate.ParseDate(Start, out var startDisp);
+            DateTime? endDt = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
             EndDisplay = endDisp;
 
@@ -151,8 +153,8 @@ namespace Danplanner.Client.Pages
         {
             // Vi skipper fuldstændig over alt med betaling
 
-            DateTime? checkIn = ParseDate(Start, out var startDisp);
-            DateTime? checkOut = ParseDate(End, out var endDisp);
+            DateTime? checkIn = _parseDate.ParseDate(Start, out var startDisp);
+            DateTime? checkOut = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
             EndDisplay = endDisp;
 
@@ -229,25 +231,6 @@ namespace Danplanner.Client.Pages
             return RedirectToPage("/ThankYou");
         }
 
-        private static DateTime? ParseDate(string? raw, out string display)
-        {
-            display = "—";
-            if (string.IsNullOrEmpty(raw))
-                return null;
-
-            if (DateTime.TryParseExact(
-                    raw,
-                    "yyyy-MM-dd",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out var dt))
-            {
-                display = dt.ToString("d. MMMM", CultureInfo.GetCultureInfo("da-DK"));
-                return dt.Date;
-            }
-
-            display = raw;
-            return null;
-        }
+        
     }
 }
