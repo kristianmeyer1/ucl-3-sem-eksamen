@@ -7,6 +7,7 @@ using Danplanner.Application.Models;
 using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Application.Services;
 using Danplanner.Domain.Entities;
+using Danplanner.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.IdentityModel.Tokens;
@@ -28,6 +29,7 @@ namespace Danplanner.Client.Pages
         private readonly IUserGetById _userGetById;
         private readonly IAccommodationGetAll _accommodationGetAll;
         private readonly IAccommodationConverter _accommodationConverter;
+        private readonly IAddressService _addressService;
         private readonly ICalculateTotalPrice _priceCalculator;
         private readonly IParseDate _parseDate;
         public ContactInformation ContactInformation { get; set; }
@@ -43,7 +45,8 @@ namespace Danplanner.Client.Pages
             IUserGetByEmail userGetByEmail, 
             IUserGetById userGetById,
             IAccommodationGetAll accommodationGetAll, 
-            IAccommodationConverter accommodationConverter, 
+            IAccommodationConverter accommodationConverter,
+            IAddressService addressService,
             ICalculateTotalPrice calculateTotalPrice, 
             IParseDate parseDate)
         {
@@ -57,6 +60,7 @@ namespace Danplanner.Client.Pages
             _userGetById = userGetById;
             _accommodationGetAll = accommodationGetAll;
             _accommodationConverter = accommodationConverter;
+            _addressService = addressService;
             _priceCalculator = calculateTotalPrice;
             _parseDate = parseDate;
         }
@@ -276,7 +280,15 @@ namespace Danplanner.Client.Pages
             var createdUser = await _userGetByEmail.GetUserByEmailAsync(NewUserEmail);
             return createdUser.UserId;
         }
+        public async Task<JsonResult> OnGetAddressSuggestionsAsync(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return new JsonResult(new List<string>());
+            }
+            var addresses = await _addressService.GetAddressesAsync(query);
+            return new JsonResult(addresses);
+        }
 
-        
     }
 }

@@ -19,8 +19,8 @@
                 <input class="form-control" asp-for="NewUserEmail" placeholder="Email" />
                 <span asp-validation-for="NewUserEmail" class="text-danger"></span>
 
-                <input class="form-control" asp-for="NewUserAdress" placeholder="Adresse" />
-                <span asp-validation-for="NewUserAdress" class="text-danger"></span>
+                <input id="address-input" class="form-control" asp-for="NewUserAdress" placeholder="Adresse" autocomplete="off" />
+                <ul id="suggestions" class="list-group"></ul>
             </div>
         </div>
 
@@ -91,6 +91,25 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+		const input = document.getElementById('address-input');
+		const list = document.getElementById('suggestions');
+
+		input.addEventListener('input', async () => {
+			if (input.value.length < 2) { list.innerHTML = ''; return; }
+
+			const response = await fetch(`?handler=AddressSuggestions&query=${input.value}`);
+                const data = await response.json();
+
+        list.innerHTML = data.map(x => `<li class='list-group-item' style='cursor:pointer'>${x}</li>`).join("");
+
+        list.querySelectorAll("li").forEach(li => li.onclick = () => {
+            input.value = li.textContent;
+            list.innerHTML = "";
+            });
+		});
+    </script>
 }
 
 

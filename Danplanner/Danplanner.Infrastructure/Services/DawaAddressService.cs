@@ -23,7 +23,7 @@ namespace Danplanner.Infrastructure.Services
 
         public async Task<List<string>> GetAddressesAsync(string query)
         {
-            var requestUri = $"https://dawa.aws.dk/adresser/autocomplete?tekst={Uri.EscapeDataString(query)}&maxAntal=5";
+            var requestUri = $"https://api.dataforsyningen.dk/adresser/autocomplete?q={Uri.EscapeDataString(query)}&per_side=5";
             var response = await _httpClient.GetAsync(requestUri);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
