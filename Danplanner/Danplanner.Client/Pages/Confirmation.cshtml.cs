@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Interfaces.BookingInterfaces;
+using Danplanner.Application.Interfaces.ConfirmationInterfaces;
 using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.ModelsDto;
@@ -24,9 +26,11 @@ namespace Danplanner.Client.Pages
         private readonly IUserGetByEmail _userGetByEmail;
         private readonly IAccommodationGetAll _accommodationGetAll;
         private readonly IAccommodationConverter _accommodationConverter;
+        private readonly ICalculateTotalPrice _priceCalculator;
+        private readonly IParseDate _parseDate;
         public ContactInformation ContactInformation { get; set; }
 
-        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env, IBookingAdd bookingAdd, IUserAdd userAdd, IUserGetByEmail userGetByEmail, IAccommodationGetAll accommodationGetAll, IAccommodationConverter accommodationConverter)
+        public ConfirmationModel(IAddonGetAll addonGetAll,IAccommodationTransfer accommodationService,IAccommodationUpdate availabilityService, IWebHostEnvironment env, IBookingAdd bookingAdd, IUserAdd userAdd, IUserGetByEmail userGetByEmail, IAccommodationGetAll accommodationGetAll, IAccommodationConverter accommodationConverter, ICalculateTotalPrice calculateTotalPrice, IParseDate parseDate)
         {
             _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
@@ -37,6 +41,8 @@ namespace Danplanner.Client.Pages
             _userGetByEmail = userGetByEmail;
             _accommodationGetAll = accommodationGetAll;
             _accommodationConverter = accommodationConverter;
+            _priceCalculator = calculateTotalPrice;
+            _parseDate = parseDate;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -100,8 +106,8 @@ namespace Danplanner.Client.Pages
             Addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
 
             // Datoer
-            DateTime? startDt = ParseDate(Start, out var startDisp);
-            DateTime? endDt = ParseDate(End, out var endDisp);
+            DateTime? startDt = _parseDate.ParseDate(Start, out var startDisp);
+            DateTime? endDt = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
             EndDisplay = endDisp;
 
@@ -147,25 +153,23 @@ namespace Danplanner.Client.Pages
         {
             // Vi skipper fuldstændig over alt med betaling
 
-            DateTime? checkIn = ParseDate(Start, out var startDisp);
-            DateTime? checkOut = ParseDate(End, out var endDisp);
+            DateTime? checkIn = _parseDate.ParseDate(Start, out var startDisp);
+            DateTime? checkOut = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
             EndDisplay = endDisp;
 
-            await CalculateTotalPriceAsync(checkIn, checkOut);
-            
+            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, checkIn, checkOut);
+
+            SelectedAccommodation = result.SelectedAccommodation;
+            TotalPrice = result.TotalPrice;
+            TotalPriceDisplay = result.TotalPriceDisplay;
+
             // Tjekker om vi har det dato info vi skal bruge
             if (!checkIn.HasValue || !checkOut.HasValue || checkIn >= checkOut)
             {
                 ModelState.AddModelError("", "Der skete en fejl med datoerne.");
                 return Page();
             }
-
-            var accommodations = await _accommodationGetAll.GetAllAccommodationsAsync();
-            var accommodationsDto = await _accommodationConverter.AccommodationDtoConverter(accommodations);
-
-            SelectedAccommodation = accommodationsDto
-                .FirstOrDefault(a => a.AccommodationId == AccommodationId);
 
             if (SelectedAccommodation == null || !AccommodationId.HasValue)
             {
@@ -224,68 +228,6 @@ namespace Danplanner.Client.Pages
             return RedirectToPage("/ThankYou");
         }
 
-        private static DateTime? ParseDate(string? raw, out string display)
-        {
-            display = "—";
-            if (string.IsNullOrEmpty(raw))
-                return null;
-
-            if (DateTime.TryParseExact(
-                    raw,
-                    "yyyy-MM-dd",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out var dt))
-            {
-                display = dt.ToString("d. MMMM", CultureInfo.GetCultureInfo("da-DK"));
-                return dt.Date;
-            }
-
-            display = raw;
-            return null;
-        }
-
-        private async Task CalculateTotalPriceAsync(DateTime? checkIn, DateTime? checkOut)
-        {
-            // Vi genindlæser addon listen
-            Addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
-
-            // Vi beregner hvor mange dage
-            if (checkIn.HasValue && checkOut.HasValue)
-            {
-                Days = Math.Max(0, (checkOut.Value.Date - checkIn.Value.Date).Days);
-            }
-
-            // Vi genindlæser den valgte hytte/plads
-            var accommodations = await _accommodationGetAll.GetAllAccommodationsAsync();
-            var accommodationsDto = await _accommodationConverter.AccommodationDtoConverter(accommodations);
-            SelectedAccommodation = accommodationsDto.FirstOrDefault(a => a.AccommodationId == AccommodationId);
-
-            // Standard pris for valgt hytte/plads
-            if (SelectedAccommodation?.PricePerNight is decimal price)
-            {
-                TotalPrice = price * Days;
-            }
-            else
-            {
-                TotalPrice = 0;
-            }
-
-            // Addon price
-            AddonsTotal = Addons
-                .Where(a => SelectedAddonIds.Contains(a.AddonId))
-                .Sum(a => (decimal)a.AddonPrice);
-
-            TotalPrice += AddonsTotal;
-
-            // Det skal koste ekstra for hver voksen
-            if (BookingResidents > 1)
-            {
-                int extraAdults = BookingResidents - 1;
-                TotalPrice += extraAdults * 350;
-            }
-
-            TotalPriceDisplay = $"{TotalPrice.Value:N0} kr.";
-        }
+        
     }
 }
