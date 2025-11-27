@@ -69,7 +69,24 @@
                 <div>Total pris:</div>
                 <div>@Model.TotalPriceDisplay</div>
             </div>
+            @if (User.IsInRole("Admin"))
+            {
+                    <div class="admin-discount-box">
+            <h5>Admin rabat</h5>
 
+            <div class="d-flex gap-2 mb-2">
+                <input type="number" id="manualDiscount" class="form-control" placeholder="Indtast rabat %" />
+                    <button type="button" class="btn btn-success" id="applyDiscount">Anvend rabat</button>
+                    <button type="button" class="btn btn-success" id="btn20Percent">20% rabat</button>
+            </div>
+
+            <div>
+                <strong>Opdateret pris:</strong>
+                <span id="discountedPrice">@Model.TotalPriceDisplay</span>
+            </div>
+        </div>
+
+            }
             <button type="submit" class="btn btn-primary pay-btn">Betal</button>
         </div>
 
