@@ -162,6 +162,7 @@ namespace Danplanner.Client.Pages
             await LoadPageDataAsync(checkIn, checkOut);
 
             var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, checkIn, checkOut);
+
             SelectedAccommodation = result.SelectedAccommodation;
             TotalPrice = result.TotalPrice;
             TotalPriceDisplay = result.TotalPriceDisplay;
@@ -186,7 +187,17 @@ namespace Danplanner.Client.Pages
                 return Page(); // Redisplay page without creating booking
             }
 
-            // Validate dates
+
+
+            // Accommodation
+            var list = await _accommodationGetAll.GetAllAccommodationsAsync();
+            var listDto = await _accommodationConverter.AccommodationDtoConverter(list);
+            if (AccommodationId.HasValue)
+            {
+                SelectedAccommodation = listDto.FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
+            }
+
+            // Tjekker om vi har det dato info vi skal bruge
             if (!checkIn.HasValue || !checkOut.HasValue || checkIn >= checkOut)
             {
                 ModelState.AddModelError("", "Der skete en fejl med datoerne.");
@@ -220,6 +231,7 @@ namespace Danplanner.Client.Pages
                 else
                 {
                     ModelState.AddModelError("", "You do not have permission to create a booking.");
+
                     return Page();
                 }
             }
@@ -341,7 +353,7 @@ namespace Danplanner.Client.Pages
                 SelectedAccommodation = list.FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
             }
 
-            // Beregn total 
+            // Henter valgte accommodation 
             if (!string.IsNullOrWhiteSpace(Category))
             {
                 SelectedAccommodation = list
@@ -353,6 +365,13 @@ namespace Danplanner.Client.Pages
                 // fallback: første element, hvis der ingen kategori er
                 SelectedAccommodation = list.FirstOrDefault();
             }
+
+            // Beregn Pris (uden tilkøb)
+            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, startDt, endDt);
+
+            TotalPrice = result.TotalPrice;
+            TotalPriceDisplay = result.TotalPriceDisplay;
+
         }
 
         public async Task<JsonResult> OnGetAddressSuggestionsAsync(string query)

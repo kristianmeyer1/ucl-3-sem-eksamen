@@ -9,10 +9,12 @@ namespace Danplanner.Application.Interfaces.ConfirmationInterfaces
 {
     public interface ICalculateTotalPrice
     {
-        Task<TotalPriceDto> CalculateAsync(
-    int accommodationId,
-    List<int> selectedAddonIds,
-    DateTime? checkIn,
-    DateTime? checkOut);
+        Task<TotalPriceDto> CalculateAsync
+        (
+            int accommodationId,
+            List<int> selectedAddonIds,
+            DateTime? checkIn,
+            DateTime? checkOut
+        );
     }
 }
