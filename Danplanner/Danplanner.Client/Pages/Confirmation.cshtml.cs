@@ -212,6 +212,12 @@ namespace Danplanner.Client.Pages
 
             int userId;
 
+            if (!AddressConfirmed)
+            {
+                ModelState.AddModelError("", "Vælg en adresse fra listen.");
+                return Page();
+            }
+
             // Determine which user to link to booking
             if (User.Identity?.IsAuthenticated == true)
             {
@@ -230,7 +236,7 @@ namespace Danplanner.Client.Pages
                 }
                 else
                 {
-                    ModelState.AddModelError("", "You do not have permission to create a booking.");
+                    ModelState.AddModelError("", "Du har ikke tilladelse til at oprette en booking.");
 
                     return Page();
                 }
@@ -238,7 +244,9 @@ namespace Danplanner.Client.Pages
             else
             {
                 if (!ModelState.IsValid)
+                {
                     return Page();
+                }
 
                 var userExists = await _userGetByEmail.GetUserByEmailAsync(NewUserEmail);
                 if (userExists == null)
@@ -252,11 +260,6 @@ namespace Danplanner.Client.Pages
                 }
             }
 
-            if (User.Identity?.IsAuthenticated != true && !AddressConfirmed)
-            {
-                ModelState.AddModelError(nameof(NewUserAdress), "Vælg en adresse fra listen.");
-                return Page();
-            }
 
             var finalPrice = TotalPrice ?? 0m;
             if (AdminDiscountPercent.HasValue && AdminDiscountPercent > 0)
@@ -287,8 +290,6 @@ namespace Danplanner.Client.Pages
 
             return RedirectToPage("/ThankYou");
         }
-
-
 
         public async Task UserInputFiller(int userId)
         {
