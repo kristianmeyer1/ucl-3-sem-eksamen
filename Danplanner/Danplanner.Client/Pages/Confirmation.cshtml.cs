@@ -107,6 +107,8 @@ namespace Danplanner.Client.Pages
         public bool AddressConfirmed { get; set; }
 
         public decimal AddonsTotal { get; set; }
+        [BindProperty]
+        public decimal? AdminDiscountPercent { get; set; }
 
         // ---- til view ----
         public AccommodationDto? SelectedAccommodation { get; private set; }
@@ -149,25 +151,42 @@ namespace Danplanner.Client.Pages
             }
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string? applyDiscount)
         {
-            // Vi skipper fuldstændig over alt med betaling
-
+            // Parse dates
             DateTime? checkIn = _parseDate.ParseDate(Start, out var startDisp);
             DateTime? checkOut = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
             EndDisplay = endDisp;
-            int userId;
 
             await LoadPageDataAsync(checkIn, checkOut);
 
             var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, checkIn, checkOut);
-
             SelectedAccommodation = result.SelectedAccommodation;
             TotalPrice = result.TotalPrice;
             TotalPriceDisplay = result.TotalPriceDisplay;
 
-            // Tjekker om vi har det dato info vi skal bruge
+            // --- Handle discount buttons separately ---
+            if (!string.IsNullOrEmpty(applyDiscount))
+            {
+                // If preset discount button clicked
+                if (applyDiscount != "manual" && decimal.TryParse(applyDiscount, out var presetDiscount))
+                {
+                    AdminDiscountPercent = presetDiscount;
+                }
+
+                // Apply discount if set
+                if (AdminDiscountPercent.HasValue && AdminDiscountPercent > 0)
+                {
+                    var discountFactor = 1 - (AdminDiscountPercent.Value / 100m);
+                    TotalPrice = TotalPrice * discountFactor;
+                    TotalPriceDisplay = TotalPrice?.ToString("F2");
+                }
+
+                return Page(); // Redisplay page without creating booking
+            }
+
+            // Validate dates
             if (!checkIn.HasValue || !checkOut.HasValue || checkIn >= checkOut)
             {
                 ModelState.AddModelError("", "Der skete en fejl med datoerne.");
@@ -180,7 +199,9 @@ namespace Danplanner.Client.Pages
                 return Page();
             }
 
-            // Tjekker om en bruger er logget ind eller ej;
+            int userId;
+
+            // Determine which user to link to booking
             if (User.Identity?.IsAuthenticated == true)
             {
                 var (loggedUserId, adminId, role) = GetLoggedInUser();
@@ -189,20 +210,24 @@ namespace Danplanner.Client.Pages
                 {
                     userId = loggedUserId.Value;
                 }
+                else if (role == "Admin")
+                {
+                    if (!ModelState.IsValid)
+                        return Page();
+
+                    userId = await NewUserHandler(NewUserEmail, NewUserAdress, NewUserName);
+                }
                 else
                 {
-                    ModelState.AddModelError("", "Admins cannot create bookings."); // jo de kan??
+                    ModelState.AddModelError("", "You do not have permission to create a booking.");
                     return Page();
                 }
             }
             else
             {
                 if (!ModelState.IsValid)
-                {
-                    return Page(); // sender brugeren tilbage med fejl
-                }
-                
-                // Før vi opretter ny bruger, tjekker vi om den findes i forvejen
+                    return Page();
+
                 var userExists = await _userGetByEmail.GetUserByEmailAsync(NewUserEmail);
                 if (userExists == null)
                 {
@@ -214,25 +239,26 @@ namespace Danplanner.Client.Pages
                     return Page();
                 }
             }
-            if (User.Identity?.IsAuthenticated != true)
+
+            if (User.Identity?.IsAuthenticated != true && !AddressConfirmed)
             {
-                if (!AddressConfirmed)
-                {
-                    ModelState.AddModelError(nameof(NewUserAdress), "Vælg en adresse fra listen.");
-                }
-                if (!ModelState.IsValid)
-                {
-                    return Page(); // sender brugeren tilbage med fejl
-                }
+                ModelState.AddModelError(nameof(NewUserAdress), "Vælg en adresse fra listen.");
+                return Page();
             }
 
+            var finalPrice = TotalPrice ?? 0m;
+            if (AdminDiscountPercent.HasValue && AdminDiscountPercent > 0)
+            {
+                var discountFactor = 1 - (AdminDiscountPercent.Value / 100m);
+                finalPrice = finalPrice * discountFactor;
+            }
             var bookingDto = new BookingDto()
             {
                 BookingResidents = BookingResidents,
-                BookingPrice = (double)TotalPrice.Value,
+                BookingPrice = (double)finalPrice,
                 CheckInDate = checkIn.Value,
                 CheckOutDate = checkOut.Value,
-                UserId = userId, 
+                UserId = userId,
                 AccommodationId = AccommodationId.Value
             };
 
@@ -242,12 +268,15 @@ namespace Danplanner.Client.Pages
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Der skete en fejl.");
+                Console.WriteLine(ex); // log for debugging
+                ModelState.AddModelError("", $"Der skete en fejl: {ex.Message}");
                 return Page();
             }
 
             return RedirectToPage("/ThankYou");
         }
+
+
 
         public async Task UserInputFiller(int userId)
         {
