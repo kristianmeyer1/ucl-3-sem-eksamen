@@ -62,9 +62,10 @@
             }
 
             <div class="guest-item">
-                <span class="guest-label">Antal : </span>
-                <input asp-for="BookingResidents" type="number" min="1" value="1" class="form-control" />
+                <label class="guest-label" for="BookingResidents">Antal:</label>
+                <input asp-for="BookingResidents" id="BookingResidents" type="number" min="1" value="1" class="form-control" />
             </div>
+
 
             <div class="total-box">
                 <div>Total pris:</div>

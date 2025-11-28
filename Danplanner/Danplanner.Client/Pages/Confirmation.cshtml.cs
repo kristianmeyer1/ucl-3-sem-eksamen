@@ -163,9 +163,16 @@ namespace Danplanner.Client.Pages
 
             var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, checkIn, checkOut);
 
-            SelectedAccommodation = result.SelectedAccommodation;
             TotalPrice = result.TotalPrice;
             TotalPriceDisplay = result.TotalPriceDisplay;
+
+            // Accommodation
+            var list = await _accommodationGetAll.GetAllAccommodationsAsync();
+            var listDto = await _accommodationConverter.AccommodationDtoConverter(list);
+            if (AccommodationId.HasValue)
+            {
+                SelectedAccommodation = listDto.FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
+            }
 
             // Tjekker om vi har det dato info vi skal bruge
             if (!checkIn.HasValue || !checkOut.HasValue || checkIn >= checkOut)
@@ -191,7 +198,7 @@ namespace Danplanner.Client.Pages
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Admins cannot create bookings."); // jo de kan??
+                    ModelState.AddModelError("", "Admins cannot create bookings.");
                     return Page();
                 }
             }
@@ -312,7 +319,7 @@ namespace Danplanner.Client.Pages
                 SelectedAccommodation = list.FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
             }
 
-            // Beregn total 
+            // Henter valgte accommodation 
             if (!string.IsNullOrWhiteSpace(Category))
             {
                 SelectedAccommodation = list
@@ -324,6 +331,13 @@ namespace Danplanner.Client.Pages
                 // fallback: første element, hvis der ingen kategori er
                 SelectedAccommodation = list.FirstOrDefault();
             }
+
+            // Beregn Pris (uden tilkøb)
+            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, startDt, endDt);
+
+            TotalPrice = result.TotalPrice;
+            TotalPriceDisplay = result.TotalPriceDisplay;
+
         }
 
         public async Task<JsonResult> OnGetAddressSuggestionsAsync(string query)

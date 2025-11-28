@@ -8,8 +8,10 @@ namespace Danplanner.Application.Interfaces.AccommodationInterfaces
 {
     public interface IAccommodationGetById
     {
-        Task<IReadOnlyCollection<int>> GetAvailableIdsAsync(
+        Task<IReadOnlyCollection<int>> GetAvailableIdsAsync
+        (
             DateTime? start,
-            DateTime? end);
+            DateTime? end
+        );
     }
 }
