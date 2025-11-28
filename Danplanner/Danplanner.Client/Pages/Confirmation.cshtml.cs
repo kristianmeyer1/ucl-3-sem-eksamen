@@ -317,7 +317,7 @@ namespace Danplanner.Client.Pages
             }
         }
 
-        public async Task<JsonResult> AddressSuggestionsHandler(string query)
+        public async Task<JsonResult> OnGetAddressSuggestionsAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
@@ -326,6 +326,5 @@ namespace Danplanner.Client.Pages
             var addresses = await _addressService.GetAddressesAsync(query);
             return new JsonResult(addresses);
         }
-
     }
 }
