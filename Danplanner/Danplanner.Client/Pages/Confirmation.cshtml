@@ -73,22 +73,25 @@
             </div>
             @if (User.IsInRole("Admin"))
             {
-                    <div class="admin-discount-box">
+        <div class="admin-discount-box">
             <h5>Admin rabat</h5>
 
             <div class="d-flex gap-2 mb-2">
-                <input type="number" id="manualDiscount" class="form-control" placeholder="Indtast rabat %" />
-                    <button type="button" class="btn btn-success" id="applyDiscount">Anvend rabat</button>
-                    <button type="button" class="btn btn-success" id="btn20Percent">20% rabat</button>
-            </div>
+                <!-- Manual discount input -->
+                <input asp-for="AdminDiscountPercent" id="AdminDiscountPercent" class="form-control" placeholder="Indtast rabat %" />
 
-            <div>
-                <strong>Opdateret pris:</strong>
-                <span id="discountedPrice">@Model.TotalPriceDisplay</span>
+                <!-- Buttons to recalc price, not pay -->
+                <button type="submit" class="btn btn-success" name="applyDiscount" value="manual">Anvend rabat</button>
+                <button type="submit" class="btn btn-success" name="applyDiscount" value="20"
+                        onclick="document.getElementById('AdminDiscountPercent').value='20'">
+                    20% rabat
+                </button>
             </div>
         </div>
-
             }
+
+
+
             <button type="submit" class="btn btn-primary pay-btn">Betal</button>
         </div>
 
