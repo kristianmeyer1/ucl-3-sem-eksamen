@@ -27,7 +27,8 @@ namespace Danplanner.Application.Services
             int accommodationId,
             List<int> selectedAddonIds,
             DateTime? checkIn,
-            DateTime? checkOut)
+            DateTime? checkOut,
+            int numberofGuests)
         {
             var addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
 
@@ -44,7 +45,7 @@ namespace Danplanner.Application.Services
             decimal total = 0;
             if (selectedAccommodation?.PricePerNight is decimal price)
             {
-                total = price * days;
+                total = price * days + (numberofGuests * 50);
             }
 
             var addonsTotal = addons

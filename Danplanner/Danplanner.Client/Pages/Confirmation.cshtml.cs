@@ -161,7 +161,7 @@ namespace Danplanner.Client.Pages
 
             await LoadPageDataAsync(checkIn, checkOut);
 
-            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, checkIn, checkOut);
+            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, checkIn, checkOut, BookingResidents);
 
             SelectedAccommodation = result.SelectedAccommodation;
             TotalPrice = result.TotalPrice;
@@ -368,7 +368,7 @@ namespace Danplanner.Client.Pages
             }
 
             // Beregn Pris (uden tilkøb)
-            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, startDt, endDt);
+            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, startDt, endDt, BookingResidents);
 
             TotalPrice = result.TotalPrice;
             TotalPriceDisplay = result.TotalPriceDisplay;

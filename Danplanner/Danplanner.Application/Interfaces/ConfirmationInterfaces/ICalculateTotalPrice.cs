@@ -14,7 +14,8 @@ namespace Danplanner.Application.Interfaces.ConfirmationInterfaces
             int accommodationId,
             List<int> selectedAddonIds,
             DateTime? checkIn,
-            DateTime? checkOut
+            DateTime? checkOut,
+            int numberOfGuests
         );
     }
 }
