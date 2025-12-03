@@ -41,9 +41,50 @@
             </div>
 
             <div class="price-box-confirm">
-                <div><strong>Pris pr. nat:</strong></div>
-                <div>@Model.SelectedAccommodation?.PricePerNight</div>
-            </div>
+    <div><strong>Pris pr. nat:</strong></div>
+
+                @if (Model.NightlySeasonPrices != null && Model.NightlySeasonPrices.Count > 0)
+                {
+                    var seasonSummary = new Dictionary<string, (decimal BasePrice, decimal Diff, int NightsCount)>();
+
+                    for (int i = 0; i < Model.NightlySeasonPrices.Count; i++)
+                    {
+                        var seasonName = Model.SeasonNames[i];
+                        var basePrice = Model.NightlyBasePrices[i];
+                        var seasonalPrice = Model.NightlySeasonPrices[i];
+                        var diff = seasonalPrice - basePrice;
+
+                        if (!seasonSummary.ContainsKey(seasonName))
+                        {
+                            seasonSummary[seasonName] = (basePrice, diff, 1);
+                        }
+                        else
+                        {
+                            var current = seasonSummary[seasonName];
+                            seasonSummary[seasonName] = (current.BasePrice, current.Diff, current.NightsCount + 1);
+                        }
+                    }
+
+        <ul>
+                        @foreach (var season in seasonSummary)
+                        {
+                    <li style="margin-bottom: 12px;">
+                        <strong>@season.Key:</strong><br />
+                        @season.Value.BasePrice.ToString("F2") kr.<br />
+                        <span style="margin-left: 10px;">+ @season.Value.Diff.ToString("F2") kr.</span><br />
+                    </li>
+                        }
+        </ul>
+                }
+                else
+                {
+        <div>@Model.PricePerNightWithSeason?.ToString("F2") kr.</div>
+                }
+
+
+
+
+</div>
 
             <div asp-validation-summary="All" class="text-danger"></div>
 
