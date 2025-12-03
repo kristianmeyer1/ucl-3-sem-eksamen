@@ -6,14 +6,10 @@ using Danplanner.Application.Interfaces.UserInterfaces;
 using Danplanner.Application.Models;
 using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Application.Services;
-using Danplanner.Domain.Entities;
 using Danplanner.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Runtime.InteropServices;
 using Danplanner.Application.Interfaces.SeasonInterfaces;
 
 namespace Danplanner.Client.Pages
@@ -33,7 +29,8 @@ namespace Danplanner.Client.Pages
         private readonly IAddressService _addressService;
         private readonly IOrderPricing _priceCalculator;
         private readonly IParseDate _parseDate;
-        private readonly ISeasonGetForDate _getSeasonForDate; 
+        private readonly ISeasonGetForDate _getSeasonForDate;
+        private readonly IBookingNotificationService _notificationService;
         public ContactInformation ContactInformation { get; set; }
 
         public ConfirmationModel
@@ -51,7 +48,8 @@ namespace Danplanner.Client.Pages
             IAddressService addressService,
             IOrderPricing calculateTotalPrice, 
             IParseDate parseDate,
-            ISeasonGetForDate getSeasonForDate)
+            ISeasonGetForDate getSeasonForDate,
+            IBookingNotificationService notificationService)
         {
             _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
@@ -67,6 +65,7 @@ namespace Danplanner.Client.Pages
             _priceCalculator = calculateTotalPrice;
             _parseDate = parseDate;
             _getSeasonForDate = getSeasonForDate;
+            _notificationService = notificationService;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -289,11 +288,29 @@ namespace Danplanner.Client.Pages
 
             try
             {
+                // 1) Opret booking i DB
                 await _bookingAdd.AddBookingAsync(bookingDto);
+
+                // 2) Byg notification-objekt
+                var noti = new BookingNotification
+                {
+                    UserEmail = NewUserEmail,
+                    UserName = NewUserName,
+                    Residents = BookingResidents,
+                    Price = (double)finalPrice,
+                    CheckInDate = checkIn.Value,
+                    CheckOutDate = checkOut.Value,
+                    AccommodationName = SelectedAccommodation.AccommodationName,
+                    BookingResidents = BookingResidents
+                };
+
+                // 3) Send via service (der bruger HttpClient)
+                await _notificationService.SendNotificationsAsync(noti);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex); // log for debugging
+                Console.WriteLine("[Confirmation] Fejl ved booking/notification:");
+                Console.WriteLine(ex);
                 ModelState.AddModelError("", $"Der skete en fejl: {ex.Message}");
                 return Page();
             }

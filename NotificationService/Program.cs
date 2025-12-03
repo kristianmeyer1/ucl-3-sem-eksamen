@@ -41,10 +41,12 @@ Vi glæder os til at se dig.
     {
         smtp.Send(message);
         Console.WriteLine($"[Notification] Email sent to {order.UserEmail}");
+        return Results.Ok(new {success  = true});
     }
     catch (Exception ex)
     {
         Console.WriteLine($"[Notification] Email FAILED: {ex.Message}");
+        return Results.StatusCode(500);
     }
 
     return Results.Ok();

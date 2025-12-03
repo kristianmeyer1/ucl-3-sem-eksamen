@@ -6,7 +6,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:8080
     ports:
-      - "8080:8080"   # expose to host
+      - "8080:8080" # expose to host
     depends_on:
       - notification_service
     networks:
@@ -19,7 +19,7 @@ services:
     ports:
       - "5002:5002"
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:5002/health"]
+      test: [ "CMD", "curl", "-fsS", "http://localhost:5002/health" ]
       interval: 5s
       timeout: 3s
       retries: 20

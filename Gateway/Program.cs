@@ -2,11 +2,11 @@ using Yarp.ReverseProxy;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add a CORS policy so the gateway responds with the proper headers
-// when the Blazor client (https://localhost:7091) calls the proxy at http://localhost:8080
+// when the Blazor client (https://localhost:7026) calls the proxy at http://localhost:8080
 builder.Services.AddCors(options =>
 {
 	options.AddDefaultPolicy(policy =>
-		policy.WithOrigins("https://localhost:7091")
+		policy.WithOrigins("https://localhost:7026")
 			  .AllowAnyHeader()
 			  .AllowAnyMethod()
 	);

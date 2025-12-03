@@ -48,6 +48,7 @@ namespace Danplanner.Application.Services
         {
             // Send booking til DB
             var response = await _httpClient.PostAsJsonAsync("https://localhost:7026/api/booking", bookingDto);
+            response.EnsureSuccessStatusCode();
 
             // Opret orderline og hent id til faktura
             int orderlineId = await _orderlineAdd.OrderlineAddAsync(bookingDto.BookingId);
@@ -66,39 +67,6 @@ namespace Danplanner.Application.Services
 
             // Hent tilkøb
             //List<AddonDto> addons = await _addonGetByBookingId.GetAddonsByBookingIdAsync(bookingDto.BookingId);
-
-            // Opret bekræftelses objekt og send det til notifikations service
-            var orderConfirmation = new OrderConfirmationDto
-            {
-                Date = DateTime.Now,
-                UserEmail = user.UserEmail,
-                UserName = user.UserName,
-                CheckInDate = bookingDto.CheckInDate,
-                CheckOutDate = bookingDto.CheckOutDate,
-            };
-
-            await _httpClient.PostAsJsonAsync("http://localhost:8080/orderNotify", orderConfirmation);
-
-            // Opretter faktura objekt og sender det
-            var paymentConfirmation = new PaymentConfirmationDto
-            {
-                UserEmail = user.UserEmail,
-                UserName = user.UserName,
-                Date = DateTime.Now,
-
-                PaymentId = 0, // Vi har ikke payment etc, så vi sætter id til 0
-                OrderlineId = orderlineId,
-
-                AccommodationName = accommodation.AccommodationName,
-                BookingResidents = booking.BookingResidents,
-                BookingCheckIn = booking.CheckInDate,
-                BookingCheckOut = booking.CheckOutDate,
-                Price = orderline.TotalPrice,
-            };
-
-            await _httpClient.PostAsJsonAsync("http://localhost:8080/paymentNotify", paymentConfirmation);
-
-            response.EnsureSuccessStatusCode();
         }
     }
 }
