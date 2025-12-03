@@ -7,9 +7,9 @@ using Danplanner.Application.Models.ModelsDto;
 
 namespace Danplanner.Application.Interfaces.ConfirmationInterfaces
 {
-    public interface ICalculateTotalPrice
+    public interface IOrderPricing
     {
-        Task<TotalPriceDto> CalculateAsync
+        Task<OrderPricingDto> CalculateAsync
         (
             int accommodationId,
             List<int> selectedAddonIds,

@@ -30,7 +30,7 @@ namespace Danplanner.Client.Pages
         private readonly IAccommodationGetAll _accommodationGetAll;
         private readonly IAccommodationConverter _accommodationConverter;
         private readonly IAddressService _addressService;
-        private readonly ICalculateTotalPrice _priceCalculator;
+        private readonly IOrderPricing _priceCalculator;
         private readonly IParseDate _parseDate;
         public ContactInformation ContactInformation { get; set; }
 
@@ -47,7 +47,7 @@ namespace Danplanner.Client.Pages
             IAccommodationGetAll accommodationGetAll, 
             IAccommodationConverter accommodationConverter,
             IAddressService addressService,
-            ICalculateTotalPrice calculateTotalPrice, 
+            IOrderPricing calculateTotalPrice, 
             IParseDate parseDate)
         {
             _addonGetAll = addonGetAll;
