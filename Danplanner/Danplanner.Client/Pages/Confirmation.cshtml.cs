@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using Danplanner.Application.Interfaces.SeasonInterfaces;
 
 namespace Danplanner.Client.Pages
 {
@@ -32,6 +33,7 @@ namespace Danplanner.Client.Pages
         private readonly IAddressService _addressService;
         private readonly IOrderPricing _priceCalculator;
         private readonly IParseDate _parseDate;
+        private readonly ISeasonGetForDate _getSeasonForDate; 
         public ContactInformation ContactInformation { get; set; }
 
         public ConfirmationModel
@@ -48,7 +50,8 @@ namespace Danplanner.Client.Pages
             IAccommodationConverter accommodationConverter,
             IAddressService addressService,
             IOrderPricing calculateTotalPrice, 
-            IParseDate parseDate)
+            IParseDate parseDate,
+            ISeasonGetForDate getSeasonForDate)
         {
             _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
@@ -63,6 +66,7 @@ namespace Danplanner.Client.Pages
             _addressService = addressService;
             _priceCalculator = calculateTotalPrice;
             _parseDate = parseDate;
+            _getSeasonForDate = getSeasonForDate;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -109,6 +113,12 @@ namespace Danplanner.Client.Pages
         public decimal AddonsTotal { get; set; }
         [BindProperty]
         public decimal? AdminDiscountPercent { get; set; }
+        public decimal? PricePerNightWithSeason { get; private set; }
+        public string? SeasonName { get; private set; }
+        public List<decimal> NightlyBasePrices { get; private set; } = new();
+        public List<decimal> NightlySeasonPrices { get; private set; } = new();
+        public List<string> SeasonNames { get; private set; } = new();
+
 
         // ---- til view ----
         public AccommodationDto? SelectedAccommodation { get; private set; }
@@ -336,44 +346,61 @@ namespace Danplanner.Client.Pages
 
         private async Task LoadPageDataAsync(DateTime? startDt, DateTime? endDt)
         {
-            // Kontaktinfo boks
+            // --- Load contact info ---
             var filePath = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "contactinfo.txt");
             ContactInformation = ContactInfoReader.Load(filePath);
 
-            // Tilkøb
+            // --- Load addons ---
             Addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
 
-            // Days
+            // --- Calculate days ---
             if (startDt.HasValue && endDt.HasValue)
                 Days = Math.Max(0, (endDt.Value.Date - startDt.Value.Date).Days);
 
-            // Hent alle accommodations og find den valgte
+            // --- Load accommodations ---
             var list = await _accommodationService.GetAccommodationsAsync(startDt, endDt);
             if (AccommodationId.HasValue)
-            {
                 SelectedAccommodation = list.FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
-            }
 
-            // Henter valgte accommodation 
+            // --- Fallback by category ---
             if (!string.IsNullOrWhiteSpace(Category))
-            {
-                SelectedAccommodation = list
-                    .FirstOrDefault(a =>
-                        string.Equals(a.Category, Category, StringComparison.OrdinalIgnoreCase));
-            }
+                SelectedAccommodation = list.FirstOrDefault(a => string.Equals(a.Category, Category, StringComparison.OrdinalIgnoreCase));
             else
+                SelectedAccommodation ??= list.FirstOrDefault();
+
+            // --- Loop through each night for display purposes only ---
+            if (startDt.HasValue && endDt.HasValue && SelectedAccommodation != null)
             {
-                // fallback: første element, hvis der ingen kategori er
-                SelectedAccommodation = list.FirstOrDefault();
+                NightlyBasePrices = new List<decimal>();
+                NightlySeasonPrices = new List<decimal>();
+                SeasonNames = new List<string>();
+
+                for (var date = startDt.Value.Date; date < endDt.Value.Date; date = date.AddDays(1))
+                {
+                    var season = await _getSeasonForDate.GetSeasonForDate(date);
+                    decimal basePrice = SelectedAccommodation.PricePerNight ?? 0m;
+                    decimal seasonalPrice = basePrice * (season?.SeasonMultiplier ?? 1);
+
+                    NightlyBasePrices.Add(basePrice);
+                    NightlySeasonPrices.Add(seasonalPrice);
+                    SeasonNames.Add(season?.SeasonName ?? "Normal Sæson");
+                }
+
+                // Show first night for summary display
+                PricePerNightWithSeason = NightlySeasonPrices.FirstOrDefault();
+                SeasonName = SeasonNames.FirstOrDefault() ?? "Normal Sæson";
             }
 
-            // Beregn Pris (uden tilkøb)
-            var result = await _priceCalculator.CalculateAsync(AccommodationId!.Value, SelectedAddonIds, startDt, endDt, BookingResidents);
-
-            TotalPrice = result.TotalPrice;
-            TotalPriceDisplay = result.TotalPriceDisplay;
-
+            // --- Calculate total price including addons properly ---
+            if (AccommodationId.HasValue)
+            {
+                var result = await _priceCalculator.CalculateAsync(AccommodationId.Value, SelectedAddonIds, startDt, endDt, BookingResidents);
+                TotalPrice = result.TotalPrice;           // Already includes accommodation + season + addons
+                TotalPriceDisplay = result.TotalPriceDisplay;
+            }
         }
+
+
 
         public async Task<JsonResult> OnGetAddressSuggestionsAsync(string query)
         {
