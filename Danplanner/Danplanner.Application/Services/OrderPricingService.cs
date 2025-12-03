@@ -2,27 +2,31 @@
 using Danplanner.Application.Interfaces.AddonInterfaces;
 using Danplanner.Application.Models.ModelsDto;
 using Danplanner.Application.Interfaces.ConfirmationInterfaces;
+using Danplanner.Application.Interfaces.SeasonInterfaces;
 
 namespace Danplanner.Application.Services
 {
-    public class CalculateTotalPriceService : ICalculateTotalPrice
+    public class OrderPricingService : IOrderPricing
     {
         private readonly IAddonGetAll _addonGetAll;
         private readonly IAccommodationGetAll _accommodationGetAll;
         private readonly IAccommodationConverter _accommodationConverter;
+        private readonly ISeasonGetForDate _seasonGetForDate;
 
-        public CalculateTotalPriceService
+        public OrderPricingService
         (
             IAddonGetAll addonGetAll,
             IAccommodationGetAll accommodationGetAll,
-            IAccommodationConverter accommodationConverter)
+            IAccommodationConverter accommodationConverter,
+            ISeasonGetForDate seasonGetForDate)
         {
             _addonGetAll = addonGetAll;
             _accommodationGetAll = accommodationGetAll;
             _accommodationConverter = accommodationConverter;
+            _seasonGetForDate = seasonGetForDate;
         }
 
-        public async Task<TotalPriceDto> CalculateAsync
+        public async Task<OrderPricingDto> CalculateAsync
         (
             int accommodationId,
             List<int> selectedAddonIds,
@@ -43,9 +47,18 @@ namespace Danplanner.Application.Services
             var selectedAccommodation = accommodationsDto.FirstOrDefault(a => a.AccommodationId == accommodationId);
 
             decimal total = 0;
-            if (selectedAccommodation?.PricePerNight is decimal price)
+
+            if (selectedAccommodation?.PricePerNight is decimal price && checkIn.HasValue && checkOut.HasValue)
             {
-                total = price * days + (numberofGuests * 50);
+
+                for (var date = checkIn.Value.Date; date < checkOut.Value.Date; date = date.AddDays(1))
+                {
+                    var season = await _seasonGetForDate.GetSeasonForDate(date);
+                    decimal multiplier = season?.SeasonMultiplier ?? 1;
+                    total += price * multiplier;
+                }
+
+                total += (numberofGuests - 1) * 50;
             }
 
             var addonsTotal = addons
@@ -54,7 +67,7 @@ namespace Danplanner.Application.Services
 
             total += addonsTotal;
 
-            return new TotalPriceDto
+            return new OrderPricingDto
             {
                 Days = days,
                 Addons = addons,

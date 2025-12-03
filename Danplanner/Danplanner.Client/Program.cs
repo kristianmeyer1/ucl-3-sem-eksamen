@@ -20,6 +20,8 @@ using Danplanner.Application.Interfaces.AuthInterfaces.IUserRegister;
 using Danplanner.Application.Interfaces.AuthInterfaces.IUserLogin;
 using Danplanner.Domain.Entities;
 using Danplanner.Application.Interfaces.ConfirmationInterfaces;
+using Danplanner.Persistence.Repositories.SeasonRepositories;
+using Danplanner.Application.Interfaces.SeasonInterfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -88,8 +90,16 @@ builder.Services.AddScoped<IAccommodationGetById, AccommodationRepositoryGet>();
 builder.Services.AddScoped<IAccommodationTransfer, AccommodationService>();
 builder.Services.AddScoped<IAccommodationUpdate, AccommodationRepositoryPut>();
 
+// Season builders
+builder.Services.AddScoped<ISeasonGetForDate, SeasonRepositoryGet>();
+builder.Services.AddScoped<ISeasonDelete, SeasonRepositoryDelete>();
+builder.Services.AddScoped<ISeasonUpdate, SeasonRepositoryPut>();
+builder.Services.AddScoped<ISeasonAdd, SeasonRepositoryPost>();
+builder.Services.AddScoped<ISeasonGetById, SeasonRepositoryGet>();
+builder.Services.AddScoped<ISeasonGetAll, SeasonRepositoryGet>();
+
 // Confirmation builders
-builder.Services.AddScoped<ICalculateTotalPrice, CalculateTotalPriceService>();
+builder.Services.AddScoped<IOrderPricing, OrderPricingService>();
 builder.Services.AddScoped<IParseDate, ParseDateService>();
 
 // HttpClient 

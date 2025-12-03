@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Danplanner.Application.Models.ModelsDto
 {
-    public class TotalPriceDto
+    public class OrderPricingDto
     {
         public int Days { get; init; }
         public decimal TotalPrice { get; init; }
