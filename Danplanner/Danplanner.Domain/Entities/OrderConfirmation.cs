@@ -6,8 +6,10 @@ namespace Danplanner.Domain.Entities
     {
         [Key]
         public int OrderConfirmationId { get; set; }
-        [Required]
+        public string UserEmail { get; set; }
+        public string UserName { get; set; }
         public DateTime OrderConfirmationDate { get; set; }
-        public int OrderlineId { get; set; }
+        public DateTime CheckInDate { get; set; }
+        public DateTime CheckOutDate { get; set; }
     }
 }

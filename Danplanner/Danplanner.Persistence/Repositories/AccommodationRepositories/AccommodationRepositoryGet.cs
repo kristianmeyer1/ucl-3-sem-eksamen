@@ -1,5 +1,6 @@
 ﻿using Danplanner.Application.Interfaces.AccommodationInterfaces;
 using Danplanner.Domain.Entities;
+using Danplanner.Application.Models.ModelsDto;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Danplanner.Persistence.Repositories.AccommodationRepositories
 {
-    public class AccommodationRepositoryGet : IAccommodationGetAll, IAccommodationGetAllFromTxt, IAccommodationGetById
+    public class AccommodationRepositoryGet : IAccommodationGetAll, IAccommodationGetAllFromTxt, IAccommodationGetById, IAccommodationGetById2
     {
         private readonly string _dataFilePath;
         private readonly DbManager _db;
@@ -100,6 +101,22 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
             return await query
                 .Select(a => a.AccommodationId)
                 .ToListAsync();
+        }
+
+        public async Task<AccommodationDto> AccommodationGetByIdAsync(int id)
+        {
+            Accommodation accommodation = await _db.Accommodation.FirstOrDefaultAsync(a => a.AccommodationId == id);
+
+            return new AccommodationDto()
+            {
+                AccommodationId = accommodation.AccommodationId,
+                AccommodationName = accommodation.AccommodationName,
+                AccommodationDescription = accommodation.AccommodationDescription,
+                PricePerNight = accommodation?.PricePerNight,
+                Availability = accommodation.Availability,
+                ImageUrl = accommodation?.ImageUrl,
+                Category = accommodation?.Category,
+            };
         }
     }
 }
