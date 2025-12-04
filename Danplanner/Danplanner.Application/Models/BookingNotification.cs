@@ -14,5 +14,7 @@ namespace Danplanner.Application.Models
         public double Price { get; set; }
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
+        public string AccommodationName { get; set; } = string.Empty;
+        public int BookingResidents { get; set; }
     }
 }

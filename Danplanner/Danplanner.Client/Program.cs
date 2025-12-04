@@ -61,6 +61,9 @@ builder.Services.AddScoped<IAdminRegister, AuthService>();
 // Booking builders
 builder.Services.AddScoped<IBookingAdd, BookingRepositoryPost>();
 
+// Notification builders
+builder.Services.AddHttpClient<IBookingNotificationService, BookingNotificationService>();
+
 // User builders
 builder.Services.AddHttpClient<UserService>();
 builder.Services.AddScoped<IUserAdd, UserRepositoryPost>();

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Danplanner.Persistence.Repositories.AddonRepositories
 {
-    public class AddonRepositoryGet : IAddonGetAll
+    public class AddonRepositoryGet : IAddonGetAll/*, IAddonGetByBookingId*/
     {
         private readonly DbManager _dbManager;
 
@@ -32,5 +32,17 @@ namespace Danplanner.Persistence.Repositories.AddonRepositories
                 })
                 .ToListAsync();
         }
+
+        //public async Task<List<Addon>> AddonGetByBookingIdAsync(int id)
+        //{
+        //    return await _dbManager.Addon
+        //        .Where(a => a.BookingId == id)
+        //        .Select(a => new AddonDto 
+        //        { 
+        //            AddonId = a.AddonId, 
+        //            AddonName = a.AddonName, 
+        //            AddonDescription = a.AddonDescription 
+        //        });
+        //}
     }
 }
