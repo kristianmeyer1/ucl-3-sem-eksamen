@@ -109,7 +109,7 @@ namespace Danplanner.Client.Pages
             // owner can be connection id or user id if available
             var owner = User?.Identity?.Name ?? HttpContext.Connection.Id;
 
-            var result = await _reservationLockService.TryLockAsync(key, TimeSpan.FromMinutes(1), owner);
+            var result = await _reservationLockService.TryLockAsync(key, TimeSpan.FromMinutes(10), owner);
 
             var resp = new LockResponse
             {
