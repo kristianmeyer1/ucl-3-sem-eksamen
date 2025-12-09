@@ -97,10 +97,9 @@
             @foreach (var addon in Model.Addons)
             {
                 <label>
-                    <input type="checkbox"
+                    <input type="checkbox" 
                            name="SelectedAddonIds"
-                           value="@addon.AddonId"
-                           onchange="this.form.submit()" />
+                               value="@addon.AddonId"/>
                     @addon.AddonName (@addon.AddonPrice kr.)
                 </label>
             }
