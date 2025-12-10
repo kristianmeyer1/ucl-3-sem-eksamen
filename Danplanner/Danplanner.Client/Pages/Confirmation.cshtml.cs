@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using Danplanner.Application.Interfaces.SeasonInterfaces;
+using Danplanner.Application.Interfaces.ReservationInterfaces;
 
 namespace Danplanner.Client.Pages
 {
@@ -31,6 +32,7 @@ namespace Danplanner.Client.Pages
         private readonly IParseDate _parseDate;
         private readonly ISeasonGetForDate _getSeasonForDate;
         private readonly IBookingNotificationService _notificationService;
+        private readonly IReservationLockService _reservationLockService;
         public ContactInformation ContactInformation { get; set; }
 
         public ConfirmationModel
@@ -49,7 +51,8 @@ namespace Danplanner.Client.Pages
             IOrderPricing calculateTotalPrice, 
             IParseDate parseDate,
             ISeasonGetForDate getSeasonForDate,
-            IBookingNotificationService notificationService)
+            IBookingNotificationService notificationService,
+            IReservationLockService reservationLockService)
         {
             _addonGetAll = addonGetAll;
             _accommodationService = accommodationService;
@@ -66,6 +69,7 @@ namespace Danplanner.Client.Pages
             _parseDate = parseDate;
             _getSeasonForDate = getSeasonForDate;
             _notificationService = notificationService;
+            _reservationLockService = reservationLockService;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -117,6 +121,10 @@ namespace Danplanner.Client.Pages
         public List<decimal> NightlyBasePrices { get; private set; } = new();
         public List<decimal> NightlySeasonPrices { get; private set; } = new();
         public List<string> SeasonNames { get; private set; } = new();
+        [BindProperty(SupportsGet = true)]
+        public string? LockToken { get; set; }
+
+        public bool LockValid { get; private set; } = false;
 
 
         // ---- til view ----
@@ -414,6 +422,18 @@ namespace Danplanner.Client.Pages
                 var result = await _priceCalculator.CalculateAsync(AccommodationId.Value, SelectedAddonIds, startDt, endDt, BookingResidents);
                 TotalPrice = result.TotalPrice;           // Already includes accommodation + season + addons
                 TotalPriceDisplay = result.TotalPriceDisplay;
+            }
+            if (string.IsNullOrEmpty(LockToken) || !AccommodationId.HasValue)
+            {
+                ModelState.AddModelError("", "Manglende reservationstoken. Start venligst din booking forfra");
+            }
+
+            var placeKeyPost = PlaceKey ?? string.Empty;
+            var lockKey = $"{AccommodationId.Value}|{Start}|{End}|{placeKeyPost}";
+            var valid = await _reservationLockService.ValidateTokenAsync(lockKey, LockToken);
+            if (!valid)
+            {
+                ModelState.AddModelError("", "Reservationstoken er udløbet eller ugyldig. Booking blev ikke oprettet. Start venligts din booking forfra");
             }
         }
 

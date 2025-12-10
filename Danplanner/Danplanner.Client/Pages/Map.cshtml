@@ -50,6 +50,7 @@
 </select>
     </div>
 </div>
+<form method="post" asp-antiforgery="true" id="antiforgeryForm" style="display:none"></form>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -157,20 +158,50 @@
             </div>`;
             marker.bindPopup(popupHtml, { closeButton: true });
 
-                marker.on('popupopen', () => {
-                setTimeout(() => {
-                    const btn = document.querySelector('.choose-btn[data-key="' + point.Key + '"]');
-                    if (btn) {
-                        btn.addEventListener('click', () => {
-                            const accommodationId = point.AccommodationId; // ID fra map.json / DB
-                            const category = point.Category || "";         // hytte/plads/luksushytte
-                            const placeKey = point.Key;   // fx "Plads 5"
+            marker.on('popupopen', () => {
+            setTimeout(() => {
+                const btn = document.querySelector('.choose-btn[data-key="' + point.Key + '"]');
+                if (btn) {
+                    btn.addEventListener('click', async () => {
+                        const accommodationId = point.AccommodationId;
+                        const category = point.Category || "";
+                        const placeKey = point.Key;
+                        // startQuery and endQuery should be in the surrounding script context
+                        const payload = {
+                            accommodationId: accommodationId,
+                            start: startQuery,
+                            end: endQuery,
+                            placeKey: placeKey
+                        };
+                        // before calling fetch, read token:
+                        const afInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                        const token = afInput ? afInput.value : null;
 
-                            const url = `/Confirmation?Start=${encodeURIComponent(startQuery)}&End=${encodeURIComponent(endQuery)}&accommodationId=${encodeURIComponent(accommodationId)}&category=${encodeURIComponent(category)}&placeKey=${encodeURIComponent(placeKey)}`;
-                            window.location.href = url;
+                        const r = await fetch('?handler=Lock', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': token // required by ASP.NET Core antiforgery
+                            },
+                            body: JSON.stringify(payload)
                         });
-                    }
-                }, 10);
+
+                        if (!r.ok) {
+                            alert('Kunne ikke oprette reservation lock (netværk). Prøv igen.');
+                            return;
+                        }
+
+                        const data = await r.json();
+                        if (data.success) {
+                            // include token in query so Confirmation page can validate
+                            const url = `/Confirmation?Start=${encodeURIComponent(startQuery)}&End=${encodeURIComponent(endQuery)}&accommodationId=${encodeURIComponent(accommodationId)}&category=${encodeURIComponent(category)}&placeKey=${encodeURIComponent(placeKey)}&lockToken=${encodeURIComponent(data.token)}`;
+                            window.location.href = url;
+                        } else {
+                            alert('Denne plads er allerede reserveret af en anden bruger: ' + (data.message || ''));
+                        }
+                    });
+                }
+            }, 10);
             });
 
             markers[point.Key] = marker;
@@ -194,3 +225,4 @@
         return s.replace(/[&<>"'`=\/]/g, function (c) { return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;', '/':'&#x2F;','`':'&#x60;','=':'&#x3D;' })[c]; });
     }
 </script>
+

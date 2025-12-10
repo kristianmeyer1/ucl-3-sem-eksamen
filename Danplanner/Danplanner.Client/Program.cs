@@ -22,6 +22,7 @@ using Danplanner.Domain.Entities;
 using Danplanner.Application.Interfaces.ConfirmationInterfaces;
 using Danplanner.Persistence.Repositories.SeasonRepositories;
 using Danplanner.Application.Interfaces.SeasonInterfaces;
+using Danplanner.Application.Interfaces.ReservationInterfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -105,6 +106,9 @@ builder.Services.AddScoped<ISeasonGetAll, SeasonRepositoryGet>();
 builder.Services.AddScoped<IOrderPricing, OrderPricingService>();
 builder.Services.AddScoped<IParseDate, ParseDateService>();
 
+// Reservation lock service
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IReservationLockService, ReservationLockService>();
 // HttpClient 
 builder.Services.AddHttpClient();
 

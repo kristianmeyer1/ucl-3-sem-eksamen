@@ -1,4 +1,5 @@
 using Danplanner.Application.Interfaces.AccommodationInterfaces;
+using Danplanner.Application.Interfaces.ReservationInterfaces;
 using Danplanner.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,11 +12,13 @@ namespace Danplanner.Client.Pages
     {
         private readonly IWebHostEnvironment _env;
         private readonly IAccommodationGetById _accommodationGetById;
+        private readonly IReservationLockService _reservationLockService;
 
-        public MapModel(IWebHostEnvironment env, IAccommodationGetById accommodationGetById)
+        public MapModel(IWebHostEnvironment env, IAccommodationGetById accommodationGetById, IReservationLockService reservationLockService)
         {
             _env = env;
             _accommodationGetById = accommodationGetById;
+            _reservationLockService = reservationLockService;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -94,6 +97,29 @@ namespace Danplanner.Client.Pages
             };
 
             FilteredMapJson = JsonSerializer.Serialize(filteredMap);
+        }
+        public async Task<IActionResult> OnPostLockAsync([FromBody] LockRequest req)
+        {
+            if (req == null || req.AccommodationId <= 0)
+                return new JsonResult(new LockResponse { Success = false, Message = "Invalid request" });
+
+            // Build a deterministic lock key — include dates/placeKey to allow same accommodation for different dates
+            var key = $"{req.AccommodationId}|{req.Start}|{req.End}|{req.PlaceKey}";
+
+            // owner can be connection id or user id if available
+            var owner = User?.Identity?.Name ?? HttpContext.Connection.Id;
+
+            var result = await _reservationLockService.TryLockAsync(key, TimeSpan.FromMinutes(10), owner);
+
+            var resp = new LockResponse
+            {
+                Success = result.Success,
+                Token = result.Token,
+                ExpiresAt = result.ExpiresAt,
+                Message = result.Message
+            };
+
+            return new JsonResult(resp);
         }
 
         private static DateTime? ParseDate(string? raw)
