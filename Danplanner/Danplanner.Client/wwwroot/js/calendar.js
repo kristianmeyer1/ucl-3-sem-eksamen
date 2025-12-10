@@ -1,6 +1,4 @@
-﻿// Inline, two-month range calendar using flatpickr.
-// Updates #start, #end and #days. Requires flatpickr + l10n/da loaded in layout.
-document.addEventListener("DOMContentLoaded", function () {
+﻿document.addEventListener("DOMContentLoaded", function () {
     if (typeof flatpickr === "undefined") {
         console.warn("flatpickr not found. Include flatpickr scripts in _Layout.cshtml.");
         return;
@@ -21,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const format = (instance, date) => {
         if (!date) return "—";
-        // use flatpickr's formatting (short month)
         return instance.formatDate(date, "d. M.");
     };
 
@@ -48,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // two dates selected
+            // two dates
             const start = selectedDates[0];
             const end = selectedDates[1];
             startSpan.textContent = format(instance, start);
@@ -56,7 +53,6 @@ document.addEventListener("DOMContentLoaded", function () {
             daysSpan.textContent = calcDays(new Date(start), new Date(end));
         },
         onReady: function (_, __, instance) {
-            // initial empty state handled above
         }
     });
 
