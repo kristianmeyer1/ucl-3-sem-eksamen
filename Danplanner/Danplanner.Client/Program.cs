@@ -32,7 +32,6 @@ var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DbManager>(options =>
     options.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
-// Add HttpContextAccessor for Razor pages and layout injection
 builder.Services.AddHttpContextAccessor();
 
 // Controllers & Razor Pages
@@ -85,7 +84,6 @@ builder.Services.AddScoped<IUserVerifyLoginCode, AuthService>();
 builder.Services.AddScoped<IUserRequestRegisterCode, AuthService>();
 builder.Services.AddScoped<IUserVerifyRegisterCode, AuthService>();
 
-
 // Accommodation builders
 builder.Services.AddScoped<IAccommodationConverter, AccommodationService>();
 builder.Services.AddScoped<IAccommodationGetAll, AccommodationRepositoryGet>();
@@ -109,6 +107,7 @@ builder.Services.AddScoped<IParseDate, ParseDateService>();
 // Reservation lock service
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IReservationLockService, ReservationLockService>();
+
 // HttpClient 
 builder.Services.AddHttpClient();
 

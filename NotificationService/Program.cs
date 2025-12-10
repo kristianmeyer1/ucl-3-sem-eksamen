@@ -5,9 +5,6 @@ using NotificationService.Models;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-// ---------------------------
-// Order confirmation email
-// ---------------------------
 app.MapPost("/orderNotify", (OrderConfirmation order) =>
 {
     Console.WriteLine($"[Notification] Order -> {order.UserEmail}");
@@ -52,9 +49,6 @@ Vi glæder os til at se dig.
     return Results.Ok();
 });
 
-// ---------------------------
-// Payment confirmation email
-// ---------------------------
 app.MapPost("/paymentNotify", (PaymentConfirmation payment) =>
 {
     Console.WriteLine($"[Notification] Payment -> {payment.UserEmail}");

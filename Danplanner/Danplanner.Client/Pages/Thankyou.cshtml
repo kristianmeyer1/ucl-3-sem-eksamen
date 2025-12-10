@@ -6,7 +6,6 @@
 
 <div class="container">
     <div class="thankyou-grid">
-        <!-- Venstre kolonne: besked -->
         <div class="left-column">
             <div class="thankyou-box">
                 <h3>Tak for din booking!</h3>
@@ -19,7 +18,6 @@
             </div>
         </div>
 
-        <!-- Højre kolonne: Kontakt info -->
         <aside class="contact-box">
             <h6><span class="badge bg-dark">i</span> Kontakt Information</h6>
             <p><strong>Tlf:</strong> @Model.ContactInformation.ContactPhoneNumber</p>
@@ -45,11 +43,10 @@
         gap: 24px;
     }
 
-    /* Boksen omkring tak-teksten er nu usynlig */
     .thankyou-box {
-        border: none; /* Fjern border */
-        background: transparent; /* Fjern baggrund */
-        padding: 0; /* Valgfrit, kan sættes til lidt padding */
+        border: none; 
+        background: transparent;
+        padding: 0; 
         font-size: 1.1rem;
         line-height: 1.5;
     }
@@ -59,14 +56,13 @@
         background: #f7f7f7;
         padding: 12px;
         border-radius: 4px;
-        margin-left: auto; /* Skubber boksen til højre */
+        margin-left: auto; 
         min-width: 280px;
         flex: 0 0 auto;
         position: sticky;
         top: 20px;
     }
 
-    /* Responsivt til små skærme */
     @@media (max-width: 992px) {
         .thankyou-grid
 

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Danplanner</title>
 
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Danplanner.Client.styles.css" asp-append-version="true" />
@@ -20,7 +19,7 @@
 
         ViewBag.HideBackButton = hideBackButton;
     }
-    <!-- Header / Navbar -->
+
     <header>
         <header>
             <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -64,21 +63,18 @@
         </header>
     </header>
 
-    <!-- Main content -->
     <main class="flex-grow-1">
         <div class="container py-3">
             @RenderBody()
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="border-top footer text-muted text-center py-3">
         <div class="container">
             &copy; 2025 - Danplanner - <a asp-area="" asp-page="/Privacy">Privatliv</a>
         </div>
     </footer>
 
-    <!-- Login Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -102,7 +98,7 @@
             </div>
         </div>
     </div>
-    <!-- Register Modal -->
+
 <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -114,7 +110,6 @@
 
             <div class="modal-body">
 
-                <!-- OTP Section -->
                 <div id="otpSection">
                     <div class="mb-3">
                         <label class="form-label">Email</label>
@@ -128,7 +123,6 @@
                     </div>
                 </div>
 
-                <!-- Registration Form -->
                 <form id="registerForm" style="display:none;">
                     <div class="mb-3">
                         <label class="form-label">Email</label>
@@ -155,11 +149,9 @@
 
 
 
-    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-@*     <script src="~/js/site.js" asp-append-version="true"></script>
- *@    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/da.js"></script>
     <script src="~/js/login.js" asp-append-version="true"></script>
     <script src="~/js/register.js" asp-append-version="true"></script>
@@ -182,7 +174,6 @@
 </html>
 
 <style>
-    /* Kalenderkort */
     .calendar-card {
         min-height: 420px;
         max-width: 760px;
@@ -194,7 +185,6 @@
         font-size: 1.05rem;
     }
 
-    /* Centering helper */
     .center-vertical {
         min-height: 60vh;
         display: flex;
@@ -202,7 +192,6 @@
         justify-content: center;
     }
 
-    /* Sticky footer layout */
     html, body {
         height: 100%;
         margin: 0;
@@ -215,14 +204,13 @@
     }
 
     main.flex-grow-1 {
-        flex: 1 0 auto; /* fylder mellem header og footer */
+        flex: 1 0 auto; 
     }
 
     footer {
-        flex-shrink: 0; /* Footer klippes ikke */
+        flex-shrink: 0; 
     }
 
-    /* Google Translate */
     #google_translate_element {
         display: inline-block;
         margin-left: 10px;

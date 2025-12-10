@@ -9,6 +9,5 @@ namespace Danplanner.Application.Interfaces.AuthInterfaces.IUserLogin
     public interface IUserRequestLoginCode
     {
         Task<bool> RequestUserLoginCodeAsync(string email);
-
     }
 }

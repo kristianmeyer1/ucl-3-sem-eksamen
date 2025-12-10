@@ -16,17 +16,13 @@ namespace Danplanner.Application.Services
     {
         private readonly IAdminGetById _adminGetById;
         private readonly IAdminAdd _adminAdd;
-
         private readonly IUserCreateToken _userToken;
         private readonly IAdminCreateToken _adminToken;
-
         private readonly PasswordHasher<Admin> _passwordHasher;
-
         private readonly IUserGetByEmail _userRepository;
         private readonly IEmailService _emailService;
         private readonly IUserAdd _addUserByEmail;
 
-        // In-memory OTP store
         private static readonly ConcurrentDictionary<string, UserOtp> _userOtps = new();
 
         public AuthService(
@@ -48,15 +44,11 @@ namespace Danplanner.Application.Services
             _addUserByEmail = addUserByEmail;
         }
 
-        // --------------------------
-        // Token creation
-        // --------------------------
+        // Token Creation
         private string CreateTokenForAdmin(Admin admin) => _adminToken.CreateTokenForAdmin(admin);
         private string CreateTokenForUser(UserDto user) => _userToken.CreateTokenForUser(user);
 
-        // --------------------------
         // Admin Registration
-        // --------------------------
         public async Task<AdminDto> RegisterAdminAsync(AdminDto request)
         {
             var existingAdmin = await _adminGetById.GetAdminByIdAsync(request.AdminId);
@@ -78,9 +70,7 @@ namespace Danplanner.Application.Services
             };
         }
 
-        // --------------------------
         // User Registration
-        // -------------------------- 
         public async Task<UserDto> RegisterUserAsync(UserDto request)
         {
             var existingUser = await _userRepository.GetUserByEmailAsync(request.UserEmail);
@@ -101,12 +91,10 @@ namespace Danplanner.Application.Services
         }
 
 
-        // --------------------------
         // Login (Admin & User OTP)
-        // --------------------------
         public async Task<string?> LoginAsync(LoginDto request)
         {
-            // ----- Admin login -----
+            // Admin login
             if (request.AdminId.HasValue && !string.IsNullOrEmpty(request.Password))
             {
                 var admin = await _adminGetById.GetAdminByIdAsync(request.AdminId.Value);
@@ -119,13 +107,12 @@ namespace Danplanner.Application.Services
                 return null;
             }
 
-            // ----- User OTP login -----
+            // User OTP login
             if (!string.IsNullOrEmpty(request.Email))
             {
                 var user = await _userRepository.GetUserByEmailAsync(request.Email);
                 if (user == null) return null;
 
-                // Step 1: Request OTP
                 if (string.IsNullOrEmpty(request.Code))
                 {
                     var code = new Random().Next(100000, 999999).ToString();
@@ -147,7 +134,7 @@ namespace Danplanner.Application.Services
                     return "OTP_SENT";
                 }
 
-                // Step 2: Verify OTP
+                // Verificer OTP
                 if (_userOtps.TryGetValue(request.Email, out var storedOtp))
                 {
                     if (storedOtp.Expiration < DateTime.UtcNow)
@@ -169,9 +156,7 @@ namespace Danplanner.Application.Services
             return null; // no credentials provided
         }
 
-        // --------------------------
         // Request OTP separately
-        // --------------------------
         public async Task<bool> RequestUserLoginCodeAsync(string email)
         {
             var user = await _userRepository.GetUserByEmailAsync(email);
@@ -222,9 +207,7 @@ namespace Danplanner.Application.Services
 
 
 
-        // --------------------------
         // Verify OTP separately
-        // --------------------------
         public async Task<string?> VerifyUserLoginCodeAsync(string email, string code)
         {
             if (!_userOtps.TryGetValue(email, out var storedOtp))
@@ -265,12 +248,7 @@ namespace Danplanner.Application.Services
             return true; // OTP korrekt
         }
 
-
-
-
-        // --------------------------
         // Helper class for OTP
-        // --------------------------
         private class UserOtp
         {
             public string Code { get; set; } = null!;

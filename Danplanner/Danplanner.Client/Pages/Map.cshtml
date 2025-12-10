@@ -55,13 +55,11 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    // embed server-provided json
     const mapDef = @Html.Raw(Model.FilteredMapJson);
     const startQuery = '@(Model.Start ?? string.Empty)';
     const endQuery = '@(Model.End ?? string.Empty)';
     const preselected = '@(Model.SelectedKey ?? "")';
 
-    // default Leaflet blue marker (use CDN images)
     const defaultIcon = L.icon({
         iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
         iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -72,7 +70,6 @@
         shadowSize: [41, 41]
     });
 
-    // initialize leaflet with CRS.Simple so coordinates map to image pixels
     const map = L.map('map', {
         crs: L.CRS.Simple,
         minZoom: -5,
@@ -81,13 +78,11 @@
         attributionControl: false
     });
 
-    // image bounds: top-left (0,0) to bottom-right (height, width)
     const bounds = [[0, 0], [mapDef.Height, mapDef.Width]];
     const image = L.imageOverlay(mapDef.ImageUrl, bounds).addTo(map);
 
     map.fitBounds(bounds);
 
-    // marker group
     const markers = {};
     const listEl = document.getElementById('points');
         listEl.addEventListener('change', () => {
@@ -96,7 +91,6 @@
         }
     });
 
-    // create icon for a custom image url
     function createIconFromUrl(url) {
         return L.icon({
             iconUrl: url,
@@ -110,7 +104,6 @@
         const m = markers[key];
         if (!m) return;
 
-        // marker valgt option i dropdown
         Array.from(listEl.options).forEach(o => {
             o.selected = (o.value === key);
         });
@@ -121,15 +114,12 @@
 
     (function addPoints() {
         (mapDef.Points || []).forEach(point => {
-            // Leaflet uses [lat, lng] => [y, x] for CRS.Simple using the same bounds as the image
             const lat = mapDef.Height - point.Y;
             const lng = point.X;
             const latlng = [lat, lng];
 
-            // create marker initially with defaultIcon to avoid broken images
             const marker = L.marker(latlng, { icon: defaultIcon }).addTo(map);
 
-            // if a custom ImageUrl exists, try to load it and replace icon on success
             if (point.ImageUrl) {
                 const img = new Image();
                 img.onload = function () {
@@ -137,15 +127,12 @@
                         const custom = createIconFromUrl(point.ImageUrl);
                         marker.setIcon(custom);
                     } catch (e) {
-                        // if anything goes wrong, keep defaultIcon
                         console.warn('Failed to set custom icon for', point.Key, e);
                     }
                 };
                 img.onerror = function () {
-                    // keep default icon if image fails to load
                     console.warn('Custom icon failed to load for', point.Key, point.ImageUrl);
                 };
-                // start loading (cache-bust omitted to allow normal caching)
                 img.src = point.ImageUrl;
             }
 
@@ -166,14 +153,12 @@
                         const accommodationId = point.AccommodationId;
                         const category = point.Category || "";
                         const placeKey = point.Key;
-                        // startQuery and endQuery should be in the surrounding script context
                         const payload = {
                             accommodationId: accommodationId,
                             start: startQuery,
                             end: endQuery,
                             placeKey: placeKey
                         };
-                        // before calling fetch, read token:
                         const afInput = document.querySelector('input[name="__RequestVerificationToken"]');
                         const token = afInput ? afInput.value : null;
 
@@ -181,7 +166,7 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'RequestVerificationToken': token // required by ASP.NET Core antiforgery
+                                'RequestVerificationToken': token 
                             },
                             body: JSON.stringify(payload)
                         });
@@ -193,7 +178,6 @@
 
                         const data = await r.json();
                         if (data.success) {
-                            // include token in query so Confirmation page can validate
                             const url = `/Confirmation?Start=${encodeURIComponent(startQuery)}&End=${encodeURIComponent(endQuery)}&accommodationId=${encodeURIComponent(accommodationId)}&category=${encodeURIComponent(category)}&placeKey=${encodeURIComponent(placeKey)}&lockToken=${encodeURIComponent(data.token)}`;
                             window.location.href = url;
                         } else {
@@ -206,20 +190,17 @@
 
             markers[point.Key] = marker;
 
-            // add list item
             const opt = document.createElement('option');
             opt.value = point.Key;
             opt.textContent = point.Title;
             listEl.appendChild(opt);
             });
 
-        // preselect if requested
         if (preselected) {
             setTimeout(() => selectPoint(preselected), 250);
         }
     })();
 
-    // small helper
     function escapeHtml(s) {
         if (!s) return '';
         return s.replace(/[&<>"'`=\/]/g, function (c) { return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;', '/':'&#x2F;','`':'&#x60;','=':'&#x3D;' })[c]; });

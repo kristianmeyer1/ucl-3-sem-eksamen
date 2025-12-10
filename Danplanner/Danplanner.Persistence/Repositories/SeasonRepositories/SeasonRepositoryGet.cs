@@ -34,7 +34,6 @@ namespace Danplanner.Persistence.Repositories.SeasonRepositories
         }).ToListAsync();
         }
 
-
         public async Task<SeasonDto?> GetSeasonByIdAsync(int seasonId)
         {
             var season = await _dbManager.Season.FirstOrDefaultAsync(u => u.SeasonId == seasonId);

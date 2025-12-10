@@ -18,11 +18,9 @@ namespace Danplanner.Persistence.Repositories.SeasonRepositories
 
         public async Task<SeasonDto?> UpdateSeasonAsync(SeasonDto seasonDto)
         {
-            // Find the existing entity
             var season = await _dbManager.Season.FirstOrDefaultAsync(u => u.SeasonId == seasonDto.SeasonId);
             if (season == null) return null;
 
-            // Update properties
             season.SeasonName = seasonDto.SeasonName;
             season.SeasonStartDate = seasonDto.SeasonStartDate;
             season.SeasonEndDate = seasonDto.SeasonEndDate;
@@ -30,7 +28,6 @@ namespace Danplanner.Persistence.Repositories.SeasonRepositories
 
             await _dbManager.SaveChangesAsync();
 
-            // Map back to DTO
             return new SeasonDto
             {
                 SeasonId = season.SeasonId,

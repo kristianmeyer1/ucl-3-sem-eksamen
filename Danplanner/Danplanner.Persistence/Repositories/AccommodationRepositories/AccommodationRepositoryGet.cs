@@ -85,7 +85,6 @@ namespace Danplanner.Persistence.Repositories.AccommodationRepositories
             var e = end.Value.Date;
 
             // Find accommodationId'er med overlappende booking i perioden
-            // Overlap: CheckIn < slut && CheckOut > start
             var bookedIds = await _db.Booking
                 .Where(b => b.CheckInDate < e && b.CheckOutDate > s)
                 .Select(b => b.AccommodationId)

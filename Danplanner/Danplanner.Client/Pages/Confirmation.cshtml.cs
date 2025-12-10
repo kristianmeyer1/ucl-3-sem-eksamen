@@ -126,8 +126,7 @@ namespace Danplanner.Client.Pages
 
         public bool LockValid { get; private set; } = false;
 
-
-        // ---- til view ----
+        // til view 
         public AccommodationDto? SelectedAccommodation { get; private set; }
         public List<AddonDto> Addons { get; private set; } = new();
         public string StartDisplay { get; private set; } = "—";
@@ -163,14 +162,14 @@ namespace Danplanner.Client.Pages
 
                 if (role == "User" && userId.HasValue)
                 {
-                    await UserInputFiller(userId.Value); // fill form for normal user
+                    await UserInputFiller(userId.Value); // fill form til normal user
                 }
             }
         }
 
         public async Task<IActionResult> OnPostAsync(string? applyDiscount)
         {
-            // Parse dates
+            // Parse dato
             DateTime? checkIn = _parseDate.ParseDate(Start, out var startDisp);
             DateTime? checkOut = _parseDate.ParseDate(End, out var endDisp);
             StartDisplay = startDisp;
@@ -184,16 +183,14 @@ namespace Danplanner.Client.Pages
             TotalPrice = result.TotalPrice;
             TotalPriceDisplay = result.TotalPriceDisplay;
 
-            // --- Handle discount buttons separately ---
+            // Håndter rabat sepperat
             if (!string.IsNullOrEmpty(applyDiscount))
             {
-                // If preset discount button clicked
                 if (applyDiscount != "manual" && decimal.TryParse(applyDiscount, out var presetDiscount))
                 {
                     AdminDiscountPercent = presetDiscount;
                 }
 
-                // Apply discount if set
                 if (AdminDiscountPercent.HasValue && AdminDiscountPercent > 0)
                 {
                     var discountFactor = 1 - (AdminDiscountPercent.Value / 100m);
@@ -201,10 +198,8 @@ namespace Danplanner.Client.Pages
                     TotalPriceDisplay = TotalPrice?.ToString("F2");
                 }
 
-                return Page(); // Redisplay page without creating booking
+                return Page(); 
             }
-
-
 
             // Accommodation
             var list = await _accommodationGetAll.GetAllAccommodationsAsync();
@@ -235,7 +230,6 @@ namespace Danplanner.Client.Pages
                 return Page();
             }
 
-            // Determine which user to link to booking
             if (User.Identity?.IsAuthenticated == true)
             {
                 var (loggedUserId, adminId, role) = GetLoggedInUser();
@@ -276,7 +270,6 @@ namespace Danplanner.Client.Pages
                     return Page();
                 }
             }
-
 
             var finalPrice = TotalPrice ?? 0m;
             if (AdminDiscountPercent.HasValue && AdminDiscountPercent > 0)
@@ -371,29 +364,23 @@ namespace Danplanner.Client.Pages
 
         private async Task LoadPageDataAsync(DateTime? startDt, DateTime? endDt)
         {
-            // --- Load contact info ---
             var filePath = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "contactinfo.txt");
             ContactInformation = ContactInfoReader.Load(filePath);
 
-            // --- Load addons ---
             Addons = (await _addonGetAll.GetAllAddonsAsync()).ToList();
 
-            // --- Calculate days ---
             if (startDt.HasValue && endDt.HasValue)
                 Days = Math.Max(0, (endDt.Value.Date - startDt.Value.Date).Days);
 
-            // --- Load accommodations ---
             var list = await _accommodationService.GetAccommodationsAsync(startDt, endDt);
             if (AccommodationId.HasValue)
                 SelectedAccommodation = list.FirstOrDefault(a => a.AccommodationId == AccommodationId.Value);
 
-            // --- Fallback by category ---
             if (!string.IsNullOrWhiteSpace(Category))
                 SelectedAccommodation = list.FirstOrDefault(a => string.Equals(a.Category, Category, StringComparison.OrdinalIgnoreCase));
             else
                 SelectedAccommodation ??= list.FirstOrDefault();
 
-            // --- Loop through each night for display purposes only ---
             if (startDt.HasValue && endDt.HasValue && SelectedAccommodation != null)
             {
                 NightlyBasePrices = new List<decimal>();
@@ -411,16 +398,14 @@ namespace Danplanner.Client.Pages
                     SeasonNames.Add(season?.SeasonName ?? "Normal Sæson");
                 }
 
-                // Show first night for summary display
                 PricePerNightWithSeason = NightlySeasonPrices.FirstOrDefault();
                 SeasonName = SeasonNames.FirstOrDefault() ?? "Normal Sæson";
             }
 
-            // --- Calculate total price including addons properly ---
             if (AccommodationId.HasValue)
             {
                 var result = await _priceCalculator.CalculateAsync(AccommodationId.Value, SelectedAddonIds, startDt, endDt, BookingResidents);
-                TotalPrice = result.TotalPrice;           // Already includes accommodation + season + addons
+                TotalPrice = result.TotalPrice;
                 TotalPriceDisplay = result.TotalPriceDisplay;
             }
             if (string.IsNullOrEmpty(LockToken) || !AccommodationId.HasValue)
@@ -436,9 +421,6 @@ namespace Danplanner.Client.Pages
                 ModelState.AddModelError("", "Reservationstoken er udløbet eller ugyldig. Booking blev ikke oprettet. Start venligts din booking forfra");
             }
         }
-
-
-
         public async Task<JsonResult> OnGetAddressSuggestionsAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))

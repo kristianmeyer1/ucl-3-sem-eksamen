@@ -10,6 +10,5 @@ namespace Danplanner.Application.Interfaces.SeasonInterfaces
     public interface ISeasonGetAll
     {
         Task<List<SeasonDto>> GetAllSeasonsAsync();
-
     }
 }

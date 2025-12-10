@@ -9,6 +9,5 @@ namespace Danplanner.Application.Interfaces.AuthInterfaces.IUserRegister
     public interface IUserRequestRegisterCode
     {
         Task<bool> RequestUserRegisterCodeAsync(string email);
-
     }
 }

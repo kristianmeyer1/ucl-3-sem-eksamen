@@ -10,6 +10,5 @@ namespace Danplanner.Application.Interfaces.AdminInterfaces
     public interface IAdminAdd
     {
         Task AddAdminAsync(Admin admin);
-
     }
 }

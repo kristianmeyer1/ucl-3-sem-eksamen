@@ -42,7 +42,6 @@ namespace Danplanner.Client.Pages.Admin
         {
             if (!ModelState.IsValid)
             {
-                // If validation fails, reload the page with existing data
                 GridData = await _userGetAll.GetAllUsersAsync();
                 return Page();
             }

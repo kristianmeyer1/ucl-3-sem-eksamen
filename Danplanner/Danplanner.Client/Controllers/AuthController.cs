@@ -46,7 +46,6 @@ namespace Danplanner.Client.Controllers
             _userVerifyRegisterCode = userVerifyRegisterCode;
         }
 
-        // Admin registration
         [HttpPost("register")]
         public async Task<ActionResult<AdminDto>> RegisterAdmin([FromBody] AdminDto request)
         {
@@ -72,7 +71,6 @@ namespace Danplanner.Client.Controllers
             public int AdminId { get; set; }
         }
 
-        // Admin or User login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
@@ -84,7 +82,6 @@ namespace Danplanner.Client.Controllers
             if (token == "OTP_SENT")
                 return Ok("OTP sent to your email.");
 
-            // Sign in with cookies for Razor UI
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
             var claims = jwt.Claims.ToList();
@@ -93,10 +90,9 @@ namespace Danplanner.Client.Controllers
 
             await HttpContext.SignInAsync("Cookies", userPrincipal);
 
-            return Ok(token); // Return JWT for API usage
+            return Ok(token);
         }
 
-        // User login OTP
         [HttpPost("user/request-code")]
         public async Task<IActionResult> RequestUserCode([FromBody] RequestCodeDto request)
         {
@@ -123,7 +119,6 @@ namespace Danplanner.Client.Controllers
             return Ok(token);
         }
 
-        // User registration OTP
         [HttpPost("user/request-register-code")]
         public async Task<IActionResult> RequestUserRegisterCode([FromBody] RequestCodeDto request)
         {
@@ -152,7 +147,6 @@ namespace Danplanner.Client.Controllers
             return Ok(user);
         }
 
-        // Logout
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
@@ -161,7 +155,6 @@ namespace Danplanner.Client.Controllers
             return RedirectToPage("/Index");
         }
 
-        // Authenticated only
         [Authorize]
         [HttpGet("authenticated-only")]
         public IActionResult AuthenticatedOnly()

@@ -37,12 +37,10 @@
     <script src="~/js/calendar.js" asp-append-version="true"></script>
     <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // find flatpickr instance attached to #fp-calendar
     const calEl = document.querySelector("#fp-calendar");
     if (!calEl) return;
 
     const fp = calEl._flatpickr || (window.flatpickr && flatpickr(calEl)[0]) || null;
-    // create button and append near controls
     const controls = document.querySelector(".calendar-controls");
     if (!controls) return;
 
@@ -58,12 +56,10 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Use ISO format (YYYY-MM-DD) to keep parsing simple server-side
-        const format = (d) => fp.formatDate(d, "Y-m-d"); // flatpickr token Y=4-digit year, m=month, d=day
+        const format = (d) => fp.formatDate(d, "Y-m-d"); 
         const start = format(fp.selectedDates[0]);
         const end = format(fp.selectedDates[1]);
 
-        // calculate days (safe to send, but server will also compute)
         const a = new Date(fp.selectedDates[0].getFullYear(), fp.selectedDates[0].getMonth(), fp.selectedDates[0].getDate());
         const b = new Date(fp.selectedDates[1].getFullYear(), fp.selectedDates[1].getMonth(), fp.selectedDates[1].getDate());
         const days = Math.max(0, Math.round((b - a) / (1000 * 60 * 60 * 24)));
@@ -81,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
         display: flex !important;
         justify-content: space-between !important;
         align-items: flex-start !important;
-        gap: 32px !important; /* afstand mellem månederne */
+        gap: 32px !important; 
         width: 100% !important;
     }
 
@@ -101,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
         padding-right: 24px;
     }
 
-    /* Calendar visual styling to match screenshot */
     .calendar-top {
         background: #5f9aa5;
         color: #fff;
@@ -128,7 +123,6 @@ document.addEventListener("DOMContentLoaded", function () {
         padding-top: 12px;
     }
 
-    /* flatpickr range styling */
     .flatpickr-calendar {
         box-shadow: none;
         border: none;
@@ -159,8 +153,6 @@ document.addEventListener("DOMContentLoaded", function () {
         width: 100% !important;
     }
 
-
-    /* small tweaks for the control area */
     .calendar-controls {
         margin-top: 10px;
         display: flex;
@@ -173,7 +165,6 @@ document.addEventListener("DOMContentLoaded", function () {
             color: #6c757d;
         }
 
-    /* clear button */
     #clearSelection {
         margin-left: auto;
     }

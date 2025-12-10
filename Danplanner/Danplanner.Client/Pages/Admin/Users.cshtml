@@ -46,7 +46,6 @@
     <div class="edit-panel p-3 rounded shadow-sm">
         <h4>Rediger bruger</h4>
         <form method="post">
-            <!-- Hidden field for UserId -->
             <input asp-for="SelectedUser.UserId" type="hidden" />
 
             <div class="mb-3">
@@ -124,9 +123,9 @@
     }
 
     .edit-panel {
-        border: none; /* fjerner kant */
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* blød skygge */
-        margin-top: 6rem; /* rykker panel lidt ned */
+        border: none; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-top: 6rem; 
         min-width: 300px;
         max-width: 350px;
         padding: 1rem;
@@ -134,7 +133,7 @@
     }
 
     .taller-input {
-        height: 40px; /* juster højden efter behov */
+        height: 40px; 
     }
 
 </style>

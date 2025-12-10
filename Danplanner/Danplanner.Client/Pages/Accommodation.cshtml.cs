@@ -37,7 +37,6 @@ namespace Danplanner.Client.Pages
 
         public async Task OnGetAsync()
         {
-            // Kontaktinfo boks
             var filePath = Path.Combine(_env.WebRootPath ?? string.Empty, "data", "contactinfo.txt");
             ContactInformation = ContactInfoReader.Load(filePath); 
             

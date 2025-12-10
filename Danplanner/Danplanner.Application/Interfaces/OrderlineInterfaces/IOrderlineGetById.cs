@@ -11,6 +11,5 @@ namespace Danplanner.Application.Interfaces.OrderlineInterfaces
     public interface IOrderlineGetById
     {
         Task<OrderlineDto> OrderlineGetByIdAsync(int orderlineId);
-
     }
 }

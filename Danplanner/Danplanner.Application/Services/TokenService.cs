@@ -21,11 +21,11 @@ namespace Danplanner.Application.Services
         public string CreateTokenForAdmin(Admin admin)
         {
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, admin.AdminId.ToString()),
-        new Claim(ClaimTypes.NameIdentifier, admin.AdminId.ToString()),
-        new Claim(ClaimTypes.Role, "Admin")
-    };
+        {
+            new Claim(ClaimTypes.Name, admin.AdminId.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, admin.AdminId.ToString()),
+            new Claim(ClaimTypes.Role, "Admin")
+        };
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_configuration.GetValue<string>("AppSettings:Token")!));
@@ -46,10 +46,10 @@ namespace Danplanner.Application.Services
         public string CreateTokenForUser(UserDto user)
         {
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, user.UserName.ToString()),
-        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
-    };
+        {
+            new Claim(ClaimTypes.Name, user.UserName.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+        };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("AppSettings:Token")!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);

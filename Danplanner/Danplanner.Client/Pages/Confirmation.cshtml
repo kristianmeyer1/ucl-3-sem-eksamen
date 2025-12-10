@@ -6,7 +6,6 @@
 
 <div class="confirm-grid">
 
-    <!-- VENSTRE KOLONNE = selve formularen -->
     <form method="post" class="w-100">
 
         <div class="form-box">
@@ -64,7 +63,6 @@
                             seasonSummary[seasonName] = (current.BasePrice, current.Diff, current.NightsCount + 1);
                         }
                     }
-
         <ul>
                         @foreach (var season in seasonSummary)
                         {
@@ -81,14 +79,8 @@
                      <div>@Model.PricePerNightWithSeason?.ToString("F2") kr.</div>
                 }
 
-
-
-
 </div>
-
             <div asp-validation-summary="All" class="text-danger"></div>
-
-            <!-- VIGTIGT: skjulte felter der skal med i POST -->
             <input type="hidden" asp-for="AccommodationId" />
             <input type="hidden" asp-for="Start" />
             <input type="hidden" asp-for="End" />
@@ -120,10 +112,8 @@
                     <h5>Admin rabat</h5>
 
                     <div class="d-flex gap-2 mb-2">
-                        <!-- Manual discount input -->
                         <input asp-for="AdminDiscountPercent" id="AdminDiscountPercent" class="form-control" placeholder="Indtast rabat %" />
 
-                        <!-- Buttons to recalc price, not pay -->
                         <button type="submit" class="btn btn-success" name="applyDiscount" value="manual">Anvend rabat</button>
                         <button type="submit" class="btn btn-success" name="applyDiscount" value="20"
                                 onclick="document.getElementById('AdminDiscountPercent').value='20'">
@@ -138,7 +128,6 @@
 
     </form>
 
-    <!-- HØJRE KOLONNE = kontaktinfo (uden for form) -->
     <aside class="accom-aside">
         <div class="sticky-wrapper">
             <div class="contact-box">
@@ -183,8 +172,6 @@
     </script>
 }
 
-
-
 <style>
     .confirm-grid {
         display: grid;
@@ -199,7 +186,6 @@
         padding: 0 12px;
     }
 
-    /* Tildel grid-områder */
     .form-box {
         grid-area: form;
     }
@@ -227,7 +213,7 @@
     background: #f7f7f7;
     padding: 12px;
     border-radius: 4px;
-    overflow-y: auto; /* scroll hvis for høj */
+    overflow-y: auto;
 }
 
 
@@ -244,7 +230,6 @@
         margin-top: 12px;
     }
 
-    /* Bedre spacing og jævn struktur */
     .accom-box {
         border: 1px solid #ccc;
         background: #fff;
@@ -255,7 +240,6 @@
         gap: 24px;
     }
 
-    /* Header */
     .accom-header {
         display: flex;
         justify-content: space-between;
@@ -271,13 +255,11 @@
         color: #444;
     }
 
-    /* Datoer */
     .date-box div {
         margin-bottom: 4px;
         white-space: nowrap;
     }
 
-    /* Pris-boks */
     .price-box-confirm {
         display: flex;
         justify-content: space-between;
@@ -298,7 +280,6 @@
         font-weight: 500;
     }
 
-    /* Kontroller: - 0 + */
     .guest-controls {
         display: flex;
         align-items: center;
@@ -317,8 +298,6 @@
         height: 28px;
     }
 
-
-    /* Tilkøb sektionen */
     .section-title {
         margin: 0 0 10px 0;
     }
@@ -336,7 +315,6 @@
         gap: 2px;
     }
 
-    /* Total */
     .total-box {
         display: flex;
         justify-content: space-between;
@@ -344,7 +322,6 @@
         font-weight: bold;
     }
 
-    /* Betal knap */
     .pay-btn {
         width: 100%;
         padding: 12px;

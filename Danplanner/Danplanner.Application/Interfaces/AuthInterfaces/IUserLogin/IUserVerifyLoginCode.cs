@@ -9,6 +9,5 @@ namespace Danplanner.Application.Interfaces.AuthInterfaces.IUserLogin
     public interface IUserVerifyLoginCode
     {
         Task<string?> VerifyUserLoginCodeAsync(string email, string code);
-
     }
 }

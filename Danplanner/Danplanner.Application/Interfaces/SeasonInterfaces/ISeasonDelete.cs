@@ -9,6 +9,5 @@ namespace Danplanner.Application.Interfaces.SeasonInterfaces
     public interface ISeasonDelete
     {
         Task DeleteSeasonAsync(int seasonId);
-
     }
 }

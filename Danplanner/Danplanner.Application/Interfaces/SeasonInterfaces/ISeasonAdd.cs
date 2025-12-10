@@ -10,6 +10,5 @@ namespace Danplanner.Application.Interfaces.SeasonInterfaces
     public interface ISeasonAdd
     {
         Task<SeasonDto> AddSeasonAsync(SeasonDto seasonDto);
-
     }
 }

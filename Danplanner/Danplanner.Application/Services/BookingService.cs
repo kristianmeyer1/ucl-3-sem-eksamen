@@ -64,9 +64,6 @@ namespace Danplanner.Application.Services
 
             // Hent accommodation
             AccommodationDto accommodation = await _accommodationGetById2.AccommodationGetByIdAsync(booking.AccommodationId);
-
-            // Hent tilkøb
-            //List<AddonDto> addons = await _addonGetByBookingId.GetAddonsByBookingIdAsync(bookingDto.BookingId);
         }
     }
 }

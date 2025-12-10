@@ -26,7 +26,6 @@ public class SeasonController : ControllerBase
         return Ok(season);
     }
 
-    // Optional: other CRUD endpoints
     [HttpGet]
     public async Task<ActionResult<List<SeasonDto>>> GetAllSeasons()
     {

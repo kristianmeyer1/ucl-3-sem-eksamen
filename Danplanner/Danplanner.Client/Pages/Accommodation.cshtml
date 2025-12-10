@@ -45,7 +45,6 @@
                     <strong>Pris:</strong>
                     <p>@item.PricePerNight kr./nat</p>
 
-                    <!-- form posts selected key to OnPostSelect -->
                     <form method="post" asp-page-handler="Select" style="display:inline;">
                         <input type="hidden" name="key" value="@item.AccommodationId" />
                         <input type="hidden" name="Start" value="@(Model.Start ?? string.Empty)" />

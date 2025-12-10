@@ -10,6 +10,5 @@ namespace Danplanner.Application.Interfaces.SeasonInterfaces
     public interface ISeasonGetForDate
     {
         Task<SeasonDto?> GetSeasonForDate(DateTime date);
-
     }
 }

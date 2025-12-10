@@ -35,7 +35,6 @@ namespace Danplanner.Client.Pages
         {
             var startDt = ParseDate(Start);
             var endDt = ParseDate(End);
-            // 1) Indlæs map.json
             var dataDir = Path.Combine(_env.WebRootPath ?? string.Empty, "data");
             var mapFile = Path.Combine(dataDir, "map.json");
             MapDefinition mapDef;
@@ -60,26 +59,21 @@ namespace Danplanner.Client.Pages
                 throw new FileNotFoundException("Map definition file not found.", mapFile);
             }
 
-            // 2) Forvalgt pin
             SelectedKey = Request.Cookies["selectedItem"];
             var qSelected = Request.Query["selected"].FirstOrDefault();
             if (!string.IsNullOrEmpty(qSelected))
                 SelectedKey = qSelected;
 
-            // 3) Kategori filter
             SelectedCategory = Request.Cookies["selectedCategory"];
             var qCategory = Request.Query["category"].FirstOrDefault();
             if (!string.IsNullOrEmpty(qCategory))
                 SelectedCategory = qCategory;
-            // filtrér mapDef.Points på availability (+ kategori hvis du har det)
             var categoryFilter = SelectedCategory?.Trim().ToLowerInvariant();
             var hasCategoryFilter = !string.IsNullOrEmpty(categoryFilter);
 
-            // 4) Hent ledige AccommodationId'er fra databasen via EF
             var availableIds = await _accommodationGetById.GetAvailableIdsAsync(startDt, endDt);
             var idSet = new HashSet<int>(availableIds);
 
-            // 5) Filtrér punkterne på availability
             var filteredPoints = mapDef.Points
                 .Where(p =>
                     p.AccommodationId.HasValue &&
@@ -103,10 +97,8 @@ namespace Danplanner.Client.Pages
             if (req == null || req.AccommodationId <= 0)
                 return new JsonResult(new LockResponse { Success = false, Message = "Invalid request" });
 
-            // Build a deterministic lock key — include dates/placeKey to allow same accommodation for different dates
             var key = $"{req.AccommodationId}|{req.Start}|{req.End}|{req.PlaceKey}";
 
-            // owner can be connection id or user id if available
             var owner = User?.Identity?.Name ?? HttpContext.Connection.Id;
 
             var result = await _reservationLockService.TryLockAsync(key, TimeSpan.FromMinutes(10), owner);
